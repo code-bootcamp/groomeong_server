@@ -1,12 +1,12 @@
-import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
-import { CreateShopInput } from './dto/create-shop.input';
-import { Shop } from './entities/shop.entity';
-import { ShopsService } from './shops.service';
+import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
+import { CreateShopInput } from "./dto/create-shop.input";
+import { Shop } from "./entities/shop.entity";
+import { ShopsService } from "./shops.service";
 
 @Resolver()
 export class ShopsResolver {
 	constructor(
-		private readonly shopsService: ShopsService, //
+		private readonly shopsService: ShopsService //
 	) {}
 
 	@Query(() => [Shop])
@@ -16,7 +16,7 @@ export class ShopsResolver {
 
 	@Query(() => Shop)
 	fetchShop(
-		@Args('shopId') shopId: string, //
+		@Args("shopId") shopId: string //
 	): Promise<Shop> {
 		return this.shopsService.findOne({ shopId });
 	}
@@ -28,14 +28,14 @@ export class ShopsResolver {
 
 	@Query(() => Shop)
 	fetchShopWithDeleted(
-		@Args('shopId') shopId: string, //
+		@Args("shopId") shopId: string //
 	): Promise<Shop> {
 		return this.shopsService.findOneDeleted({ shopId });
 	}
 
 	@Mutation(() => Shop)
 	createShop(
-		@Args('createShopInput') createShopInput: CreateShopInput,
+		@Args("createShopInput") createShopInput: CreateShopInput
 	): Promise<Shop> {
 		return this.shopsService.create({ createShopInput });
 	}

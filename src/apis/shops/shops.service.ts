@@ -1,17 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Shop } from './entities/shop.entity';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Shop } from "./entities/shop.entity";
 import {
 	IShopsServiceCreate,
 	IShopsServiceFindOne,
-} from './interfaces/shops-service.interface';
+} from "./interface/shops.interface";
 
 @Injectable()
 export class ShopsService {
 	constructor(
 		@InjectRepository(Shop)
-		private readonly shopsRepository: Repository<Shop>, //
+		private readonly shopsRepository: Repository<Shop> //
 	) {}
 
 	async create({ createShopInput }: IShopsServiceCreate): Promise<Shop> {
