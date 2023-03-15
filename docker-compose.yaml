@@ -1,0 +1,31 @@
+version: '3.7'
+
+# 컴퓨터들
+# 띄어쓰기를 중요하게 해야한다. 왜냐하면 띄어쓰기로 부모 자식을 정해주기때문이다.
+services:
+  #컴퓨터 이름
+  my-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/teamproject/src
+    ports:
+      - 3000:3000
+    env_file:
+      - ./.env.docker
+
+  # 컴퓨터 이름
+  my-database:
+    # platform : linux/86_64
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: 'teamproject'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - 3306:3306
+  # 컴퓨터 이름
+  # my-redis:
+  #   image: redis:latest
+  #   ports:
+  #     - 6379:6379

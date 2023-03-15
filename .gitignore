@@ -1,0 +1,8 @@
+node_modules
+dist
+.env*
+gcp-file-storage.json
+schema.gql
+
+
+.vscode/*
