@@ -1,6 +1,9 @@
 node_modules
 dist
 .env*
-
-Dockerfile
+gcp-file-storage.json
+schema.gql
 docker-compose.yaml
+
+
+.vscode/*
