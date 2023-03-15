@@ -1,4 +1,6 @@
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
+import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DogsModule } from './apis/dogs/dogs.module';
 import { AppController } from './app.controller';
@@ -7,18 +9,22 @@ import { AppService } from './app.service';
 @Module({
 	imports: [
 		DogsModule, //
+		GraphQLModule.forRoot<ApolloDriverConfig>({
+			driver: ApolloDriver,
+			autoSchemaFile: true,
+			context: ({ req, res }) => ({ req, res }),
+		}),
 		TypeOrmModule.forRoot({
 			type: process.env.DATABASE_TYPE as 'mysql',
 			host: process.env.DATABASE_HOST,
 			port: Number(process.env.DATABASE_PORT),
 			username: process.env.DATABASE_USERNAME,
-			password: process.env.DATABASEA_PASSWORD,
+			password: process.env.DATABASE_PASSWORD,
+			database: process.env.DATABASE_DATABASE,
 			entities: [__dirname + '/apis/**/*.entity.*'],
-			logging: true,
 			synchronize: true,
+			logging: true,
 		}),
 	],
-	controllers: [AppController],
-	providers: [AppService],
 })
 export class AppModule {}

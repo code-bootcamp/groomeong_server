@@ -48,28 +48,26 @@ export class Dog {
 		enum: DOG_TYPE,
 		nullable: true,
 	})
-	@Field(() => DOG_TYPE)
+	@Field(() => DOG_TYPE, { nullable: true })
 	breed: DOG_TYPE;
 
 	@Column({
 		type: 'text',
 		nullable: true,
 	})
-	@Field(() => String)
+	@Field(() => String, { nullable: true })
 	specifics: string;
 
 	@Column({
 		length: 100,
 		nullable: true,
 	})
-	@Field(() => String)
+	@Field(() => String, { nullable: true })
 	image: string;
 
-	@CreateDateColumn()
-	@Field(() => Date)
+	@CreateDateColumn({ nullable: true })
 	createdAt: Date;
 
 	@DeleteDateColumn({ nullable: true })
-	@Field(() => Date)
 	deletedAt: Date;
 }
