@@ -4,8 +4,10 @@ import { Repository } from "typeorm";
 import { Shop } from "./entities/shop.entity";
 import {
 	IShopsServiceCreate,
+	IShopsServiceDelete,
 	IShopsServiceFindOne,
-} from "./interface/shops.interface";
+	IShopsServiceUpdate,
+} from "./interface/shops-service.interface";
 
 @Injectable()
 export class ShopsService {
@@ -46,7 +48,22 @@ export class ShopsService {
 		});
 	}
 
-	// update() {}
+	async update({
+		shopId,
+		updateShopInput,
+	}: IShopsServiceUpdate): Promise<Shop> {
+		await this.shopsRepository.findOne({
+			where: { id: shopId },
+		});
 
-	// delete() {}
+		return this.shopsRepository.save({
+			...updateShopInput,
+		});
+	}
+
+	async delete({ shopId }: IShopsServiceDelete): Promise<boolean> {
+		const result = await this.shopsRepository.softDelete({ id: shopId });
+
+		return result.affected ? true : false;
+	}
 }
