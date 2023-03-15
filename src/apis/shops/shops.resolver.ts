@@ -1,7 +1,6 @@
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
-import { query } from 'express';
 import { CreateShopInput } from './dto/create-shop.input';
-import { Shop } from './entities/shops.entity';
+import { Shop } from './entities/shop.entity';
 import { ShopsService } from './shops.service';
 
 @Resolver()
@@ -10,9 +9,28 @@ export class ShopsResolver {
 		private readonly shopsService: ShopsService, //
 	) {}
 
-	@Query(() => String)
-	fetchshop() {
-		return 'graphQL 동작을 위한 임시쿼리문입니다!!';
+	@Query(() => [Shop])
+	fetchShops(): Promise<Shop[]> {
+		return this.shopsService.findAll();
+	}
+
+	@Query(() => Shop)
+	fetchShop(
+		@Args('shopId') shopId: string, //
+	): Promise<Shop> {
+		return this.shopsService.findOne({ shopId });
+	}
+
+	@Query(() => [Shop])
+	fetchShopsWithDeleted(): Promise<Shop[]> {
+		return this.shopsService.findAllDeleted();
+	}
+
+	@Query(() => Shop)
+	fetchShopWithDeleted(
+		@Args('shopId') shopId: string, //
+	): Promise<Shop> {
+		return this.shopsService.findOneDeleted({ shopId });
 	}
 
 	@Mutation(() => Shop)
