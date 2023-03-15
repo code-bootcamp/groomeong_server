@@ -1,5 +1,11 @@
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+	Column,
+	CreateDateColumn,
+	DeleteDateColumn,
+	Entity,
+	PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -43,4 +49,12 @@ export class Dog {
 	})
 	@Field(() => String)
 	image: string;
+
+	@CreateDateColumn()
+	@Field(() => Date)
+	createdAt: Date;
+
+	@DeleteDateColumn()
+	@Field(() => Date)
+	deletedAt: Date;
 }
