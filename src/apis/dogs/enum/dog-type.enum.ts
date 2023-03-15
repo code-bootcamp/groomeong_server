@@ -1,4 +1,4 @@
-export enum DogType {
+export enum DOG_TYPE {
 	SMALL = 'SMALL',
 	MEDIUM = 'MEDIUM',
 	LARGE = 'LARGE',

@@ -1,4 +1,10 @@
-import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
+import {
+	Field,
+	Float,
+	Int,
+	ObjectType,
+	registerEnumType,
+} from '@nestjs/graphql';
 import {
 	Column,
 	CreateDateColumn,
@@ -6,6 +12,11 @@ import {
 	Entity,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
+import { DOG_TYPE } from '../enum/dog-type.enum';
+
+registerEnumType(DOG_TYPE, {
+	name: 'DOG_TYPE',
+});
 
 @Entity()
 @ObjectType()
@@ -33,10 +44,11 @@ export class Dog {
 	weight: number;
 
 	@Column({
-		length: 20, //
+		type: 'enum',
+		enum: DOG_TYPE,
 	})
-	@Field(() => String)
-	breed: string;
+	@Field(() => DOG_TYPE)
+	breed: DOG_TYPE;
 
 	@Column({
 		type: 'text', //
@@ -54,7 +66,7 @@ export class Dog {
 	@Field(() => Date)
 	createdAt: Date;
 
-	@DeleteDateColumn()
+	@DeleteDateColumn({ nullable: true })
 	@Field(() => Date)
 	deletedAt: Date;
 }
