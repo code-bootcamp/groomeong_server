@@ -46,18 +46,21 @@ export class Dog {
 	@Column({
 		type: 'enum',
 		enum: DOG_TYPE,
+		nullable: true,
 	})
 	@Field(() => DOG_TYPE)
 	breed: DOG_TYPE;
 
 	@Column({
-		type: 'text', //
+		type: 'text',
+		nullable: true,
 	})
 	@Field(() => String)
 	specifics: string;
 
 	@Column({
-		length: 100, //
+		length: 100,
+		nullable: true,
 	})
 	@Field(() => String)
 	image: string;
