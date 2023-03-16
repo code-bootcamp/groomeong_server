@@ -3,7 +3,7 @@ dist
 .env*
 gcp-file-storage.json
 schema.gql
-docker-compose.yml
+docker-compose.yaml
 
 
 .vscode/*

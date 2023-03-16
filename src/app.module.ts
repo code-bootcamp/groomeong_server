@@ -1,19 +1,22 @@
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { UsersModule } from './apis/users/user.module';
 import { DogsModule } from './apis/dogs/dogs.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 @Module({
 	imports: [
-		DogsModule, //
+    DogsModule,
+		UsersModule, //
+
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
 			autoSchemaFile: true,
 			context: ({ req, res }) => ({ req, res }),
 		}),
+		ConfigModule.forRoot(),
 		TypeOrmModule.forRoot({
 			type: process.env.DATABASE_TYPE as 'mysql',
 			host: process.env.DATABASE_HOST,
