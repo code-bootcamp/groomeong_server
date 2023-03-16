@@ -26,12 +26,13 @@ export class ShopsResolver {
 		return await this.shopsService.findById({ shopId });
 	}
 
-	@Query(() => [Shop], {
-		description: 'Return : DB에 등록된 모든 삭제된 가게(Shop) 데이터',
-	})
-	async fetchShopsWithDeleted(): Promise<Shop[]> {
-		return await this.shopsService.findAllDeleted();
-	}
+	// // 삭제 기능 생략되어 주석 처리함
+	// @Query(() => [Shop], {
+	// 	description: 'Return : DB에 등록된 모든 삭제된 가게(Shop) 데이터',
+	// })
+	// async fetchShopsWithDeleted(): Promise<Shop[]> {
+	// 	return await this.shopsService.findAllDeleted();
+	// }
 
 	@Query(() => Shop, {
 		description: 'Return : 입력한 shopId와 일치하는 가게(Shop) 데이터',
@@ -63,22 +64,24 @@ export class ShopsResolver {
 		return await this.shopsService.update({ shopId, updateShopInput });
 	}
 
-	@Mutation(() => Boolean, {
-		description:
-			'Return : 가게 정보 삭제 완료 시 true. softdelete이므로 가게의 정보를 복원할 수 있습니다',
-	})
-	async deleteShop(
-		@Args('shopId') shopId: string, //
-	): Promise<boolean> {
-		return await this.shopsService.delete({ shopId });
-	}
+	// // 삭제 기능 생략되어 주석 처리함
+	// @Mutation(() => Boolean, {
+	// 	description:
+	// 		'Return : 가게 정보 삭제 완료 시 true. softdelete이므로 가게의 정보를 복원할 수 있습니다',
+	// })
+	// async deleteShop(
+	// 	@Args('shopId') shopId: string, //
+	// ): Promise<boolean> {
+	// 	return await this.shopsService.delete({ shopId });
+	// }
 
-	@Mutation(() => Boolean, {
-		description: 'Return : 가게 정보 복구 완료 시 true.',
-	})
-	async restoreShop(
-		@Args('shopId') shopId: string, //
-	): Promise<boolean> {
-		return await this.shopsService.restore({ shopId });
-	}
+	// // 삭제 기능 생략되어 주석 처리함
+	// @Mutation(() => Boolean, {
+	// 	description: 'Return : 가게 정보 복구 완료 시 true.',
+	// })
+	// async restoreShop(
+	// 	@Args('shopId') shopId: string, //
+	// ): Promise<boolean> {
+	// 	return await this.shopsService.restore({ shopId });
+	// }
 }

@@ -87,30 +87,32 @@ export class ShopsService {
 		return result;
 	}
 
-	// 삭제 처리된 모든 가게 정보 불러오기
-	async findAllDeleted(): Promise<Shop[]> {
-		return await this.shopsRepository.find({
-			withDeleted: true,
-			// relations: ['reservation'],
-		});
-	}
+	// // 삭제 기능 생략되어 주석 처리함
+	// // 삭제 처리된 모든 가게 정보 불러오기
+	// async findAllDeleted(): Promise<Shop[]> {
+	// 	return await this.shopsRepository.find({
+	// 		withDeleted: true,
+	// 		// relations: ['reservation'],
+	// 	});
+	// }
 
-	// 삭제된 가게ID로 해당 가게 정보 가져오기
-	async findDeleted({ shopId }: IShopsServiceFindDeleted): Promise<Shop> {
-		const result = await this.shopsRepository.findOne({
-			where: { id: shopId },
-			withDeleted: true,
-			// relations: ['reservation'],
-		});
+	// // 삭제 기능 생략되어 주석 처리함
+	// // 삭제된 가게ID로 해당 가게 정보 가져오기
+	// async findDeleted({ shopId }: IShopsServiceFindDeleted): Promise<Shop> {
+	// 	const result = await this.shopsRepository.findOne({
+	// 		where: { id: shopId },
+	// 		withDeleted: true,
+	// 		// relations: ['reservation'],
+	// 	});
 
-		if (!result) {
-			throw new NotFoundException(
-				`삭제된 목록에서 ID가 ${shopId}인 가게를 찾을 수 없습니다`,
-			);
-		}
+	// 	if (!result) {
+	// 		throw new NotFoundException(
+	// 			`삭제된 목록에서 ID가 ${shopId}인 가게를 찾을 수 없습니다`,
+	// 		);
+	// 	}
 
-		return result;
-	}
+	// 	return result;
+	// }
 
 	// 가게ID로 가게 정보 업데이트하기
 	async update({
@@ -130,31 +132,33 @@ export class ShopsService {
 		});
 	}
 
-	// 가게ID로 가게 정보 삭제하기
-	async delete({ shopId }: IShopsServiceDelete): Promise<boolean> {
-		const checkShop = await this.shopsRepository.findOne({
-			where: { id: shopId },
-		});
+	// // 삭제 기능 생략되어 주석 처리함
+	// // 가게ID로 가게 정보 삭제하기
+	// async delete({ shopId }: IShopsServiceDelete): Promise<boolean> {
+	// 	const checkShop = await this.shopsRepository.findOne({
+	// 		where: { id: shopId },
+	// 	});
 
-		if (!checkShop) {
-			throw new NotFoundException(`ID가 ${shopId}인 가게를 찾을 수 없습니다`);
-		}
+	// 	if (!checkShop) {
+	// 		throw new NotFoundException(`ID가 ${shopId}인 가게를 찾을 수 없습니다`);
+	// 	}
 
-		const result = await this.shopsRepository.softDelete({ id: shopId });
+	// 	const result = await this.shopsRepository.softDelete({ id: shopId });
 
-		return result.affected ? true : false;
-	}
+	// 	return result.affected ? true : false;
+	// }
 
-	// 삭제된 가게ID로 해당 가게 정보 복원하기
-	async restore({ shopId }: IShopsServiceRestore): Promise<boolean> {
-		const checkDeletedShop = await this.findDeleted({ shopId });
+	// // 삭제 기능 생략되어 주석 처리함
+	// // 삭제된 가게ID로 해당 가게 정보 복원하기
+	// async restore({ shopId }: IShopsServiceRestore): Promise<boolean> {
+	// 	const checkDeletedShop = await this.findDeleted({ shopId });
 
-		if (!checkDeletedShop) {
-			throw new NotFoundException(`ID가 ${shopId}인 가게를 찾을 수 없습니다`);
-		}
+	// 	if (!checkDeletedShop) {
+	// 		throw new NotFoundException(`ID가 ${shopId}인 가게를 찾을 수 없습니다`);
+	// 	}
 
-		const result = await this.shopsRepository.restore({ id: shopId });
+	// 	const result = await this.shopsRepository.restore({ id: shopId });
 
-		return result.affected ? true : false;
-	}
+	// 	return result.affected ? true : false;
+	// }
 }
