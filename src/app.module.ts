@@ -7,8 +7,6 @@ import { Module } from '@nestjs/common';
 import { ShopsModule } from './apis/shops/shops.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './apis/users/user.module';
-import { APP_FILTER } from '@nestjs/core';
-import { HttpExceptionFilter } from './commons/filter/http-exception.filter';
 import { JwtAccessStrategy } from './apis/auth/strategies/jwt-access.strategy';
 import { JwtRefreshStrategy } from './apis/auth/strategies/jwt-refresh.stratehy';
 
@@ -18,6 +16,7 @@ import { JwtRefreshStrategy } from './apis/auth/strategies/jwt-refresh.stratehy'
 		DogsModule,
 		ShopsModule,
 		UsersModule,
+    
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
 			autoSchemaFile: true,

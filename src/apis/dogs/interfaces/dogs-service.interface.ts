@@ -7,3 +7,7 @@ export interface IDogsServiceFindOneById {
 export interface IDogsServiceCreate {
 	createDogInput: CreateDogInput;
 }
+
+export interface IDogsServiceDeleteById {
+	id: string;
+}
