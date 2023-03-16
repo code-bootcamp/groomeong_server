@@ -11,7 +11,7 @@ import { UsersModule } from './apis/users/user.module';
 	imports: [
 		DogsModule, //
 		ShopsModule,
-		UsersModule, 
+		UsersModule,
 
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
