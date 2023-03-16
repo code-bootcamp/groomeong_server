@@ -11,35 +11,35 @@ export class ShopsResolver {
 	) {}
 
 	@Query(() => [Shop])
-	fetchShops(): Promise<Shop[]> {
-		return this.shopsService.findAll();
+	async fetchShops(): Promise<Shop[]> {
+		return await this.shopsService.findAll();
 	}
 
 	@Query(() => Shop)
-	fetchShop(
+	async fetchShop(
 		@Args('shopId') shopId: string, //
 	): Promise<Shop> {
-		return this.shopsService.findOne({ shopId });
+		return await this.shopsService.findById({ shopId });
 	}
 
 	@Query(() => [Shop])
-	fetchShopsWithDeleted(): Promise<Shop[]> {
-		return this.shopsService.findAllDeleted();
+	async fetchShopsWithDeleted(): Promise<Shop[]> {
+		return await this.shopsService.findAllDeleted();
 	}
 
 	@Query(() => Shop)
-	fetchShopWithDeleted(
+	async fetchShopWithDeleted(
 		@Args('shopId') shopId: string, //
 	): Promise<Shop> {
-		return this.shopsService.findOneDeleted({ shopId });
+		return await this.shopsService.findDeleted({ shopId });
 	}
 
 	@Mutation(() => Shop)
 	createShop(
 		@Args('createShopInput') createShopInput: CreateShopInput,
 	): Promise<Shop> {
-		const phone = createShopInput.phone;
-		return this.shopsService.create({ phone, createShopInput });
+		const address = createShopInput.address;
+		return this.shopsService.create({ address, createShopInput });
 	}
 
 	@Mutation(() => Shop)
@@ -47,20 +47,20 @@ export class ShopsResolver {
 		@Args('shopId') shopId: string,
 		@Args('updateShopInput') updateShopInput: UpdateShopInput,
 	): Promise<Shop> {
-		return this.shopsService.update({ shopId, updateShopInput });
+		return await this.shopsService.update({ shopId, updateShopInput });
 	}
 
 	@Mutation(() => Boolean)
-	deleteShop(
+	async deleteShop(
 		@Args('shopId') shopId: string, //
 	): Promise<boolean> {
-		return this.shopsService.delete({ shopId });
+		return await this.shopsService.delete({ shopId });
 	}
 
 	@Mutation(() => Boolean)
-	restoreShop(
+	async restoreShop(
 		@Args('shopId') shopId: string, //
 	): Promise<boolean> {
-		return this.shopsService.restore({ shopId });
+		return await this.shopsService.restore({ shopId });
 	}
 }

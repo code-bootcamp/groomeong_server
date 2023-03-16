@@ -2,16 +2,24 @@ import { CreateShopInput } from '../dto/create-shop.input';
 import { UpdateShopInput } from '../dto/update-shop.input';
 
 export interface IShopsServiceCreate {
-	phone: string;
+	address: string;
 	createShopInput: CreateShopInput;
 }
 
-export interface IShopsServiceFindOne {
+export interface IShopsServiceFindById {
 	shopId: string;
 }
 
-export interface IShopsServiceFindOneByPhone {
+export interface IShopsServiceFindByPhone {
 	phone: string;
+}
+
+export interface IShopsServiceFindByAddress {
+	address: string;
+}
+
+export interface IShopsServiceFindDeleted {
+	shopId: string;
 }
 
 export interface IShopsServiceUpdate {

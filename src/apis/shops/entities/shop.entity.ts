@@ -3,7 +3,6 @@ import {
 	Column,
 	DeleteDateColumn,
 	Entity,
-	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -44,4 +43,11 @@ export class Shop {
 	// })
 	// @Field(() => [Reservation])
 	// reservation?: Reservation[];
+
+	// // 가게(own):가게이미지 = 1:N
+	// @OneToMany(() => ShopImage, (shopImage) => shopImage.id, {
+	// 	nullable: true,
+	// })
+	// @Field(() => [ShopImage])
+	// image?: ShopImage[];
 }
