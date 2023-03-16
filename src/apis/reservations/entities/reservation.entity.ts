@@ -29,7 +29,7 @@ export class Reservation {
 	createAt?: Date;
 
 	// Shop(own): 예약 = 1:N // OneToMany 받음
-	@ManyToOne(() => Shop, (shop) => shop.reservation, { nullable: false })
+	@ManyToOne(() => Shop, (shop) => shop.id, { nullable: false })
 	@Field(() => Shop)
 	shop: Shop[];
 

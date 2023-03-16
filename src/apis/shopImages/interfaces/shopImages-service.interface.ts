@@ -12,3 +12,7 @@ export interface IShopImagesServiceFindById {
 export interface IShopImagesServiceFindByShopId {
 	shopId: string;
 }
+
+export interface IShopImagesServiceDelete {
+	shopImageId: string;
+}

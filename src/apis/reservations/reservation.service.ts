@@ -6,16 +6,16 @@ import { Reservation } from './entities/reservation.entity';
 import {
 	IReservationsServiceCreate,
 	IReservationsServiceDelete,
-	IReservationsServiceFindAllByUserId,
 	IReservationsServiceFindById,
 	IReservationsServiceFindDeletedById,
-} from './interfaces/reservation-service.interface';
+} from './interfaces/reservations-service.interface';
 
 @Injectable()
 export class ReservationsService {
 	constructor(
 		@InjectRepository(Reservation)
 		private readonly reservationsRepository: Repository<Reservation>, //
+		@InjectRepository(User)
 		private readonly usersRepository: Repository<User>,
 	) {}
 
