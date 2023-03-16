@@ -6,12 +6,16 @@ import { Module } from '@nestjs/common';
 import { ShopsModule } from './apis/shops/shops.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './apis/users/user.module';
+import { ShopImagesModule } from './apis/shopImages/shopImage.module';
+import { ReservationsModule } from './apis/reservations/reservation.module';
 
 @Module({
 	imports: [
 		DogsModule, //
 		ShopsModule,
-		UsersModule, 
+		ShopImagesModule,
+		ReservationsModule,
+		UsersModule,
 
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
