@@ -34,14 +34,15 @@ export class ShopsResolver {
 	// 	return await this.shopsService.findAllDeleted();
 	// }
 
-	@Query(() => Shop, {
-		description: 'Return : 입력한 shopId와 일치하는 가게(Shop) 데이터',
-	})
-	async fetchShopWithDeleted(
-		@Args('shopId') shopId: string, //
-	): Promise<Shop> {
-		return await this.shopsService.findDeleted({ shopId });
-	}
+	// // 삭제 기능 생략되어 주석 처리함
+	// @Query(() => Shop, {
+	// 	description: 'Return : 입력한 shopId와 일치하는 가게(Shop) 데이터',
+	// })
+	// async fetchShopWithDeleted(
+	// 	@Args('shopId') shopId: string, //
+	// ): Promise<Shop> {
+	// 	return await this.shopsService.findDeleted({ shopId });
+	// }
 
 	@Mutation(() => Shop, {
 		description: 'Return : 새로 생성되어 DB에 저장된 신규 가게(Shop) 데이터',

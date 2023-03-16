@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { Shop } from 'src/apis/shops/entities/shop.entity';
 import {
 	Column,
 	CreateDateColumn,
@@ -27,18 +28,18 @@ export class Reservation {
 	@Field(() => Date)
 	createAt?: Date;
 
-	// // Shop(own): 예약 = 1:N
-	// @ManyToOne(()=> , ()=>, {nullable: false})
-	// @Field(()=>[Shop])
-	// shop: Shop[];
+	// Shop(own): 예약 = 1:N // OneToMany 받음
+	@ManyToOne(() => Shop, (shop) => shop.reservation, { nullable: false })
+	@Field(() => Shop)
+	shop: Shop[];
 
 	// // User(own) : 예약 =  1:N
-	// @ManyToOne(()=> , ()=>, {nullable: false})
-	// @Field(()=>[User])
+	// @ManyToOne(()=> User, (user)=> , {nullable: false})
+	// @Field(()=>User)
 	// user: User[];
 
 	// // Dog(own) : 예약 = 1:N
-	// @ManyToOne(()=> , ()=>, {nullable: false})
-	// @Field(()=>[Dog])
+	// @ManyToOne(()=> Dog, (dog)=>, {nullable: false})
+	// @Field(()=>Dog)
 	// dog: Dog[];
 }

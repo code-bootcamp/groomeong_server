@@ -1,8 +1,11 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { Reservation } from 'src/apis/reservations/entities/reservation.entity';
+import { ShopImage } from 'src/apis/shopImages/entities/shopImages.entity';
 import {
 	Column,
 	DeleteDateColumn,
 	Entity,
+	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -38,17 +41,17 @@ export class Shop {
 	// @Field(() => Date)
 	// deleteAt?: Date;
 
-	// // 가게(own):예약 = 1:N
-	// @OneToMany(() => Reservation, (reservation) => reservation.id, {
-	// 	nullable: true,
-	// })
-	// @Field(() => [Reservation])
-	// reservation?: Reservation[];
+	// 가게(own):예약 = 1:N
+	@OneToMany(() => Reservation, (reservation) => reservation.id, {
+		nullable: true,
+	})
+	@Field(() => Reservation)
+	reservation?: Reservation[];
 
-	// // 가게(own):가게이미지 = 1:N
-	// @OneToMany(() => ShopImage, (shopImage) => shopImage.id, {
-	// 	nullable: true,
-	// })
-	// @Field(() => [ShopImage])
-	// image?: ShopImage[];
+	// 가게(own):가게이미지 = 1:N
+	@OneToMany(() => ShopImage, (shopImage) => shopImage.shop, {
+		nullable: true,
+	})
+	@Field(() => ShopImage)
+	image?: ShopImage[];
 }
