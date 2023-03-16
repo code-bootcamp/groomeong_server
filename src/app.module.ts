@@ -1,17 +1,17 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { UsersModule } from './apis/users/user.module';
+import { ConfigModule } from '@nestjs/config';
 import { DogsModule } from './apis/dogs/dogs.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { Module } from '@nestjs/common';
 import { ShopsModule } from './apis/shops/shops.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './apis/users/user.module';
 
 @Module({
 	imports: [
-		DogsModule,
+		DogsModule, //
 		ShopsModule,
-		UsersModule, //
+		UsersModule, 
 
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
