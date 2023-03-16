@@ -1,0 +1,25 @@
+version: '3.7'
+
+# 컴퓨터들
+services:
+  # 컴퓨터이름
+  my-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/myfolder/src
+    ports:
+      - 3000:3000
+    env_file:
+      - ./.env
+
+  # 컴퓨터이름
+  my-database:
+    # platform: linux/86_64
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: 'groo-meong'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - 3306:3306
