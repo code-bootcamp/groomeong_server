@@ -65,6 +65,15 @@ export class UsersService {
 		});
 	}
 
+	// 로그인한 유저와 유저 댕댕이 프로필
+	async findUserDog({ email }): Promise<User> {
+		const result = await this.userRepository.findOne({
+			where: { email },
+			// relations: {dog:true},
+		});
+		return result;
+	}
+
 	// 회원 수정하기
 	async update({
 		userId, //
