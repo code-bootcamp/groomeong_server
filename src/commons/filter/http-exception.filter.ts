@@ -19,6 +19,7 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
 		console.log('예외가 발생했어요!');
 		console.log('예외내용:', message);
 		console.log('예외코드:', statusCode);
+		console.log(response);
 		console.log('============');
 
 		// response.status(statusCode).json({
