@@ -13,7 +13,6 @@ import {
 	IShopsServiceFindById,
 	IShopsServiceFindByPhone,
 	IShopsServiceFindDeleted,
-	IShopsServiceFindOne,
 	IShopsServiceRestore,
 	IShopsServiceUpdate,
 } from './interface/shops-service.interface';
@@ -25,6 +24,7 @@ export class ShopsService {
 		private readonly shopsRepository: Repository<Shop>, //
 	) {}
 
+	// 신규 가게 정보 생성
 	async create({
 		address,
 		createShopInput,
@@ -42,6 +42,7 @@ export class ShopsService {
 		return await this.shopsRepository.save({ ...createShopInput });
 	}
 
+	// 가게ID로 해당 가게 정보 찾기
 	async findById({ shopId }: IShopsServiceFindById): Promise<Shop> {
 		return await this.shopsRepository.findOne({
 			where: { id: shopId },
@@ -49,12 +50,14 @@ export class ShopsService {
 		});
 	}
 
+	// DB의 모든 가게 정보 불러오기
 	async findAll(): Promise<Shop[]> {
 		return await this.shopsRepository.find({
 			// relations: ['reservation'],
 		});
 	}
 
+	// 가게 연락처(phone)로 해당 가게 정보 찾기
 	async findByPhone({ phone }: IShopsServiceFindByPhone): Promise<Shop> {
 		const result = await this.shopsRepository.findOne({
 			where: { phone: phone },
@@ -69,6 +72,7 @@ export class ShopsService {
 		return result;
 	}
 
+	// 가게 주소(address)로 해당 가게 정보 찾기
 	async findByAddress({ address }: IShopsServiceFindByAddress): Promise<Shop> {
 		const result = await this.shopsRepository.findOne({
 			where: { address: address },
@@ -83,6 +87,7 @@ export class ShopsService {
 		return result;
 	}
 
+	// 삭제 처리된 모든 가게 정보 불러오기
 	async findAllDeleted(): Promise<Shop[]> {
 		return await this.shopsRepository.find({
 			withDeleted: true,
@@ -90,6 +95,7 @@ export class ShopsService {
 		});
 	}
 
+	// 삭제된 가게ID로 해당 가게 정보 가져오기
 	async findDeleted({ shopId }: IShopsServiceFindDeleted): Promise<Shop> {
 		const result = await this.shopsRepository.findOne({
 			where: { id: shopId },
@@ -106,6 +112,7 @@ export class ShopsService {
 		return result;
 	}
 
+	// 가게ID로 가게 정보 업데이트하기
 	async update({
 		shopId,
 		updateShopInput,
@@ -123,6 +130,7 @@ export class ShopsService {
 		});
 	}
 
+	// 가게ID로 가게 정보 삭제하기
 	async delete({ shopId }: IShopsServiceDelete): Promise<boolean> {
 		const checkShop = await this.shopsRepository.findOne({
 			where: { id: shopId },
@@ -137,6 +145,7 @@ export class ShopsService {
 		return result.affected ? true : false;
 	}
 
+	// 삭제된 가게ID로 해당 가게 정보 복원하기
 	async restore({ shopId }: IShopsServiceRestore): Promise<boolean> {
 		const checkDeletedShop = await this.findDeleted({ shopId });
 

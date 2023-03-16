@@ -19,6 +19,7 @@ export class ReservationsService {
 		private readonly usersRepository: Repository<User>,
 	) {}
 
+	// 신규 예약 정보 생성
 	async create({
 		createReservationInput,
 	}: IReservationsServiceCreate): Promise<Reservation> {
@@ -27,6 +28,7 @@ export class ReservationsService {
 		});
 	}
 
+	// 예약ID로 해당 예약정보 찾기
 	async findById({
 		reservationId,
 	}: IReservationsServiceFindById): Promise<Reservation> {
@@ -64,6 +66,7 @@ export class ReservationsService {
 	// 	});
 	// }
 
+	// 삭제된 예약의 예약ID로 해당 예약 정보 가져오기
 	async findDeletedById({
 		reservationId,
 	}: IReservationsServiceFindDeletedById): Promise<Reservation> {
@@ -101,6 +104,7 @@ export class ReservationsService {
 	// 	return result;
 	// }
 
+	//예약ID로 해당 예약 정보 삭제
 	async delete({
 		reservationId,
 	}: IReservationsServiceDelete): Promise<boolean> {
