@@ -51,7 +51,7 @@ export class ReservationsService {
 	// // * User테이블과 조인 후 주석 해제 예정입니다
 	// async findAllByUserId({ userId }: IReservationsServiceFindAllByUserId) {
 	// 	const checkUser = await this.usersRepository.findOne({
-	// 		where: { id: userId },
+	// 		where: { user: { id: userId } },
 	//    // relations: ['shop', 'user', 'dog'],
 	// 	});
 
@@ -62,7 +62,7 @@ export class ReservationsService {
 	// 	}
 
 	// 	return await this.usersRepository.findOne({
-	// 		where: { userId: userId },
+	// 		where: { id: userId },
 	// 	});
 	// }
 
@@ -90,7 +90,7 @@ export class ReservationsService {
 	// 	userId,
 	// }: IReservationsServiceFindAllByUserId): Promise<Reservation> {
 	// 	const result = await this.reservationsRepository.find({
-	// 		where: { userId: userId },
+	// 		where: { user: { id: userId } },
 	// 		withDeleted: true,
 	// 		// relations: ['shop', 'user', 'dog'],
 	// 	});
