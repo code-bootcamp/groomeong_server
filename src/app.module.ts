@@ -1,16 +1,18 @@
-import { Module } from "@nestjs/common";
-// import { AppController } from './app.controller';
-import { ConfigModule } from "@nestjs/config";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { GraphQLModule } from "@nestjs/graphql";
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { UsersModule } from "./apis/users/user.module";
-import { ShopsModule } from "./apis/shops/shops.module";
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { UsersModule } from './apis/users/user.module';
+import { DogsModule } from './apis/dogs/dogs.module';
+import { ShopsModule } from './apis/shops/shops.module';
 
 @Module({
 	imports: [
-		UsersModule, //
+		DogsModule,
 		ShopsModule,
+		UsersModule, //
+
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
 			autoSchemaFile: true,
@@ -18,18 +20,16 @@ import { ShopsModule } from "./apis/shops/shops.module";
 		}),
 		ConfigModule.forRoot(),
 		TypeOrmModule.forRoot({
-			type: process.env.DATABASE_TYPE as "mysql",
+			type: process.env.DATABASE_TYPE as 'mysql',
 			host: process.env.DATABASE_HOST,
 			port: Number(process.env.DATABASE_PORT),
 			username: process.env.DATABASE_USERNAME,
 			password: process.env.DATABASE_PASSWORD,
 			database: process.env.DATABASE_DATABASE,
-			entities: [__dirname + "/apis/**/*.entity.*"],
+			entities: [__dirname + '/apis/**/*.entity.*'],
 			synchronize: true,
 			logging: true,
 		}),
 	],
-
-	providers: [],
 })
 export class AppModule {}
