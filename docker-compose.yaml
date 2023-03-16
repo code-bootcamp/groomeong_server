@@ -8,11 +8,11 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./src:/myfolder/src
+      - ./src:/teamproject/src
     ports:
       - 3000:3000
     env_file:
-      - ./.env
+      - ./.env.docker
 
   # 컴퓨터이름
   my-database:
