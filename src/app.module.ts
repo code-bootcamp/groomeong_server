@@ -1,14 +1,16 @@
 import { Module } from '@nestjs/common';
-// import { AppController } from './app.controller';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { UsersModule } from './apis/users/user.module';
+import { DogsModule } from './apis/dogs/dogs.module';
 
 @Module({
 	imports: [
+    DogsModule,
 		UsersModule, //
+
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
 			autoSchemaFile: true,
@@ -27,7 +29,5 @@ import { UsersModule } from './apis/users/user.module';
 			logging: true,
 		}),
 	],
-
-	providers: [],
 })
 export class AppModule {}
