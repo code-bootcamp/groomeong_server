@@ -8,7 +8,7 @@ export interface IUsersServiceFindOne {
 export interface IUsersServiceCreate {
 	name: string;
 	email: string;
-	password: string;
+	password?: string;
 	phone: string;
 }
 
