@@ -3,7 +3,6 @@ import { Shop } from 'src/apis/shops/entities/shop.entity';
 import {
 	Column,
 	CreateDateColumn,
-	DeleteDateColumn,
 	Entity,
 	ManyToOne,
 	PrimaryGeneratedColumn,
@@ -37,12 +36,12 @@ export class Reservation {
 	// shop: Shop;
 
 	// // User(own) : 예약 =  1:N
-	// @ManyToOne(()=> User, (user)=> , {nullable: false})
-	// @Field(()=>User)
-	// user: User[];
+	// @ManyToOne(() => User, (user)=> user.reservation, { nullable: false })
+	// @Field(() => User)
+	// user: User;
 
 	// // Dog(own) : 예약 = 1:N
-	// @ManyToOne(()=> Dog, (dog)=>, {nullable: false})
-	// @Field(()=>Dog)
-	// dog: Dog[];
+	// @ManyToOne(() => Dog, (dog)=> dog.reservation, { nullable: false })
+	// @Field(() => Dog)
+	// dog: Dog;
 }

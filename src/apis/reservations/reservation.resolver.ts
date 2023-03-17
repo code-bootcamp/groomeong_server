@@ -31,20 +31,17 @@ export class ReservationsResolver {
 	// }
 
 	//예약 생성하기
-	@Mutation(() => Reservation)
+	@Mutation(() => Reservation, { description: 'Return: 생성된 신규 예약 정보' })
 	async createReservation(
 		@Args('createReservationInput')
-		createReservationInput: CreateReservationInput,
+		createReservationInput: CreateReservationInput, //
 	): Promise<Reservation> {
-		return this.reservationsService.create({ createReservationInput });
+		const shopId = createReservationInput.shopId;
+		const userId = createReservationInput.userId;
+		return await this.reservationsService.create({
+			shopId,
+			userId,
+			createReservationInput,
+		});
 	}
-
-	// // 예약 삭제하기
-	// // 삭제하기 기능 추가 시, 엔티티에 삭제 컬럼 추가해야함
-	// @Mutation(() => Boolean)
-	// async deleteReservation(
-	// 	@Args('reservationId') reservationId: string, //
-	// ): Promise<boolean> {
-	// 	return await this.reservationsService.delete({ reservationId });
-	// }
 }
