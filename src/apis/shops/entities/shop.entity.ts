@@ -1,5 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Reservation } from 'src/apis/reservations/entities/reservation.entity';
+import { Review } from 'src/apis/reviews/entities/review.entity';
 import { ShopImage } from 'src/apis/shopImages/entities/shopImages.entity';
 import {
 	Column,
@@ -54,4 +55,11 @@ export class Shop {
 	})
 	@Field(() => ShopImage)
 	image?: ShopImage[];
+
+	// 가게(own):리뷰 = 1:N
+	@OneToMany(() => Review, (review) => review.id, {
+		nullable: true,
+	})
+	@Field(() => Review)
+	review?: Review[];
 }

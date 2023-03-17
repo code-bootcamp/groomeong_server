@@ -1,4 +1,5 @@
 import { Field, Float, ObjectType } from '@nestjs/graphql';
+import { Shop } from 'src/apis/shops/entities/shop.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
 	Column,
@@ -37,5 +38,8 @@ export class Review {
 	// @Field(() => User)
 	// user: User[];
 
-	// 가게 : 리뷰 = 1:N 관계 설정이 가능하지만, 유저 관점의 서비스이므로 가게(관리자 페이지)와 예약 사이의 관계 설정은 생략했다
+	// 가게 : 리뷰 = 1:N //OneToMany 받음
+	@ManyToOne(() => Shop, (shop) => shop.id)
+	@Field(() => Shop)
+	user: Shop[];
 }
