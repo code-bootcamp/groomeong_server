@@ -20,10 +20,10 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
 		console.log('예외코드:', statusCode);
 		console.log('============');
 
-		response.status(statusCode).json({
-			statusCode,
-			timestamp: new Date().toISOString(),
-			path: request.url,
-		});
+		// response.status(statusCode).json({
+		// 	statusCode,
+		// 	timestamp: new Date().toISOString(),
+		// 	path: request.url,
+		// });
 	}
 }
