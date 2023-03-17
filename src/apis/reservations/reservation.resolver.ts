@@ -1,4 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { CreateReservationInput } from './dto/create-reservation.input';
 import { Reservation } from './entities/reservation.entity';
 import { ReservationsService } from './reservation.service';
 
@@ -31,13 +32,19 @@ export class ReservationsResolver {
 
 	//예약 생성하기
 	@Mutation(() => Reservation)
-	async createReservation() {}
-
-	//예약 삭제하기
-	@Mutation(() => Boolean)
-	async deleteReservation(
-		@Args('reservationId') reservationId: string, //
-	): Promise<boolean> {
-		return await this.reservationsService.delete({ reservationId });
+	async createReservation(
+		@Args('createReservationInput')
+		createReservationInput: CreateReservationInput,
+	): Promise<Reservation> {
+		return this.reservationsService.create({ createReservationInput });
 	}
+
+	// // 예약 삭제하기
+	// // 삭제하기 기능 추가 시, 엔티티에 삭제 컬럼 추가해야함
+	// @Mutation(() => Boolean)
+	// async deleteReservation(
+	// 	@Args('reservationId') reservationId: string, //
+	// ): Promise<boolean> {
+	// 	return await this.reservationsService.delete({ reservationId });
+	// }
 }
