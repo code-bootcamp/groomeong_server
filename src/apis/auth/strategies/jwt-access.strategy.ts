@@ -1,17 +1,28 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
+import { CACHE_MANAGER, Inject, UnauthorizedException } from '@nestjs/common';
+import { Cache } from 'cache-manager';
 
 export class JwtAccessStrategy extends PassportStrategy(Strategy, 'access') {
-	constructor() {
+	constructor(
+		@Inject(CACHE_MANAGER)
+		private readonly cacheManager: Cache,
+	) {
 		super({
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 			secretOrKey: process.env.JWT_ACCESS_KEY,
+			passReqToCallback: true,
 		});
 	}
 
 	// 검증 성공하면 사용자의 정보(payload) 반환해주는 함수
-	validate(payload) {
-		console.log('🐹🐹🐹🐹🐹🐹', payload);
+	async validate(req, payload) {
+		const myAccessToken = req.headers.authorization.split('Bearer ')[1];
+		const cache = await this.cacheManager.get(`accessToken:${myAccessToken}`);
+		console.log('🐹🐹🐹🐹🐹🐹jwtAccessToken', myAccessToken);
+		if (cache) {
+			throw new UnauthorizedException('로그아웃 된 유저입니다.');
+		}
 		return {
 			email: payload.email, //
 			id: payload.sub,

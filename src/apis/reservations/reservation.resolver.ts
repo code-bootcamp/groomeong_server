@@ -29,6 +29,10 @@ export class ReservationsResolver {
 	// 	return await this.reservationsService.findAllByUserId({ userId });
 	// }
 
+	//예약 생성하기
+	@Mutation(() => Reservation)
+	async createReservation() {}
+
 	//예약 삭제하기
 	@Mutation(() => Boolean)
 	async deleteReservation(

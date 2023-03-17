@@ -5,6 +5,11 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/user.service';
+import { JwtAccessStrategy } from './strategies/jwt-access.strategy';
+import { JwtRefreshStrategy } from './strategies/jwt-refresh.stratehy';
+import { UsersModule } from '../users/user.module';
+import { AuthController } from './auth.controller';
+import { JwtGoogleStrategy } from './strategies/jwt-social-google.strategy';
 
 @Module({
 	imports: [
@@ -12,12 +17,16 @@ import { UsersService } from '../users/user.service';
 		TypeOrmModule.forFeature([
 			User, //
 		]),
+		UsersModule,
 	],
 	providers: [
 		AuthResolver, //
 		AuthService,
 		JwtService,
-		UsersService,
+		JwtAccessStrategy,
+		JwtRefreshStrategy,
+		JwtGoogleStrategy,
 	],
+	controllers: [AuthController],
 })
 export class AuthModule {}
