@@ -3,6 +3,7 @@ import { Shop } from 'src/apis/shops/entities/shop.entity';
 import {
 	Column,
 	CreateDateColumn,
+	DeleteDateColumn,
 	Entity,
 	ManyToOne,
 	PrimaryGeneratedColumn,
@@ -28,18 +29,20 @@ export class Reservation {
 	@Field(() => Date)
 	createAt?: Date;
 
-	// Shop(own): 예약 = 1:N // OneToMany 받음
-	@ManyToOne(() => Shop, (shop) => shop.reservation, { nullable: false })
-	@Field(() => Shop)
-	shop: Shop;
+	// 삭제 기능 넣는 경우, 예약 삭제일자 컬럼(@DeleteDateColumn) 새로 만든다
+
+	// // Shop(own): 예약 = 1:N // OneToMany 받음
+	// @ManyToOne(() => Shop, (shop) => shop.reservation, { nullable: false })
+	// @Field(() => Shop)
+	// shop: Shop;
 
 	// // User(own) : 예약 =  1:N
-	// @ManyToOne(()=> User, (user)=> , {nullable: false})
-	// @Field(()=>User)
-	// user: User[];
+	// @ManyToOne(() => User, (user)=> user.reservation, { nullable: false })
+	// @Field(() => User)
+	// user: User;
 
 	// // Dog(own) : 예약 = 1:N
-	// @ManyToOne(()=> Dog, (dog)=>, {nullable: false})
-	// @Field(()=>Dog)
-	// dog: Dog[];
+	// @ManyToOne(() => Dog, (dog)=> dog.reservation, { nullable: false })
+	// @Field(() => Dog)
+	// dog: Dog;
 }
