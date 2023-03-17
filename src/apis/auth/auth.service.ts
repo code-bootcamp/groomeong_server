@@ -25,7 +25,7 @@ export class AuthService {
 		res,
 	}: IAuthServiceLogin): Promise<string> {
 		// 의존성주입한 usersService 에서 email 찾아오기
-		console.log('⭐️⭐️⭐️⭐️서비스로직⭐️⭐️⭐️⭐️', res);
+		console.log('⭐️⭐️⭐️⭐️서비스로직⭐️⭐️⭐️⭐️');
 		const user = await this.usersService.findOneByEmail({ email });
 
 		// 일치하는 유저가 없으면 에러던지기!!
