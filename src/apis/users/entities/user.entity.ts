@@ -44,11 +44,7 @@ export class User {
 	@UpdateDateColumn({ nullable: true })
 	updateAt: Date;
 
-	@OneToMany(
-		() => Dog, //
-		(dogs) => dogs.user,
-		{ nullable: true },
-	)
-	@Field(() => [Dog], { nullable: true })
+	@OneToMany(() => Dog, (dogs) => dogs.user)
+	@Field(() => [Dog])
 	dogs: Dog[];
 }
