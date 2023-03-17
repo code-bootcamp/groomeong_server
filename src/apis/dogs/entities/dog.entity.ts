@@ -5,11 +5,13 @@ import {
 	ObjectType,
 	registerEnumType,
 } from '@nestjs/graphql';
+import { User } from 'src/apis/users/entities/user.entity';
 import {
 	Column,
 	CreateDateColumn,
 	DeleteDateColumn,
 	Entity,
+	ManyToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DOG_TYPE } from '../enum/dog-type.enum';
@@ -70,4 +72,8 @@ export class Dog {
 
 	@DeleteDateColumn({ nullable: true })
 	deletedAt: Date;
+
+	@ManyToOne(() => User)
+	@Field(() => User)
+	user: User;
 }

@@ -4,7 +4,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
 	IDogsServiceCreate,
 	IDogsServiceDeleteById,
+	IDogsServiceFindByUserId,
 	IDogsServiceFindOneById,
+	IDogsServiceUpdateOneById,
 } from './interfaces/dogs-service.interface';
 import { Repository } from 'typeorm';
 
@@ -25,13 +27,25 @@ export class DogsService {
 		return found;
 	}
 
-	async create({ createDogInput }: IDogsServiceCreate): Promise<Dog> {
-		const dog = this.dogsRepository.create(createDogInput);
-		await this.dogsRepository.save(dog);
+	async findByUserId({ userId }: IDogsServiceFindByUserId): Promise<Dog[]> {
+		const found = await this.dogsRepository.findBy({ user: { id: userId } });
+		return found;
+	}
+
+	async create({ createDogInput, userId }: IDogsServiceCreate): Promise<Dog> {
+		const dog = await this.dogsRepository.save({
+			...createDogInput,
+			user: {
+				id: userId,
+			},
+		});
 		return dog;
 	}
 
-	async updateOneById({ id, updateDogInput }): Promise<Dog> {
+	async updateOneById({
+		id,
+		updateDogInput,
+	}: IDogsServiceUpdateOneById): Promise<Dog> {
 		const founded = await this.findOneById({ id });
 		const updated = await this.dogsRepository.save({
 			...founded,
