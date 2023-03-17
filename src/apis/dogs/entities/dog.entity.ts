@@ -73,7 +73,7 @@ export class Dog {
 	@DeleteDateColumn({ nullable: true })
 	deletedAt: Date;
 
-	@ManyToOne(() => User)
+	@ManyToOne(() => User, (user) => user.dogs)
 	@Field(() => User)
 	user: User;
 }

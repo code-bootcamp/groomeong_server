@@ -39,8 +39,10 @@ export class ReviewsService {
 		// }
 
 		return await this.reviewsRepository.save({
-			shop: shopId,
-			user: userId,
+			shop: {
+				id: shopId, //
+			},
+			// user: userId,
 			...createReviewInput,
 		});
 	}

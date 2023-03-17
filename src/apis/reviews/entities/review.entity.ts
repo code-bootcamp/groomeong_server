@@ -39,7 +39,7 @@ export class Review {
 	// user: User;
 
 	// // 가게 : 리뷰 = 1:N //OneToMany 받음
-	// @ManyToOne(() => Shop, (shop) => shop.review)
-	// @Field(() => Shop)
-	// shop: Shop;
+	@ManyToOne(() => Shop, (shop) => shop.review)
+	@Field(() => Shop)
+	shop: Shop;
 }
