@@ -18,7 +18,10 @@ export class DogsService {
 	) {}
 
 	async findOneById({ id }: IDogsServiceFindOneById): Promise<Dog> {
-		const found = await this.dogsRepository.findOneBy({ id });
+		const found = await this.dogsRepository.findOne({
+			where: { id },
+			relations: { user: true },
+		});
 
 		if (!found) {
 			throw new NotFoundException(`id ${id}를 갖는 강아지를 찾을 수 없음`);
@@ -28,7 +31,13 @@ export class DogsService {
 	}
 
 	async findByUserId({ userId }: IDogsServiceFindByUserId): Promise<Dog[]> {
-		const found = await this.dogsRepository.findBy({ user: { id: userId } });
+		const found = await this.dogsRepository.find({
+			where: {
+				user: {
+					id: userId,
+				},
+			},
+		});
 		return found;
 	}
 
