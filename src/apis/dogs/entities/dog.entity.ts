@@ -5,6 +5,7 @@ import {
 	ObjectType,
 	registerEnumType,
 } from '@nestjs/graphql';
+import { Reservation } from 'src/apis/reservations/entities/reservation.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
 	Column,
@@ -12,6 +13,7 @@ import {
 	DeleteDateColumn,
 	Entity,
 	ManyToOne,
+	OneToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DOG_TYPE } from '../enum/dog-type.enum';
@@ -76,4 +78,9 @@ export class Dog {
 	@ManyToOne(() => User, (user) => user.dogs)
 	@Field(() => User)
 	user: User;
+
+	// 예약 엔티티와 OneToOne 관계 설정
+	// @OneToOne(() => Reservation, (reservation) => reservation.dog)
+	// @Field(() => Reservation)
+	// reservation: Reservation;
 }
