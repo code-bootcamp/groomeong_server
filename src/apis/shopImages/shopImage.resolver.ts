@@ -9,14 +9,14 @@ export class ShopImagesResolver {
 		private readonly shopImagesService: ShopImagesService, //
 	) {}
 
-	@Query(() => ShopImage, {
-		description: 'Return: 가게ID를 기준으로 모든 가게이미지 배열 데이터',
-	})
-	async fetchShopImagesByShopId(
-		@Args('shopId') shopId: string, //
-	): Promise<ShopImage[]> {
-		return await this.shopImagesService.findByShopId({ shopId });
-	}
+	// @Query(() => ShopImage, {
+	// 	description: 'Return: 가게ID를 기준으로 모든 가게이미지 배열 데이터',
+	// })
+	// async fetchShopImagesByShopId(
+	// 	@Args('shopId') shopId: string, //
+	// ): Promise<ShopImage[]> {
+	// 	return await this.shopImagesService.findByShopId({ shopId });
+	// }
 
 	@Query(() => ShopImage, {
 		description: 'Return: 가게이미지ID를 기준으로, 한 개의 가게이미지 데이터',
