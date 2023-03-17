@@ -8,7 +8,6 @@ export class FilesService {
 	async uploadImage({
 		image: _image,
 		dogId,
-		context,
 	}: IFilesServiceUploadImage): Promise<void | string[]> {
 		const bucket = process.env.GCP_BUCKET_NAME;
 		const storage = new Storage({
