@@ -16,10 +16,6 @@ export class Review {
 	@Field(() => String)
 	id: string;
 
-	@Column({ length: 10 })
-	@Field(() => String)
-	writer: string;
-
 	@Column()
 	@Field(() => String)
 	contents: string;

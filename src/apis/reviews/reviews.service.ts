@@ -39,16 +39,22 @@ export class ReviewsService {
 		// }
 
 		return await this.reviewsRepository.save({
-			shop: shopId,
-			user: userId,
+			// shop: shopId,
+			// user: userId,
 			...createReviewInput,
 		});
 	}
 
 	async findById({ reviewId }: IReviewServiceFindById): Promise<Review> {
-		return await this.reviewsRepository.findOne({
+		const result = await this.reviewsRepository.findOne({
 			where: { id: reviewId },
 		});
+
+		if (!result) {
+			throw new NotFoundException('유효하지 않은 리뷰아이디입니다');
+		}
+
+		return result;
 	}
 
 	// // 조인 완료 후 주석 해제 예정
