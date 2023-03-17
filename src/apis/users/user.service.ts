@@ -27,6 +27,7 @@ export class UsersService {
 	findOne({ userId }: IUsersServiceFindOne): Promise<User> {
 		return this.userRepository.findOne({
 			where: { id: userId },
+			relations: { dogs: true },
 		});
 	}
 
