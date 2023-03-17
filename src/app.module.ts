@@ -2,6 +2,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { AuthModule } from './apis/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { DogsModule } from './apis/dogs/dogs.module';
+import { FilesModule } from './apis/files/files.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { CacheModule, Module } from '@nestjs/common';
 import { ShopsModule } from './apis/shops/shops.module';
@@ -17,6 +18,7 @@ import { JwtGoogleStrategy } from './apis/auth/strategies/jwt-social-google.stra
 	imports: [
 		AuthModule, //
 		DogsModule,
+		FilesModule,
 		ShopsModule,
 		UsersModule,
 		GraphQLModule.forRoot<ApolloDriverConfig>({

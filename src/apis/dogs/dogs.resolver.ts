@@ -1,10 +1,14 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CreateDogInput } from './dto/create-dog.input';
 import { DogsService } from './dogs.service';
 import { Dog } from './entities/dog.entity';
 import { UpdateDogInput } from './dto/update-dog.input';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
+import { IContext } from 'src/commons/interface/context';
 
 @Resolver()
+@UseGuards(GqlAuthGuard('access'))
 export class DogsResolver {
 	constructor(
 		private readonly dogsService: DogsService, //
@@ -12,7 +16,7 @@ export class DogsResolver {
 
 	@Query(
 		() => Dog,
-		{ description: ' id로 강아지 조회 후 존재한다면 강아지 정보 반환' }, //
+		{ description: ' Return: id로 조회된 강아지 데이터 ' }, //
 	)
 	fetchDog(
 		@Args('id') id: string, //
@@ -20,22 +24,32 @@ export class DogsResolver {
 		return this.dogsService.findOneById({ id });
 	}
 
-	@Mutation(
-		() => Dog,
-		{ description: ' DB에 강아지 저장 후 생성한 강아지 정보 반환 ' }, //
+	@Query(
+		() => [Dog], //
+		{ description: ' Return: 유저가 등록한 모든 강아지 데이터 ' },
 	)
-	createDog(
-		@Args('createDogInput') createDogInput: CreateDogInput, //
-	): Promise<Dog> {
-		return this.dogsService.create({ createDogInput });
+	fetchUserDogs(
+		@Context() context: IContext, //
+	): Promise<Dog[]> {
+		const userId = context.req.user.id;
+		return this.dogsService.findByUserId({ userId });
 	}
 
 	@Mutation(
 		() => Dog,
-		{
-			description:
-				' id로 강아지 조회 후 존재한다면 강아지 정보를 업데이트하고 업데이트한 강아지 정보 반환 ',
-		}, //
+		{ description: ' Return: DB에 저장된 강아지 데이터 ' }, //
+	)
+	createDog(
+		@Args('createDogInput') createDogInput: CreateDogInput, //
+		@Context() context: IContext, //
+	): Promise<Dog> {
+		const userId = context.req.user.id;
+		return this.dogsService.create({ createDogInput, userId });
+	}
+
+	@Mutation(
+		() => Dog,
+		{ description: ' Return: 업데이트한 강아지 데이터 ' }, //
 	)
 	updateDog(
 		@Args('id') id: string, //
@@ -46,10 +60,7 @@ export class DogsResolver {
 
 	@Mutation(
 		() => Boolean,
-		{
-			description:
-				' id로 강아지 조회 후 존재한다면 강아지 정보 삭제, 삭제 여부 반환 ',
-		}, //
+		{ description: ' Return: id로 강아지 데이터 삭제 후 삭제 여부 반환 ' }, //
 	)
 	deleteDog(
 		@Args('id') id: string, //
