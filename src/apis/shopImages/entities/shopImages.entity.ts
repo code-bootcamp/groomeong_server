@@ -18,7 +18,7 @@ export class ShopImage {
 	isThumbnail: boolean;
 
 	// 가게(own): 가게이미지 = 1:N // OneToMany 받음
-	@ManyToOne(() => Shop, (shop) => shop.id)
+	@ManyToOne(() => Shop, (shop) => shop.image)
 	@Field(() => Shop)
-	shop: Shop[];
+	shop: Shop;
 }

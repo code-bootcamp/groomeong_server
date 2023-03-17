@@ -24,7 +24,7 @@ export class Review {
 	@Field(() => String)
 	contents: string;
 
-	@CreateDateColumn()
+	@CreateDateColumn({ nullable: true })
 	@Field(() => Date)
 	createAt: Date;
 
@@ -34,12 +34,12 @@ export class Review {
 
 	// // 회원(own) : 리뷰 = 1 : N //OneToMany 받음
 	// // 회원 쪽에서 관계 설정 시 주석 해제 예정
-	// @ManyToOne(() => User, (user) => user.id)
+	// @ManyToOne(() => User, (user) => user.review)
 	// @Field(() => User)
-	// user: User[];
+	// user: User;
 
-	// 가게 : 리뷰 = 1:N //OneToMany 받음
-	@ManyToOne(() => Shop, (shop) => shop.id)
-	@Field(() => Shop)
-	user: Shop[];
+	// // 가게 : 리뷰 = 1:N //OneToMany 받음
+	// @ManyToOne(() => Shop, (shop) => shop.review)
+	// @Field(() => Shop)
+	// shop: Shop;
 }

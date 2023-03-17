@@ -43,23 +43,23 @@ export class Shop {
 	// deleteAt?: Date;
 
 	// 가게(own):예약 = 1:N
-	@OneToMany(() => Reservation, (reservation) => reservation.id, {
+	@OneToMany(() => Reservation, (reservation) => reservation.shop, {
 		nullable: true,
 	})
-	@Field(() => Reservation)
+	@Field(() => [Reservation])
 	reservation?: Reservation[];
 
 	// 가게(own):가게이미지 = 1:N
-	@OneToMany(() => ShopImage, (shopImage) => shopImage.id, {
+	@OneToMany(() => ShopImage, (shopImage) => shopImage.shop, {
 		nullable: true,
 	})
-	@Field(() => ShopImage)
+	@Field(() => [ShopImage])
 	image?: ShopImage[];
 
 	// 가게(own):리뷰 = 1:N
-	@OneToMany(() => Review, (review) => review.id, {
+	@OneToMany(() => Review, (review) => review.shop, {
 		nullable: true,
 	})
-	@Field(() => Review)
+	@Field(() => [Review])
 	review?: Review[];
 }

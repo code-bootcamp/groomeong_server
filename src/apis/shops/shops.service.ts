@@ -46,14 +46,14 @@ export class ShopsService {
 	async findById({ shopId }: IShopsServiceFindById): Promise<Shop> {
 		return await this.shopsRepository.findOne({
 			where: { id: shopId },
-			// relations: ['reservation'],
+			relations: ['reservation'],
 		});
 	}
 
 	// DB의 모든 가게 정보 불러오기
 	async findAll(): Promise<Shop[]> {
 		return await this.shopsRepository.find({
-			// relations: ['reservation'],
+			relations: ['reservation'],
 		});
 	}
 
