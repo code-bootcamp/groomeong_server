@@ -8,19 +8,27 @@ export class FilesService {
 	async uploadImage({
 		image: _image,
 		dogId,
+		shopId,
 	}: IFilesServiceUploadImage): Promise<void | string[]> {
 		const bucket = process.env.GCP_BUCKET_NAME;
 		const storage = new Storage({
 			projectId: process.env.GCP_PROJECT_ID,
 			keyFilename: process.env.GCP_KEY_FILENAME,
 		});
-		const images = await Promise.all([_image]);
+		const images = await Promise.all(_image);
 		const results = await Promise.all(
 			images.map((image) => {
 				return new Promise<string>((resolve, reject) => {
-					const filename = dogId
-						? `origin/dog/${uuid()}/${image.filename}`
-						: `origin/profile/${uuid()}/${image.filename}`;
+					let filename = '';
+
+					if (dogId) {
+						filename = `origin/dog/${uuid()}/${image.filename}`; // 강아지 이미지 주소 설정
+					} else if (shopId) {
+						filename = `origin/shop/${uuid()}/${image.filename}`; // 미용샵 이미지 주소 설정
+					} else {
+						filename = `origin/profile/${uuid()}/${image.filename}`; // 프로필 이미지 주소 설정
+					}
+
 					image
 						.createReadStream()
 						.pipe(storage.bucket(bucket).file(filename).createWriteStream())
