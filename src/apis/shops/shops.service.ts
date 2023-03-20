@@ -33,7 +33,7 @@ export class ShopsService {
 			where: { address: address },
 		});
 
-		if (!checkShop) {
+		if (checkShop) {
 			throw new ConflictException(
 				`해당 주소(${address})로 등록된 가게가 있습니다`,
 			);
