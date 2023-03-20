@@ -13,12 +13,21 @@ import { JwtRefreshStrategy } from './apis/auth/strategies/jwt-refresh.stratehy'
 import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
 import { JwtGoogleStrategy } from './apis/auth/strategies/jwt-social-google.strategy';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { JwtKakaoStrategy } from './apis/auth/strategies/jwt-social-kakao.strategy';
+import { ReservationsModule } from './apis/reservations/reservation.module';
+import { ReviewsModule } from './apis/reviews/reviews.module';
+import { ShopImagesModule } from './apis/shopImages/shopImage.module';
 
 @Module({
 	imports: [
 		AuthModule, //
 		DogsModule,
 		FilesModule,
+		ReservationsModule,
+		ReviewsModule,
+		ShopImagesModule,
 		ShopsModule,
 		UsersModule,
 		GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -27,6 +36,27 @@ import { JwtGoogleStrategy } from './apis/auth/strategies/jwt-social-google.stra
 			context: ({ req, res }) => ({ req, res }),
 		}),
 		ConfigModule.forRoot(),
+		MailerModule.forRootAsync({
+			useFactory: () => ({
+				transport: {
+					service: 'Gmail',
+					host: process.env.DATABASE_HOST,
+					port: Number(process.env.DATABASE_PORT),
+					secure: false,
+					auth: {
+						user: process.env.EMAIL_USER,
+						pass: process.env.EMAIL_PASS,
+					},
+					template: {
+						dir: __dirname + '/templates/',
+						adapter: new HandlebarsAdapter(),
+						options: {
+							strict: true,
+						},
+					},
+				},
+			}),
+		}),
 		TypeOrmModule.forRoot({
 			type: process.env.DATABASE_TYPE as 'mysql',
 			host: process.env.DATABASE_HOST,
@@ -48,6 +78,7 @@ import { JwtGoogleStrategy } from './apis/auth/strategies/jwt-social-google.stra
 		JwtAccessStrategy, //
 		JwtRefreshStrategy,
 		JwtGoogleStrategy,
+		JwtKakaoStrategy,
 	],
 })
 export class AppModule {}

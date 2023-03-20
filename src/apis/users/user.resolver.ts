@@ -74,13 +74,27 @@ export class UsersResolver {
 		return this.usersService.update({ userId, updateUserInput });
 	}
 
+	// 이메일 인증번호 전송
+	@Mutation(() => String, { description: '이메일 인증번호 전송' })
+	getTokenEmail(
+		@Args('email') email: string, //
+	): Promise<string> {
+		return this.usersService.sendTokenEmail({ email });
+	}
+
+	// 인풋박스 인증번호 검증
+	@Mutation(() => Boolean, { description: '인증번호 검증' })
+	checkValidToken(
+		@Args('email') email: string, //
+		@Args('token') token: string,
+	): Promise<boolean> {
+		return this.usersService.checkToken({ email, token });
+	}
+
 	// 비밀번호 수정하기
 	// 휴대폰 인증?? 이메일 인증??
 	// const newhashedpwd = bcrypt.compo
 	// Auth 생성후 하기
-
-	// 로그인
-	// Auth 생성후 후기
 
 	// 유저 삭제하기
 	@Mutation(() => Boolean, { description: ' Return: 유저 정보 삭제하기 ' })

@@ -1,7 +1,7 @@
 import { SaveShopImageInput } from '../dto/save-shopImage.input';
 
 export interface IShopImagesServiceSave {
-	shopId: string;
+	imageUrl: string;
 	saveShopImageInput: SaveShopImageInput;
 }
 

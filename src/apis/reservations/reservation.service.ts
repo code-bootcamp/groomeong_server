@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../users/entities/user.entity';
+import { ShopsService } from '../shops/shops.service';
+import { UsersService } from '../users/user.service';
 import { Reservation } from './entities/reservation.entity';
 import {
 	IReservationsServiceCreate,
@@ -15,14 +16,26 @@ export class ReservationsService {
 	constructor(
 		@InjectRepository(Reservation)
 		private readonly reservationsRepository: Repository<Reservation>, //
-		@InjectRepository(User)
-		private readonly usersRepository: Repository<User>,
+		private readonly usersService: UsersService,
+		private readonly shopsService: ShopsService,
 	) {}
 
 	// 신규 예약 정보 생성
 	async create({
+		shopId,
+		userId,
 		createReservationInput,
 	}: IReservationsServiceCreate): Promise<Reservation> {
+		// const checkShop = this.shopsService.findById({ shopId });
+		// if (!checkShop) {
+		// 	throw new NotFoundException('유효하지 않은 가게ID 입니다');
+		// }
+
+		// const checkUser = this.usersService.findOne({ userId });
+		// if (!checkUser) {
+		// 	throw new NotFoundException('유효하지 않은 회원ID 입니다');
+		// }
+
 		return await this.reservationsRepository.save({
 			...createReservationInput,
 		});

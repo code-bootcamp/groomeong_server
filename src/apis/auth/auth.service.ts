@@ -1,13 +1,22 @@
 import * as bcrypt from 'bcrypt';
+import { Cache } from 'cache-manager';
 import {
 	IAuthServiceGetAccessToken,
 	IAuthServiceLogin,
 	IAuthServiceRestoreAccessToken,
 	IAuthServiceSetRefreshToken,
+	ILoginService,
 } from './interface/auth.interface';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+	CACHE_MANAGER,
+	Inject,
+	Injectable,
+	UnauthorizedException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/user.service';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +24,9 @@ export class AuthService {
 		private readonly usersService: UsersService, //
 
 		private readonly jwtService: JwtService, //
+
+		@Inject(CACHE_MANAGER)
+		private readonly cacheManager: Cache,
 	) {}
 
 	// 로그인하기
@@ -43,6 +55,53 @@ export class AuthService {
 		this.setRefreshToken({ user, req, res });
 		// 일치하는 유저가 있고 비밀번호도 맞았다면? accessToken 를 => JWT 만들어서 브라우저에 전달
 		return this.getAccessToken({ user });
+	}
+
+	async logout({ req, res }) {
+		try {
+			const accessToken = await req.headers['authorization'].replace(
+				'Bearer ',
+				'',
+			);
+			const refreshToken = await req.headers['cookie'].split(
+				'refreshToken=',
+			)[1];
+
+			// accessToken 토큰
+			const jwtAccessKey = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
+			console.log(
+				'🐧🐧🐧🐧🐧🐧🐧🐧🐧🐧🐧acc: ',
+				jwt.verify(accessToken, 'myAccessKey'),
+			);
+			console.log('&&&&&&&&&&', refreshToken);
+
+			// refresh 토큰
+			const jwtRefreshKey = jwt.verify(
+				refreshToken,
+				process.env.JWT_REFRESH_KEY,
+			);
+			console.log(
+				'🐧🐧🐧🐧🐧🐧🐧🐧🐧🐧🐧 myRefreshKey :',
+				jwt.verify(refreshToken, 'myRefreshKey'),
+			);
+
+			await this.cacheManager.set(`accessToken:${accessToken}`, 'accessToken', {
+				ttl: jwtAccessKey['exp'] - jwtAccessKey['iat'],
+			});
+			console.log(accessToken);
+
+			await this.cacheManager.set(
+				`refreshToken:${refreshToken}`,
+				'refreshToken',
+				{
+					ttl: jwtRefreshKey['exp'] - jwtRefreshKey['iat'],
+				},
+			);
+			// 🚗🚗🚗🚗🚗🚗🚗🚗🚗 res 이용해서 배포 수정해주기 !!!
+			return '🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊로그아웃에 성공했습니다.';
+		} catch (err) {
+			throw new UnauthorizedException('로그아웃을 실패했습니다.');
+		}
 	}
 
 	restoreAccessToken({ user }: IAuthServiceRestoreAccessToken): string {
@@ -97,5 +156,20 @@ export class AuthService {
 		// 	'Set-Cookie',
 		// 	`refreshToken=${refreshToken}; path=/; domain=.그루멍 주소 ; Secure; httpOnly; SameSite=None;`,
 		// );
+	}
+
+	async loginOAuth({ req, res }: ILoginService): Promise<void> {
+		// 1. 회원조회
+		let user = await this.usersService.findOneByEmail({
+			email: req.user.email,
+		});
+
+		// 2. 회원가입이 안되어있다면? 자동 회원가입
+		if (!user) user = await this.usersService.create({ ...req.user });
+
+		// 3. 로그인 브라우저 전송
+		this.setRefreshToken({ user, res, req });
+		res.redirect('http://localhost:3000/login/google');
+		// 페이지 수정 꼭 하기! 배포될때!!🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗
 	}
 }

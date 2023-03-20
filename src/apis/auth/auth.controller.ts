@@ -4,6 +4,8 @@ import { User } from '../users/entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from '../users/user.service';
 import { Request, Response } from 'express';
+import { IOAuthLoginUser } from './interface/auth.interface';
+import { DynamicAuthGuard } from './guards/dynamic-auth.guard-02';
 
 @Controller()
 export class AuthController {
@@ -12,26 +14,33 @@ export class AuthController {
 		private readonly usersService: UsersService,
 	) {}
 
-	@UseGuards(AuthGuard('google'))
-	@Get('login/google')
-	async loginGoogle(
+	@Get('/login/:social')
+	@UseGuards(DynamicAuthGuard)
+	loginOAuth(
 		@Req() req: Request & IOAuthLoginUser, //
-		@Res() res: Response,
+		@Res() res: Response, //
 	) {
-		// 1. 회원조회
-		let user = await this.usersService.findOneByEmail({
-			email: req.user.email,
-		});
-
-		// 2. 회원가입이 안되어있다면? 자동 회원가입
-		if (!user) user = await this.usersService.create({ ...req.user });
-
-		// 3. 로그인 브라우저 전송
-		this.authService.setRefreshToken({ user, res });
-		res.redirect('http://localhost:3000/login/google');
+		req.params;
+		// OAuth 의 로직은 중복되기 때문에 auth.service에 하나의 함수를 만들어줘 합쳐준다.
+		return this.authService.loginOAuth({ req, res });
 	}
-}
 
-export interface IOAuthLoginUser {
-	user: Pick<User, 'name' | 'email' | 'phone'>;
+	// @UseGuards(AuthGuard('google'))
+	// @Get('login/google')
+	// async loginGoogle(
+	// 	@Req() req: Request & IOAuthLoginUser, //
+	// 	@Res() res: Response,
+	// ) {
+	// 	return this.authService.loginOAuth({ req, res });
+	// }
+
+	// @UseGuards(AuthGuard('kakao'))
+	// @Get('/login/kakao')
+	// loginOAuth(
+	// 	@Req() req: Request & IOAuthLoginUser, //
+	// 	@Res() res: Response, //
+	// ) {
+	// 	// OAuth 의 로직은 중복되기 때문에 auth.service에 하나의 함수를 만들어줘 합쳐준다.
+	// 	return this.authService.loginOAuth({ req, res });
+	// }
 }
