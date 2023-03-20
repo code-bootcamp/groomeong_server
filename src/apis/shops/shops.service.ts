@@ -4,7 +4,6 @@ import {
 	NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import e from 'express';
 import { Repository } from 'typeorm';
 import { ReviewsService } from '../reviews/reviews.service';
 import { Shop } from './entities/shop.entity';
@@ -170,8 +169,8 @@ export class ShopsService {
 	async averageStar({ shopId }: IShopsServiceAverageStar): Promise<number> {
 		const reviews = await this.reviewsService.findByShopId({ shopId });
 		let result = 0;
-		const sum = reviews.forEach((el) => {
-			result += el.star;
+		reviews.forEach((el) => {
+			result += Number(el.star);
 		});
 
 		return result / reviews.length;

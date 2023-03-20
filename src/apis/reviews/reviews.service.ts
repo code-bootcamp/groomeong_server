@@ -16,8 +16,8 @@ export class ReviewsService {
 	constructor(
 		@InjectRepository(Review)
 		private readonly reviewsRepository: Repository<Review>, //
-		private readonly usersService: UsersService,
 		private readonly shopsService: ShopsService,
+		private readonly usersService: UsersService,
 	) {}
 
 	// 리뷰 생성하기

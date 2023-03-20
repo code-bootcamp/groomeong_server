@@ -36,8 +36,6 @@ export class ReservationsResolver {
 		@Args('createReservationInput')
 		createReservationInput: CreateReservationInput, //
 	): Promise<Reservation> {
-		const shopId = createReservationInput.shopId;
-		const userId = createReservationInput.userId;
 		return await this.reservationsService.create({
 			createReservationInput,
 		});

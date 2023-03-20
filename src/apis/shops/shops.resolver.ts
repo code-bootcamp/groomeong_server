@@ -111,6 +111,6 @@ export class ShopsResolver {
 	async fetchAverageStar(
 		@Args('shopId') shopId: string, //
 	): Promise<number> {
-		return;
+		return this.shopsService.averageStar({ shopId });
 	}
 }
