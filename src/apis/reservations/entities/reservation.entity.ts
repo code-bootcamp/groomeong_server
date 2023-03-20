@@ -30,10 +30,10 @@ export class Reservation {
 
 	// 삭제 기능 넣을 시, @DeleteDateColumn 생성해준다
 
-	// // Shop(own): 예약 = 1:N // OneToMany 받음
-	// @ManyToOne(() => Shop, (shop) => shop.reservation, { nullable: false })
-	// @Field(() => Shop)
-	// shop: Shop;
+	// Shop(own): 예약 = 1:N // OneToMany 받음
+	@ManyToOne(() => Shop, (shop) => shop.reservation, { nullable: false })
+	@Field(() => Shop)
+	shop: Shop;
 
 	// // User(own) : 예약 =  1:N
 	// @ManyToOne(() => User, (user)=> user.reservation, { nullable: false })

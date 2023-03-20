@@ -39,8 +39,6 @@ export class ReservationsResolver {
 		const shopId = createReservationInput.shopId;
 		const userId = createReservationInput.userId;
 		return await this.reservationsService.create({
-			shopId,
-			userId,
 			createReservationInput,
 		});
 	}
