@@ -13,12 +13,18 @@ import { JwtRefreshStrategy } from './apis/auth/strategies/jwt-refresh.stratehy'
 import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
 import { JwtGoogleStrategy } from './apis/auth/strategies/jwt-social-google.strategy';
+import { ReservationsModule } from './apis/reservations/reservation.module';
+import { ReviewsModule } from './apis/reviews/reviews.module';
+import { ShopImagesModule } from './apis/shopImages/shopImage.module';
 
 @Module({
 	imports: [
 		AuthModule, //
 		DogsModule,
 		FilesModule,
+		ReservationsModule,
+		ReviewsModule,
+		ShopImagesModule,
 		ShopsModule,
 		UsersModule,
 		GraphQLModule.forRoot<ApolloDriverConfig>({
