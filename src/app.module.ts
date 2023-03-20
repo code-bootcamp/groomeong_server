@@ -16,12 +16,18 @@ import { JwtGoogleStrategy } from './apis/auth/strategies/jwt-social-google.stra
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { JwtKakaoStrategy } from './apis/auth/strategies/jwt-social-kakao.strategy';
+import { ReservationsModule } from './apis/reservations/reservation.module';
+import { ReviewsModule } from './apis/reviews/reviews.module';
+import { ShopImagesModule } from './apis/shopImages/shopImage.module';
 
 @Module({
 	imports: [
 		AuthModule, //
 		DogsModule,
 		FilesModule,
+		ReservationsModule,
+		ReviewsModule,
+		ShopImagesModule,
 		ShopsModule,
 		UsersModule,
 		GraphQLModule.forRoot<ApolloDriverConfig>({

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { CreateReviewInput } from './dto/create-review.input';
 import { Review } from './entities/review.entity';
 import { ReviewsService } from './reviews.service';
@@ -26,7 +26,33 @@ export class ReviewsResolver {
 		});
 	}
 
-	// 가게의 리뷰 모아보기
+	// 리뷰 1개 불러오기
+	@Query(() => Review, {
+		description: 'Return: 리뷰ID 기준으로 1개 불러오기',
+	})
+	async fetchReview(
+		@Args('reviewId') reviewId: string, //
+	): Promise<Review> {
+		return await this.reviewsService.findById({ reviewId });
+	}
 
-	// 내가 작성한 리뷰 모아보기(회원의 리뷰 모아보기)
+	// // 가게의 리뷰 모아보기
+	// @Query(() => Review, {
+	// 	description: 'Return: 가게ID 기준으로 모든 리뷰 불러오기',
+	// })
+	// async fetchReviewsByShopId(
+	// 	@Args('shopId') shopId: string, //
+	// ): Promise<[Review]> {
+	// 	//
+	// }
+
+	// // 회원의 리뷰 모아보기
+	// @Query(() => Review, {
+	// 	description: 'Return: 회원ID 기준으로 모든 리뷰 불러오기',
+	// })
+	// async fetchReviewsByUserId(
+	// 	@Args('userId') userId: string, //
+	// ): Promise<[Review]> {
+	// 	//
+	// }
 }

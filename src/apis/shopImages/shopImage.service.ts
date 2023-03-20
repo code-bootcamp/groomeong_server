@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+	ConflictException,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ShopImage } from './entities/shopImages.entity';
@@ -18,10 +22,16 @@ export class ShopImagesService {
 
 	// DB테이블에 신규 이미지 저장
 	async save({
-		shopId,
+		imageUrl,
 		saveShopImageInput,
 	}: IShopImagesServiceSave): Promise<ShopImage> {
-		this.findByShopId({ shopId });
+		const checkURL = await this.shopImageRepository.findOne({
+			where: { imageUrl: imageUrl },
+		});
+		if (checkURL) {
+			throw new ConflictException('이미 등록된 이미지URL 입니다');
+		}
+
 		return await this.shopImageRepository.save(saveShopImageInput);
 	}
 
@@ -42,22 +52,22 @@ export class ShopImagesService {
 		return result;
 	}
 
-	// 가게ID로 해당 이미지 찾기
-	async findByShopId({
-		shopId,
-	}: IShopImagesServiceFindByShopId): Promise<ShopImage[]> {
-		const result = await this.shopImageRepository.find({
-			where: { shop: { id: shopId } },
-		});
+	// // 가게ID로 해당 이미지 찾기
+	// async findByShopId({
+	// 	shopId,
+	// }: IShopImagesServiceFindByShopId): Promise<ShopImage[]> {
+	// 	const result = await this.shopImageRepository.find({
+	// 		where: { shop: { id: shopId } },
+	// 	});
 
-		if (!result) {
-			throw new NotFoundException(
-				`가게ID가 ${shopId}인 가게 정보를 찾을 수 없습니다`,
-			);
-		}
+	// 	if (!result) {
+	// 		throw new NotFoundException(
+	// 			`가게ID가 ${shopId}인 가게 정보를 찾을 수 없습니다`,
+	// 		);
+	// 	}
 
-		return result;
-	}
+	// 	return result;
+	// }
 
 	// 가게이미지ID로 DB테이블에서 이미지 삭제
 	async delete({ shopImageId }: IShopImagesServiceDelete): Promise<boolean> {
@@ -65,6 +75,7 @@ export class ShopImagesService {
 		const result = await this.shopImageRepository.delete({
 			id: shopImageId,
 		});
+		console.log('✨✨✨ 삭제 완료');
 
 		return result.affected ? true : false;
 	}
