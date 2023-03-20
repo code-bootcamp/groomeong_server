@@ -23,7 +23,8 @@ export class ShopImagesService {
 	// DB테이블에 신규 이미지 저장
 	async save({
 		imageUrl,
-		saveShopImageInput,
+		isThumbnail,
+		shopId,
 	}: IShopImagesServiceSave): Promise<ShopImage> {
 		const checkURL = await this.shopImageRepository.findOne({
 			where: { imageUrl: imageUrl },
@@ -32,7 +33,11 @@ export class ShopImagesService {
 			throw new ConflictException('이미 등록된 이미지URL 입니다');
 		}
 
-		return await this.shopImageRepository.save(saveShopImageInput);
+		return await this.shopImageRepository.save({
+			imageUrl: imageUrl,
+			isThumbnail: isThumbnail,
+			shop: { id: shopId },
+		});
 	}
 
 	// 가게이미지ID로 해당 이미지 찾기
@@ -41,6 +46,7 @@ export class ShopImagesService {
 	}: IShopImagesServiceFindById): Promise<ShopImage> {
 		const result = await this.shopImageRepository.findOne({
 			where: { id: shopImageId },
+			relations: ['shop'],
 		});
 
 		if (!result) {

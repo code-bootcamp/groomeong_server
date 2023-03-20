@@ -23,8 +23,8 @@ export class ShopImage {
 	@Field(() => Boolean)
 	isThumbnail: boolean;
 
-	// // 가게(own): 가게이미지 = 1:N // OneToMany 받음
-	// @ManyToOne(() => Shop, (shop) => shop.image)
-	// @Field(() => Shop)
-	// shop: Shop;
+	// 가게(own): 가게이미지 = 1:N // OneToMany 받음
+	@ManyToOne(() => Shop, (shop) => shop.image)
+	@Field(() => Shop)
+	shop: Shop;
 }

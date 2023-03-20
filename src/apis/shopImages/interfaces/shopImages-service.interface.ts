@@ -1,8 +1,7 @@
-import { SaveShopImageInput } from '../dto/save-shopImage.input';
-
 export interface IShopImagesServiceSave {
 	imageUrl: string;
-	saveShopImageInput: SaveShopImageInput;
+	isThumbnail: boolean;
+	shopId: string;
 }
 
 export interface IShopImagesServiceFindById {
