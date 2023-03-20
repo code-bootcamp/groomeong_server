@@ -19,7 +19,7 @@ export class ShopImagesResolver {
 	// }
 
 	@Query(() => ShopImage, {
-		description: 'Return: 가게이미지ID를 기준으로, 한 개의 가게이미지 데이터',
+		description: 'Return: 가게이미지ID를 기준으로 1개의 가게이미지 가져오기',
 	})
 	async fetchShopImagesById(
 		@Args('shopImageId') shopImageId: string, //
@@ -33,16 +33,16 @@ export class ShopImagesResolver {
 	async saveShopImage(
 		@Args('saveShopImageInput') saveShopImageInput: SaveShopImageInput,
 	): Promise<ShopImage> {
-		const shopId = saveShopImageInput.shopId;
-		return await this.shopImagesService.save({ shopId, saveShopImageInput });
+		const imageUrl = saveShopImageInput.imageUrl;
+		return await this.shopImagesService.save({ imageUrl, saveShopImageInput });
 	}
 
 	@Mutation(() => ShopImage, {
 		description: 'Return: 가게 이미지 삭제 완료 시, true',
 	})
-	deleteShopImage(
+	async deleteShopImage(
 		@Args('shopImageId') shopImageId: string, //
 	): Promise<boolean> {
-		return this.shopImagesService.delete({ shopImageId });
+		return await this.shopImagesService.delete({ shopImageId });
 	}
 }
