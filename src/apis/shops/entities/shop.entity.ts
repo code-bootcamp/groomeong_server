@@ -8,6 +8,7 @@ import {
 	Entity,
 	OneToMany,
 	PrimaryGeneratedColumn,
+	UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -55,6 +56,17 @@ export class Shop {
 	// })
 	// @Field(() => [ShopImage])
 	// image?: ShopImage[];
+
+	// 가게(own):리뷰 = 1:N
+	@OneToMany(() => Review, (review) => review.shop, {
+		nullable: true,
+	})
+	@Field(() => [Review])
+	review?: Review[];
+
+	// logstash 데이터 폴링 기준 칼럼
+	@UpdateDateColumn()
+	updatedAt: Date;
 
 	// // 가게(own):리뷰 = 1:N
 	// @OneToMany(() => Review, (review) => review.shop, {
