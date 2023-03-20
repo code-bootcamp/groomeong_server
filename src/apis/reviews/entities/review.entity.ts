@@ -28,7 +28,7 @@ export class Review {
 	@Field(() => Float)
 	star: number;
 
-	// // 회원(own) : 리뷰 = 1 : N //OneToMany 받음
+	// 회원(own) : 리뷰 = 1 : N //OneToMany 받음
 	// // 회원 쪽에서 관계 설정 시 주석 해제 예정
 	// @ManyToOne(() => User, (user) => user.review)
 	// @Field(() => User)
