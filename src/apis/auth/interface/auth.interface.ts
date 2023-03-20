@@ -22,3 +22,12 @@ export interface IAuthServiceSetRefreshToken {
 export interface IAuthServiceRestoreAccessToken {
 	user: IAuthUser['user'];
 }
+
+export interface IOAuthLoginUser {
+	user: Pick<User, 'name' | 'email' | 'phone' | 'password'>;
+}
+
+export interface ILoginService {
+	req: Request & IOAuthLoginUser; //
+	res: Response;
+}

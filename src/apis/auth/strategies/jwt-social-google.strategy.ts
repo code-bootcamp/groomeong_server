@@ -1,5 +1,5 @@
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-google-oauth20';
+import { Profile, Strategy } from 'passport-google-oauth20';
 
 export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
 	constructor() {
@@ -11,7 +11,7 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
 		});
 	}
 
-	validate(accessToken, refreshToken, profile) {
+	validate(accessToken: string, refreshToken: string, profile: Profile) {
 		console.log('⚽️⚽️⚽️google acc:', accessToken);
 		console.log('🏀🏀🏀google refresh:', refreshToken);
 		console.log('🍏🍏🍏google profile:', profile);
