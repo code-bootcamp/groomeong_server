@@ -4,7 +4,6 @@ import {
 	NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import e from 'express';
 import { Repository } from 'typeorm';
 import { ShopsService } from '../shops/shops.service';
 import { ShopImage } from './entities/shopImages.entity';
