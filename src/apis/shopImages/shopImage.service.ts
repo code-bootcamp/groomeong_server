@@ -4,6 +4,7 @@ import {
 	NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import e from 'express';
 import { Repository } from 'typeorm';
 import { ShopsService } from '../shops/shops.service';
 import { ShopImage } from './entities/shopImages.entity';
@@ -71,10 +72,22 @@ export class ShopImagesService {
 			);
 		}
 
-		return await this.shopImageRepository.find({
+		const images = await this.shopImageRepository.find({
 			where: { shop: { id: shopId } },
-			relations: ['shop'],
 		});
+
+		// const result = [];
+		// images.forEach((el) => {
+		// 	result.push({
+		// 		id: el.id,
+		// 		imageUrl: el.imageUrl,
+		// 		isThumbnail: el.isThumbnail,
+		// 	});
+		// });
+
+		// console.log(result);
+		console.log(images);
+		return images;
 	}
 
 	// 가게이미지ID로 DB테이블에서 이미지 삭제
