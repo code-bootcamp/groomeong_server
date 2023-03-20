@@ -1,5 +1,5 @@
 import { ElasticsearchService } from '@nestjs/elasticsearch';
-import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query, Float } from '@nestjs/graphql';
 import { CreateShopInput } from './dto/create-shop.input';
 import { UpdateShopInput } from './dto/update-shop.input';
 import { Shop } from './entities/shop.entity';
@@ -103,4 +103,14 @@ export class ShopsResolver {
 	// ): Promise<boolean> {
 	// 	return await this.shopsService.restore({ shopId });
 	// }
+
+	// 별점 평균값 구하기
+	@Query(() => Float, {
+		description: 'Return : 별점 평균값(소수점 숫자)',
+	})
+	async fetchAverageStar(
+		@Args('shopId') shopId: string, //
+	): Promise<number> {
+		return;
+	}
 }

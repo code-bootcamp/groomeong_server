@@ -34,3 +34,7 @@ export interface IShopsServiceDelete {
 export interface IShopsServiceRestore {
 	shopId: string;
 }
+
+export interface IShopsServiceAverageStar {
+	shopId: string;
+}

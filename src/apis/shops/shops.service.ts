@@ -4,9 +4,12 @@ import {
 	NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import e from 'express';
 import { Repository } from 'typeorm';
+import { ReviewsService } from '../reviews/reviews.service';
 import { Shop } from './entities/shop.entity';
 import {
+	IShopsServiceAverageStar,
 	IShopsServiceCreate,
 	IShopsServiceDelete,
 	IShopsServiceFindByAddress,
@@ -22,6 +25,7 @@ export class ShopsService {
 	constructor(
 		@InjectRepository(Shop)
 		private readonly shopsRepository: Repository<Shop>, //
+		private readonly reviewsService: ReviewsService,
 	) {}
 
 	// 신규 가게 정보 생성
@@ -161,4 +165,15 @@ export class ShopsService {
 
 	// 	return result.affected ? true : false;
 	// }
+
+	// 별점 평균값 구하기
+	async averageStar({ shopId }: IShopsServiceAverageStar): Promise<number> {
+		const reviews = await this.reviewsService.findByShopId({ shopId });
+		let result = 0;
+		const sum = reviews.forEach((el) => {
+			result += el.star;
+		});
+
+		return result / reviews.length;
+	}
 }
