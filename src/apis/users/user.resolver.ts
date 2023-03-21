@@ -55,12 +55,14 @@ export class UsersResolver {
 		@Args('email') email: string,
 		@Args('password') password: string,
 		@Args('phone') phone: string,
+		// @Args('image') image: string,
 	): Promise<User> {
 		return this.usersService.create({
 			name, //
 			email,
 			password,
 			phone,
+			// image,
 		});
 	}
 
@@ -74,8 +76,8 @@ export class UsersResolver {
 		return this.usersService.update({ userId, updateUserInput });
 	}
 
-	// 이메일 인증번호 전송
-	@Mutation(() => String, { description: '이메일 인증번호 전송' })
+	// 회원가입 시 이메일 인증번호 전송
+	@Mutation(() => String, { description: '회원가입 시 이메일 인증번호 전송' })
 	getTokenEmail(
 		@Args('email') email: string, //
 	): Promise<string> {
@@ -90,11 +92,6 @@ export class UsersResolver {
 	): Promise<boolean> {
 		return this.usersService.checkToken({ email, token });
 	}
-
-	// 비밀번호 수정하기
-	// 휴대폰 인증?? 이메일 인증??
-	// const newhashedpwd = bcrypt.compo
-	// Auth 생성후 하기
 
 	// 유저 삭제하기
 	@Mutation(() => Boolean, { description: ' Return: 유저 정보 삭제하기 ' })
