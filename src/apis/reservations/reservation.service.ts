@@ -1,6 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+	ConflictException,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { DogsService } from '../dogs/dogs.service';
 import { ShopsService } from '../shops/shops.service';
 import { UsersService } from '../users/user.service';
 import { Reservation } from './entities/reservation.entity';
@@ -19,27 +24,53 @@ export class ReservationsService {
 		private readonly reservationsRepository: Repository<Reservation>, //
 		private readonly usersService: UsersService,
 		private readonly shopsService: ShopsService,
+		private readonly dogsService: DogsService,
 	) {}
 
 	// 신규 예약 정보 생성
 	async create({
 		createReservationInput,
 	}: IReservationsServiceCreate): Promise<Reservation> {
-		const shopId = createReservationInput.shopId;
-		const userId = createReservationInput.userId;
-		const checkShop = this.shopsService.findById({ shopId });
+		const { date, time, shopId, userId, dogId } = createReservationInput;
+
+		const checkReservation = await this.findOneByDateAndTime({ date, time });
+		if (checkReservation) {
+			throw new ConflictException('이미 예약된 시간입니다');
+		}
+
+		const checkShop = await this.shopsService.findById({ shopId });
 		if (!checkShop) {
 			throw new NotFoundException('유효하지 않은 가게ID 입니다');
 		}
 
-		const checkUser = this.usersService.findOne({ userId });
+		const checkUser = await this.usersService.findOne({ userId });
 		if (!checkUser) {
 			throw new NotFoundException('유효하지 않은 회원ID 입니다');
 		}
 
+		await this.dogsService.findOneById({ id: dogId });
+
 		return await this.reservationsRepository.save({
 			...createReservationInput,
+			shop: {
+				id: shopId,
+			},
+			user: {
+				id: userId,
+			},
+			dog: {
+				id: dogId,
+			},
 		});
+	}
+
+	// 예약날짜와 예약시간으로 예약정보 찾기
+	async findOneByDateAndTime({ date, time }): Promise<Reservation> {
+		const checkReservation = await this.reservationsRepository.findOneBy({
+			date,
+			time,
+		});
+		return checkReservation;
 	}
 
 	// 예약ID로 해당 예약정보 찾기

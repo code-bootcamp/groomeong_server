@@ -46,9 +46,8 @@ export class Reservation {
 	@Field(() => User)
 	user: User;
 
-	// Dog : Reservation = 1:1
-	@JoinColumn()
-	@OneToOne(() => Dog, (dog) => dog.reservation)
+	// Dog : Reservation = 1 : N
+	@ManyToOne(() => Dog, (dog) => dog.reservation)
 	@Field(() => Dog)
 	dog: Dog;
 }
