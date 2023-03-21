@@ -21,4 +21,5 @@ export interface IDogsServiceUpdateOneById {
 
 export interface IDogsServiceDeleteById {
 	id: string;
+	userId: string;
 }
