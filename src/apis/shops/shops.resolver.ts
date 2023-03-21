@@ -13,7 +13,8 @@ export class ShopsResolver {
 	) {}
 
 	@Query(() => [Shop], {
-		description: 'Return : DB에 등록된 모든 가게(Shop) 데이터',
+		description:
+			'Return : DB에 등록된 가게 중 검색값을 포함한 데이터. Null인 경우 모든 가게',
 	})
 	async fetchShops(
 		@Args({
@@ -32,6 +33,7 @@ export class ShopsResolver {
 		});
 		console.log(JSON.stringify(result, null, ' '));
 		// result에서 필요한 데이터만 뽑아 프론트에 전달하면 될듯?
+		// 엘라스틱서치 적용 시, 서비스 구현되었을때 '가게이름'만 나오는지, 아니면 '가게 정보'전체가 다 나오는지에 따라 로직 설정이 달라질 것.
 
 		return await this.shopsService.findAll();
 	}

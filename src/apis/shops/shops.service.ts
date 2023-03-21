@@ -45,12 +45,12 @@ export class ShopsService {
 
 	// 가게ID로 해당 가게 정보 찾기
 	async findById({ shopId }: IShopsServiceFindById): Promise<Shop> {
-		const _shop = await this.shopsRepository.findOne({
+		const myshop = await this.shopsRepository.findOne({
 			where: { id: shopId },
 			relations: ['reservation', 'image', 'review'],
 		});
 
-		const reviews = _shop.review; //배열
+		const reviews = myshop.review; //배열
 		let sum = 0;
 		reviews.map((el) => {
 			sum += Number(el.star);
@@ -59,16 +59,19 @@ export class ShopsService {
 		const _averageStar = Number((sum / reviews.length).toFixed(1));
 
 		return {
-			..._shop,
+			...myshop,
 			averageStar: _averageStar,
 		};
 	}
 
 	// DB의 모든 가게 정보 불러오기
 	async findAll(): Promise<Shop[]> {
-		return await this.shopsRepository.find({
+		const allShops = await this.shopsRepository.find({
 			relations: ['reservation', 'image', 'review'],
 		});
+
+		return allShops;
+		// 엘라스틱서치 적용 후 서비스 구현 방향이 정해지고 난 뒤 로직 재구성하기
 	}
 
 	// 가게 연락처(phone)로 해당 가게 정보 찾기
