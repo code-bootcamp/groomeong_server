@@ -31,14 +31,19 @@ export class DogsService {
 	}
 
 	async findByUserId({ userId }: IDogsServiceFindByUserId): Promise<Dog[]> {
-		const found = await this.dogsRepository.find({
-			where: {
-				user: {
-					id: userId,
-				},
+		// const found = await this.dogsRepository.find({
+		// 	where: {
+		// 		user: {
+		// 			id: userId,
+		// 		},
+		// 	},
+		// });
+		const founds = await this.dogsRepository.findBy({
+			user: {
+				id: userId,
 			},
 		});
-		return found;
+		return founds;
 	}
 
 	async create({ createDogInput, userId }: IDogsServiceCreate): Promise<Dog> {
@@ -63,9 +68,17 @@ export class DogsService {
 		return updated;
 	}
 
-	async deleteOneById({ id }: IDogsServiceDeleteById): Promise<boolean> {
+	async deleteOneById({
+		id,
+		userId,
+	}: IDogsServiceDeleteById): Promise<boolean> {
 		await this.findOneById({ id });
-		const result = await this.dogsRepository.softDelete({ id });
+		const result = await this.dogsRepository.softDelete({
+			id,
+			user: {
+				id: userId,
+			},
+		});
 		return result ? true : false;
 	}
 }
