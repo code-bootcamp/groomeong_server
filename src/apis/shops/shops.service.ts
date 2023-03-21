@@ -46,14 +46,14 @@ export class ShopsService {
 	async findById({ shopId }: IShopsServiceFindById): Promise<Shop> {
 		return await this.shopsRepository.findOne({
 			where: { id: shopId },
-			relations: ['reservation'],
+			relations: ['reservation', 'image', 'review'],
 		});
 	}
 
 	// DB의 모든 가게 정보 불러오기
 	async findAll(): Promise<Shop[]> {
 		return await this.shopsRepository.find({
-			relations: ['reservation'],
+			relations: ['reservation', 'image', 'review'],
 		});
 	}
 
@@ -61,6 +61,7 @@ export class ShopsService {
 	async findByPhone({ phone }: IShopsServiceFindByPhone): Promise<Shop> {
 		const result = await this.shopsRepository.findOne({
 			where: { phone: phone },
+			relations: ['reservation', 'image', 'review'],
 		});
 
 		if (!result) {
@@ -76,6 +77,7 @@ export class ShopsService {
 	async findByAddress({ address }: IShopsServiceFindByAddress): Promise<Shop> {
 		const result = await this.shopsRepository.findOne({
 			where: { address: address },
+			relations: ['reservation', 'image', 'review'],
 		});
 
 		if (!result) {
