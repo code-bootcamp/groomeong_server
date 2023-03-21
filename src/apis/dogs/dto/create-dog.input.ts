@@ -12,7 +12,7 @@ export class CreateDogInput {
 	@Field(() => Float)
 	weight: number;
 
-	@Field(() => DOG_TYPE, { nullable: true })
+	@Field(() => DOG_TYPE)
 	breed: DOG_TYPE;
 
 	@Field(() => String, { nullable: true })

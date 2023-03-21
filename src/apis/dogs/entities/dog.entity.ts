@@ -50,9 +50,8 @@ export class Dog {
 	@Column({
 		type: 'enum',
 		enum: DOG_TYPE,
-		nullable: true,
 	})
-	@Field(() => DOG_TYPE, { nullable: true })
+	@Field(() => DOG_TYPE)
 	breed: DOG_TYPE;
 
 	@Column({
