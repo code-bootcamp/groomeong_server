@@ -3,6 +3,7 @@ import { Cache } from 'cache-manager';
 import {
 	IAuthServiceGetAccessToken,
 	IAuthServiceLogin,
+	IAuthServiceLogOut,
 	IAuthServiceRestoreAccessToken,
 	IAuthServiceSetRefreshToken,
 	ILoginService,
@@ -57,7 +58,7 @@ export class AuthService {
 		return this.getAccessToken({ user });
 	}
 
-	async logout({ req, res }) {
+	async logout({ req, res }: IAuthServiceLogOut) {
 		try {
 			const accessToken = await req.headers['authorization'].replace(
 				'Bearer ',

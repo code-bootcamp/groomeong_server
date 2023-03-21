@@ -9,7 +9,8 @@ export interface IUsersServiceCreate {
 	name: string;
 	email: string;
 	password?: string;
-	phone: string;
+	phone?: string;
+	image?: string;
 }
 
 export interface IUsersServiceFindOneByEmail {
@@ -23,4 +24,26 @@ export interface IUsersServiceUpdate {
 
 export interface IUsersServiceDelete {
 	userId: string;
+}
+
+export interface IUsersServiceSendTokenEmail {
+	email: string;
+}
+
+export interface IUsersServiceCheckValidationEmail {
+	email: string;
+}
+
+export interface IUsersServiceFindUserDog {
+	email: string;
+}
+
+export interface IUsersServiceSendEmail {
+	email: string;
+	name: string;
+}
+
+export interface IUsersServiceCheckToken {
+	email: string;
+	token: string;
 }

@@ -27,10 +27,6 @@ export class AuthResolver {
 		});
 	}
 
-	// 소셜로그인 API
-
-	// sologin()
-
 	// 로그아웃
 	@UseGuards(GqlAuthGuard('access'))
 	@Mutation(() => String, { description: ' return: 유저 로그아웃 ' })

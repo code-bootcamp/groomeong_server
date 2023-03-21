@@ -24,10 +24,22 @@ export interface IAuthServiceRestoreAccessToken {
 }
 
 export interface IOAuthLoginUser {
-	user: Pick<User, 'name' | 'email' | 'phone' | 'password'>;
+	// 이 로직을 쓰게 된다면 카카오 이메일을 못 불러오므로 아래 로직 작성 !
+	// user: Pick<User, 'name' | 'email' | 'phone' | 'password'>;
+	user: {
+		name: string;
+		email: string;
+		password?: string;
+		phone?: string;
+	};
 }
 
 export interface ILoginService {
 	req: Request & IOAuthLoginUser; //
 	res: Response;
+}
+
+export interface IAuthServiceLogOut {
+	req: IContext['req'];
+	res: IContext['res'];
 }

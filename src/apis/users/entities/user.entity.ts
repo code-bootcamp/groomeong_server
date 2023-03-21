@@ -33,7 +33,14 @@ export class User {
 
 	@Column({ length: 16 })
 	@Field(() => String)
-	phone: string;
+	phone?: string;
+
+	@Column({
+		length: 100,
+		nullable: true,
+	})
+	@Field(() => String, { nullable: true })
+	image: string;
 
 	@CreateDateColumn({ nullable: true })
 	createAt: Date;

@@ -14,6 +14,6 @@ export class CreateUserInput {
 	@Field(() => String)
 	phone: string;
 
-	@Field(() => Date)
-	createAt: Date;
+	@Field(() => String, { nullable: true })
+	image: string;
 }
