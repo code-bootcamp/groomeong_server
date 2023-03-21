@@ -1,13 +1,12 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Dog } from 'src/apis/dogs/entities/dog.entity';
+import { Reservation } from 'src/apis/reservations/entities/reservation.entity';
 import {
 	Column,
 	CreateDateColumn,
 	DeleteDateColumn,
 	Entity,
-	JoinColumn,
 	OneToMany,
-	OneToOne,
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from 'typeorm';
@@ -51,7 +50,14 @@ export class User {
 	@UpdateDateColumn({ nullable: true })
 	updateAt: Date;
 
+	// Dog
 	@OneToMany(() => Dog, (dogs) => dogs.user)
 	@Field(() => [Dog])
 	dogs: Dog[];
+
+	@OneToMany(() => Reservation, (reservation) => reservation.user, {
+		nullable: true,
+	})
+	@Field(() => [Reservation])
+	reservation: Reservation[];
 }

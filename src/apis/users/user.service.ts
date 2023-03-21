@@ -49,7 +49,7 @@ export class UsersService {
 	async findOne({ userId }: IUsersServiceFindOne): Promise<User> {
 		return await this.userRepository.findOne({
 			where: { id: userId },
-			relations: { dogs: true },
+			relations: { reservation: true },
 		});
 	}
 
@@ -72,7 +72,7 @@ export class UsersService {
 		const token = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
 		// 이메일 정상인지 확인
 		this.checkValidationEmail({ email });
-
+		console.log(token);
 		// 이메일 인증번호 토큰 보내주기.
 		await this.mailerService.sendMail({
 			to: email,
@@ -81,9 +81,11 @@ export class UsersService {
 			html: sendTokenTemplate({ token }),
 		});
 		const myToken = await this.cacheManager.get(email);
+
 		if (myToken) {
 			await this.cacheManager.del(email);
 		}
+
 		await this.cacheManager.set(email, token, {
 			ttl: 180,
 		});
