@@ -146,7 +146,11 @@ export class ShopsService {
 			throw new NotFoundException(`ID가 ${shopId}인 가게를 찾을 수 없습니다`);
 		}
 
+		const myShop = await this.findById({ shopId });
+		console.log(myShop);
+
 		return this.shopsRepository.save({
+			...myShop,
 			...updateShopInput,
 		});
 	}
