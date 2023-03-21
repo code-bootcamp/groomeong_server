@@ -1,8 +1,6 @@
 import { CreateReservationInput } from '../dto/create-reservation.input';
 
 export interface IReservationsServiceCreate {
-	shopId: string;
-	userId: string;
 	createReservationInput: CreateReservationInput;
 }
 

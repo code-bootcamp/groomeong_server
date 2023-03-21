@@ -16,31 +16,29 @@ export class ReviewsService {
 	constructor(
 		@InjectRepository(Review)
 		private readonly reviewsRepository: Repository<Review>, //
-		private readonly usersService: UsersService,
 		private readonly shopsService: ShopsService,
+		private readonly usersService: UsersService,
 	) {}
 
 	// 리뷰 생성하기
 	async create({
-		userId,
-		shopId,
-		createReviewInput,
+		createReviewInput, //
 	}: IReviewServiceCreate): Promise<Review> {
+		const userId = createReviewInput.userId;
+		const shopId = createReviewInput.shopId;
 		// 조인 완료 후 주석 해제하기
 
-		// const checkUser = this.usersService.findOne({ userId });
+		// const checkUser = this.usersService.findOne({ id: userId });
 		// if (!checkUser) {
 		// 	throw new NotFoundException('유효하지 않은 작성자입니다');
 		// }
 
-		// const checkShop = this.shopsService.findById({ shopId });
-		// if (!checkShop) {
-		// 	throw new NotFoundException('유효하지 않은 가게입니다');
-		// }
+		const checkShop = this.shopsService.findById({ shopId });
+		if (!checkShop) {
+			throw new NotFoundException('유효하지 않은 가게입니다');
+		}
 
 		return await this.reviewsRepository.save({
-			// shop: shopId,
-			// user: userId,
 			...createReviewInput,
 		});
 	}
@@ -48,10 +46,12 @@ export class ReviewsService {
 	async findById({ reviewId }: IReviewServiceFindById): Promise<Review> {
 		const result = await this.reviewsRepository.findOne({
 			where: { id: reviewId },
+			relations: ['shop'],
+			// relations: ['shop', 'user'],
 		});
 
 		if (!result) {
-			throw new NotFoundException('유효하지 않은 리뷰아이디입니다');
+			throw new NotFoundException('아이디를 찾을 수 없습니다');
 		}
 
 		return result;
@@ -70,12 +70,16 @@ export class ReviewsService {
 	// 	});
 	// }
 
-	// // 가게의 리뷰 모아보기
-	// async findByShopId({ shopId }: IReviewServiceFindByShopId): Promise<Review> {
-	// 	const checkShop = this.shopsService.findById({ shopId });
-	// 	if (!checkShop) {
-	// 		throw new NotFoundException('유효하지 않은 가게ID 입니다');
-	// 	}
-	// 	return;
-	// }
+	// 가게의 리뷰 모아보기
+	async findByShopId({
+		shopId, //
+	}: IReviewServiceFindByShopId): Promise<Review[]> {
+		const checkShop = this.shopsService.findById({ shopId });
+		if (!checkShop) {
+			throw new NotFoundException('유효하지 않은 가게ID 입니다');
+		}
+		return this.reviewsRepository.find({
+			where: { shop: { id: shopId } },
+		});
+	}
 }

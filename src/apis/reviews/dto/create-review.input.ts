@@ -7,4 +7,10 @@ export class CreateReviewInput {
 
 	@Field(() => Float)
 	star: number;
+
+	@Field(() => String)
+	userId: string;
+
+	@Field(() => String)
+	shopId: string;
 }

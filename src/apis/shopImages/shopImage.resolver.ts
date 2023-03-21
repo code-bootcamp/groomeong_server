@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { SaveShopImageInput } from './dto/save-shopImage.input';
 import { ShopImage } from './entities/shopImages.entity';
 import { ShopImagesService } from './shopImage.service';
 
@@ -9,14 +8,14 @@ export class ShopImagesResolver {
 		private readonly shopImagesService: ShopImagesService, //
 	) {}
 
-	// @Query(() => ShopImage, {
-	// 	description: 'Return: 가게ID를 기준으로 모든 가게이미지 배열 데이터',
-	// })
-	// async fetchShopImagesByShopId(
-	// 	@Args('shopId') shopId: string, //
-	// ): Promise<ShopImage[]> {
-	// 	return await this.shopImagesService.findByShopId({ shopId });
-	// }
+	@Query(() => ShopImage, {
+		description: 'Return: 가게ID를 기준으로 모든 가게이미지 배열 데이터',
+	})
+	async fetchShopImagesByShopId(
+		@Args('shopId') shopId: string, //
+	): Promise<ShopImage[]> {
+		return await this.shopImagesService.findByShopId({ shopId });
+	}
 
 	@Query(() => ShopImage, {
 		description: 'Return: 가게이미지ID를 기준으로 1개의 가게이미지 가져오기',
@@ -31,10 +30,11 @@ export class ShopImagesResolver {
 		description: 'Return: 신규 생성된 가게이미지 데이터',
 	})
 	async saveShopImage(
-		@Args('saveShopImageInput') saveShopImageInput: SaveShopImageInput,
+		@Args('imageUrl') imageUrl: string,
+		@Args('isThumbnail') isThumbnail: boolean,
+		@Args('shopId') shopId: string,
 	): Promise<ShopImage> {
-		const imageUrl = saveShopImageInput.imageUrl;
-		return await this.shopImagesService.save({ imageUrl, saveShopImageInput });
+		return await this.shopImagesService.save({ imageUrl, isThumbnail, shopId });
 	}
 
 	@Mutation(() => ShopImage, {

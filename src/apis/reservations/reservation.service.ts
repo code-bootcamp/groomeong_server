@@ -22,14 +22,14 @@ export class ReservationsService {
 
 	// 신규 예약 정보 생성
 	async create({
-		shopId,
-		userId,
 		createReservationInput,
 	}: IReservationsServiceCreate): Promise<Reservation> {
-		// const checkShop = this.shopsService.findById({ shopId });
-		// if (!checkShop) {
-		// 	throw new NotFoundException('유효하지 않은 가게ID 입니다');
-		// }
+		const shopId = createReservationInput.shopId;
+		const userId = createReservationInput.userId;
+		const checkShop = this.shopsService.findById({ shopId });
+		if (!checkShop) {
+			throw new NotFoundException('유효하지 않은 가게ID 입니다');
+		}
 
 		// const checkUser = this.usersService.findOne({ userId });
 		// if (!checkUser) {

@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { CreateReviewInput } from './dto/create-review.input';
 import { Review } from './entities/review.entity';
@@ -15,13 +14,9 @@ export class ReviewsResolver {
 		description: 'Return: 신규 생성된 리뷰 데이터',
 	})
 	async createReview(
-		@Args('shopId') shopId: string,
-		@Args('userId') userId: string,
 		@Args('createReviewInput') createReviewInput: CreateReviewInput, //
 	): Promise<Review> {
 		return await this.reviewsService.create({
-			shopId,
-			userId,
 			createReviewInput,
 		});
 	}
@@ -36,15 +31,15 @@ export class ReviewsResolver {
 		return await this.reviewsService.findById({ reviewId });
 	}
 
-	// // 가게의 리뷰 모아보기
-	// @Query(() => Review, {
-	// 	description: 'Return: 가게ID 기준으로 모든 리뷰 불러오기',
-	// })
-	// async fetchReviewsByShopId(
-	// 	@Args('shopId') shopId: string, //
-	// ): Promise<[Review]> {
-	// 	//
-	// }
+	// 가게의 리뷰 모아보기
+	@Query(() => Review, {
+		description: 'Return: 가게ID 기준으로 모든 리뷰 불러오기',
+	})
+	async fetchReviewsByShopId(
+		@Args('shopId') shopId: string, //
+	): Promise<Review[]> {
+		return await this.reviewsService.findByShopId({ shopId });
+	}
 
 	// // 회원의 리뷰 모아보기
 	// @Query(() => Review, {
