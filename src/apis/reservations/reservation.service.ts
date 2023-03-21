@@ -10,6 +10,7 @@ import { ShopsService } from '../shops/shops.service';
 import { UsersService } from '../users/user.service';
 import { Reservation } from './entities/reservation.entity';
 import {
+	IReservationsServiceCheckDuplication,
 	IReservationsServiceCreate,
 	IReservationsServiceDelete,
 	IReservationsServiceFindAllByUserId,
@@ -33,7 +34,11 @@ export class ReservationsService {
 	}: IReservationsServiceCreate): Promise<Reservation> {
 		const { date, time, shopId, userId, dogId } = createReservationInput;
 
-		const checkReservation = await this.findOneByDateAndTime({ date, time });
+		const checkReservation = await this.checkDuplication({
+			date,
+			time,
+			shopId,
+		});
 		if (checkReservation) {
 			throw new ConflictException('이미 예약된 시간입니다');
 		}
@@ -64,11 +69,18 @@ export class ReservationsService {
 		});
 	}
 
-	// 예약날짜와 예약시간으로 예약정보 찾기
-	async findOneByDateAndTime({ date, time }): Promise<Reservation> {
+	// 예약 가능 여부 확인하기
+	async checkDuplication({
+		date,
+		time,
+		shopId,
+	}: IReservationsServiceCheckDuplication): Promise<Reservation> {
 		const checkReservation = await this.reservationsRepository.findOneBy({
 			date,
 			time,
+			shop: {
+				id: shopId,
+			},
 		});
 		return checkReservation;
 	}
@@ -79,13 +91,11 @@ export class ReservationsService {
 	}: IReservationsServiceFindById): Promise<Reservation> {
 		const result = await this.reservationsRepository.findOne({
 			where: { id: reservationId },
-			// relations: ['shop', 'user', 'dog'],
+			relations: ['shop', 'user', 'dog'],
 		});
 
 		if (!result) {
-			throw new NotFoundException(
-				`예약ID가 ${reservationId}인 예약을 찾을 수 없습니다`,
-			);
+			throw new NotFoundException('예약을 찾을 수 없습니다');
 		}
 
 		return result;
@@ -99,7 +109,11 @@ export class ReservationsService {
 	}: IReservationsServiceFindAllByUserId): Promise<Reservation[]> {
 		const checkUser = await this.reservationsRepository.find({
 			where: { user: { id: userId } },
-			// relations: ['shop', 'user'],
+			relations: ['shop', 'user', 'dog'],
+			order: {
+				date: 'ASC',
+				time: 'ASC',
+			},
 		});
 
 		if (!checkUser) {
