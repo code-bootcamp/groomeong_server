@@ -82,4 +82,17 @@ export class ReviewsService {
 			where: { shop: { id: shopId } },
 		});
 	}
+
+	// 별점 불러오기
+	async findStar({ shopId }): Promise<number> {
+		const reviews = await this.reviewsRepository.find({
+			where: { shop: { id: shopId } },
+		});
+		let result = 0;
+		reviews.forEach((el) => {
+			result += Number(el.star);
+		});
+
+		return result / reviews.length;
+	}
 }

@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query, Float } from '@nestjs/graphql';
 import { CreateReviewInput } from './dto/create-review.input';
 import { Review } from './entities/review.entity';
 import { ReviewsService } from './reviews.service';
@@ -50,4 +50,14 @@ export class ReviewsResolver {
 	// ): Promise<[Review]> {
 	// 	//
 	// }
+
+	// 별점 평균값 구하기
+	@Query(() => Float, {
+		description: 'Return : 가게의 별점 (평균값, 소수점 숫자)',
+	})
+	async fetchAverageStar(
+		@Args('shopId') shopId: string, //
+	): Promise<number> {
+		return this.reviewsService.findStar({ shopId });
+	}
 }

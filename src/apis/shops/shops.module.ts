@@ -11,7 +11,6 @@ import { ShopsService } from './shops.service';
 	imports: [
 		TypeOrmModule.forFeature([
 			Shop, //
-			Review,
 		]),
 		ElasticsearchModule.register({
 			node: 'http://elasticsearch:9200', //
@@ -20,7 +19,9 @@ import { ShopsService } from './shops.service';
 	providers: [
 		ShopsResolver, //
 		ShopsService,
-		ReviewsService,
+	],
+	exports: [
+		ShopsService, //
 	],
 })
 export class ShopsModule {}
