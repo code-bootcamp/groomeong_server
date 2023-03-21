@@ -38,12 +38,26 @@ export class ReviewsService {
 			throw new NotFoundException('유효하지 않은 가게입니다');
 		}
 
-		return await this.reviewsRepository.save({
+		// 리뷰 저장하기
+		const result = await this.reviewsRepository.save({
 			contents: createReviewInput.contents,
 			star: createReviewInput.star,
 			// user: {id: createReviewInput.userId},
 			shop: { id: createReviewInput.shopId },
 		});
+
+		// 별점평균 계산하기
+		const _averageStar = await this.averageStar({ shopId });
+		console.log('🟨🟨🟨', _averageStar);
+
+		// shop 테이블에 별점평균 넣어서 저장하기
+		const noReturn = this.shopsService.update({
+			shopId: shopId, //
+			updateShopInput: { averageStar: Number(_averageStar) },
+		});
+
+		// 저장한 리뷰 리턴하기
+		return result;
 	}
 
 	async findById({ reviewId }: IReviewServiceFindById): Promise<Review> {
@@ -88,8 +102,8 @@ export class ReviewsService {
 		return result;
 	}
 
-	// 별점 불러오기
-	async findStar({ shopId }): Promise<number> {
+	// 별점평균 계산하기
+	async averageStar({ shopId }): Promise<number> {
 		const reviews = await this.reviewsRepository.find({
 			where: { shop: { id: shopId } },
 		});

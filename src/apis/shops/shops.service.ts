@@ -56,7 +56,7 @@ export class ShopsService {
 			sum += Number(el.star);
 		});
 
-		const _averageStar = Number((sum / reviews.length).toFixed(1));
+		const _averageStar = sum ? Number((sum / reviews.length).toFixed(1)) : 0;
 
 		return {
 			...myshop,
@@ -164,11 +164,13 @@ export class ShopsService {
 		}
 
 		const myShop = await this.findById({ shopId });
+		const _averageStar = myShop.averageStar === 0 ? null : myShop.averageStar;
 		console.log(myShop);
 
 		return this.shopsRepository.save({
 			...myShop,
 			...updateShopInput,
+			averageStar: _averageStar,
 		});
 	}
 
