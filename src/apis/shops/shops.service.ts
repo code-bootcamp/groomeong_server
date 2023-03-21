@@ -76,8 +76,8 @@ export class ShopsService {
 	// 가게 이름(name)로 해당 가게 정보 찾기
 	async findByName({
 		shopName, //
-	}: IShopsServiceFindByName): Promise<Shop | Shop[]> {
-		const myShop = await this.shopsRepository.find({
+	}: IShopsServiceFindByName): Promise<Shop> {
+		const myShop = await this.shopsRepository.findOne({
 			where: { name: shopName },
 		});
 
@@ -86,13 +86,7 @@ export class ShopsService {
 				`연락처가 ${shopName}인 가게를 찾을 수 없습니다`,
 			);
 		}
-
-		if (myShop.length > 1) {
-			// 가게가 2개 이상인 경우 로직
-			return myShop;
-		}
-
-		const shopId = myShop[0].id;
+		const shopId = myShop.id;
 		const result = this.findById({ shopId });
 		return result;
 	}

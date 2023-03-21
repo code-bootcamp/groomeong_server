@@ -48,12 +48,12 @@ export class ShopsResolver {
 	}
 
 	@Query(() => Shop, {
-		description: 'Return : 입력한 shopName과 일치하는 가게 데이터',
+		description: 'Return : 입력한 shopName과 일치하는 가게 데이터 1개',
 	})
-	async fetchShopByName(
+	async fetchFirstShopByName(
 		@Args('shopName') shopName: string, //
-	): Promise<Shop | Shop[]> {
-		// 이름이 같은 가게가 있다면 배열로 리턴
+	): Promise<Shop> {
+		// 이름이 같은 가게가 있는 경우의 로직은 따로 작성 필요
 		return await this.shopsService.findByName({ shopName });
 	}
 
