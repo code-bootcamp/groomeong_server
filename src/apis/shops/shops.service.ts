@@ -5,13 +5,13 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Review } from '../reviews/entities/review.entity';
 import { Shop } from './entities/shop.entity';
 import {
 	IShopsServiceCreate,
 	IShopsServiceDelete,
 	IShopsServiceFindByAddress,
 	IShopsServiceFindById,
+	IShopsServiceFindByName,
 	IShopsServiceFindByPhone,
 	IShopsServiceFindDeleted,
 	IShopsServiceRestore,
@@ -50,7 +50,7 @@ export class ShopsService {
 			relations: ['reservation', 'image', 'review'],
 		});
 
-		const reviews = myshop.review; //배열
+		const reviews = myshop.review;
 		let sum = 0;
 		reviews.map((el) => {
 			sum += Number(el.star);
@@ -72,6 +72,29 @@ export class ShopsService {
 
 		return allShops;
 		// 엘라스틱서치 적용 후 서비스 구현 방향이 정해지고 난 뒤 로직 재구성하기
+	}
+	// 가게 이름(name)로 해당 가게 정보 찾기
+	async findByName({
+		shopName, //
+	}: IShopsServiceFindByName): Promise<Shop | Shop[]> {
+		const myShop = await this.shopsRepository.find({
+			where: { name: shopName },
+		});
+
+		if (!myShop) {
+			throw new NotFoundException(
+				`연락처가 ${shopName}인 가게를 찾을 수 없습니다`,
+			);
+		}
+
+		if (myShop.length > 1) {
+			// 가게가 2개 이상인 경우 로직
+			return myShop;
+		}
+
+		const shopId = myShop[0].id;
+		const result = this.findById({ shopId });
+		return result;
 	}
 
 	// 가게 연락처(phone)로 해당 가게 정보 찾기
