@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Review } from '../reviews/entities/review.entity';
 import { Shop } from './entities/shop.entity';
 import {
 	IShopsServiceCreate,
@@ -44,10 +45,23 @@ export class ShopsService {
 
 	// 가게ID로 해당 가게 정보 찾기
 	async findById({ shopId }: IShopsServiceFindById): Promise<Shop> {
-		return await this.shopsRepository.findOne({
+		const _shop = await this.shopsRepository.findOne({
 			where: { id: shopId },
 			relations: ['reservation', 'image', 'review'],
 		});
+
+		const reviews = _shop.review; //배열
+		let sum = 0;
+		reviews.map((el) => {
+			sum += Number(el.star);
+		});
+
+		const _averageStar = Number((sum / reviews.length).toFixed(1));
+
+		return {
+			..._shop,
+			averageStar: _averageStar,
+		};
 	}
 
 	// DB의 모든 가게 정보 불러오기

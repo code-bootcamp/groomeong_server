@@ -44,6 +44,7 @@ export class ShopsResolver {
 	): Promise<Shop> {
 		return await this.shopsService.findById({ shopId });
 	}
+
 	// // 삭제 기능 생략되어 주석 처리함
 	// @Query(() => [Shop], {
 	// 	description: 'Return : DB에 등록된 모든 삭제된 가게(Shop) 데이터',

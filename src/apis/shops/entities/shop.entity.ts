@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Float, ObjectType } from '@nestjs/graphql';
 import { Reservation } from 'src/apis/reservations/entities/reservation.entity';
 import { Review } from 'src/apis/reviews/entities/review.entity';
 import { ShopImage } from 'src/apis/shopImages/entities/shopImages.entity';
@@ -37,6 +37,11 @@ export class Shop {
 	@Column({ length: 100 })
 	@Field(() => String)
 	address: string;
+
+	// 리뷰 평균 점수
+	@Column({ nullable: true })
+	@Field(() => Float)
+	averageStar: number;
 
 	// // 삭제 기능 생략되어 주석 처리함
 	// @DeleteDateColumn({ nullable: true })
