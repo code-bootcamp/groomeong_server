@@ -79,7 +79,7 @@ export class Dog {
 	user: User;
 
 	// 예약 엔티티와 OneToOne 관계 설정
-	// @OneToOne(() => Reservation, (reservation) => reservation.dog)
-	// @Field(() => Reservation)
-	// reservation: Reservation;
+	@OneToOne(() => Reservation, (reservation) => reservation.dog)
+	@Field(() => Reservation)
+	reservation: Reservation;
 }

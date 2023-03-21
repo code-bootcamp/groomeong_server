@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { Dog } from 'src/apis/dogs/entities/dog.entity';
 import { Shop } from 'src/apis/shops/entities/shop.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
@@ -6,7 +7,9 @@ import {
 	CreateDateColumn,
 	DeleteDateColumn,
 	Entity,
+	JoinColumn,
 	ManyToOne,
+	OneToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -43,8 +46,9 @@ export class Reservation {
 	@Field(() => User)
 	user: User;
 
-	// // Dog(own) : 예약 = 1:N
-	// @ManyToOne(() => Dog, (dog)=> dog.reservation, { nullable: false })
-	// @Field(() => Dog)
-	// dog: Dog;
+	// Dog : Reservation = 1:1
+	@JoinColumn()
+	@OneToOne(() => Dog, (dog) => dog.reservation)
+	@Field(() => Dog)
+	dog: Dog;
 }
