@@ -7,6 +7,7 @@ import { Reservation } from './entities/reservation.entity';
 import {
 	IReservationsServiceCreate,
 	IReservationsServiceDelete,
+	IReservationsServiceFindAllByUserId,
 	IReservationsServiceFindById,
 	IReservationsServiceFindDeletedById,
 } from './interfaces/reservations-service.interface';
@@ -31,10 +32,10 @@ export class ReservationsService {
 			throw new NotFoundException('유효하지 않은 가게ID 입니다');
 		}
 
-		// const checkUser = this.usersService.findOne({ userId });
-		// if (!checkUser) {
-		// 	throw new NotFoundException('유효하지 않은 회원ID 입니다');
-		// }
+		const checkUser = this.usersService.findOne({ userId });
+		if (!checkUser) {
+			throw new NotFoundException('유효하지 않은 회원ID 입니다');
+		}
 
 		return await this.reservationsRepository.save({
 			...createReservationInput,
@@ -62,22 +63,22 @@ export class ReservationsService {
 	// // * 가게id, 날짜, 시간을 기준으로 찾는 함수 - 확장성 고려
 	// // * 다만, 현재 유저 관점의 서비스를 만들고 있으므로 이러한 함수들은 관리자 페이지에서 필요하다고 판단, 생성 생략했습니다
 	// // * User테이블과 조인 후 주석 해제 예정입니다
-	// async findAllByUserId({ userId }: IReservationsServiceFindAllByUserId) {
-	// 	const checkUser = await this.usersRepository.findOne({
-	// 		where: { user: { id: userId } },
-	//    // relations: ['shop', 'user', 'dog'],
-	// 	});
+	async findAllByUserId({
+		userId,
+	}: IReservationsServiceFindAllByUserId): Promise<Reservation[]> {
+		const checkUser = await this.reservationsRepository.find({
+			where: { user: { id: userId } },
+			// relations: ['shop', 'user'],
+		});
 
-	// 	if (!checkUser) {
-	// 		throw new NotFoundException(
-	// 			`회원ID가 ${userId}인 예약을 찾을 수 없습니다`,
-	// 		);
-	// 	}
+		if (!checkUser) {
+			throw new NotFoundException(
+				`회원ID가 ${userId}인 예약을 찾을 수 없습니다`,
+			);
+		}
 
-	// 	return await this.usersRepository.findOne({
-	// 		where: { id: userId },
-	// 	});
-	// }
+		return checkUser;
+	}
 
 	// 삭제된 예약의 예약ID로 해당 예약 정보 가져오기
 	async findDeletedById({

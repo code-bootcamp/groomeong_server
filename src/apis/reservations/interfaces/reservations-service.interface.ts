@@ -23,3 +23,7 @@ export interface IReservationsServiceFindAllByUserId {
 export interface IReservationsServiceDelete {
 	reservationId: string;
 }
+
+export interface IReservationsServiceFindAllByUserId {
+	userId: string;
+}

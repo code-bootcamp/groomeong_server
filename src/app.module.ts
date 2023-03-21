@@ -40,7 +40,7 @@ import { ShopImagesModule } from './apis/shopImages/shopImage.module';
 			useFactory: () => ({
 				transport: {
 					service: 'Gmail',
-					host: process.env.DATABASE_HOST,
+					host: process.env.EMAIL_HOST,
 					port: Number(process.env.DATABASE_PORT),
 					secure: false,
 					auth: {
