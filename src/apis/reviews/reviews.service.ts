@@ -77,13 +77,15 @@ export class ReviewsService {
 	async findByShopId({
 		shopId, //
 	}: IReviewServiceFindByShopId): Promise<Review[]> {
-		const checkShop = this.shopsService.findById({ shopId });
+		const checkShop = await this.shopsService.findById({ shopId });
 		if (!checkShop) {
 			throw new NotFoundException('유효하지 않은 가게ID 입니다');
 		}
-		return this.reviewsRepository.find({
+		const result = await this.reviewsRepository.find({
 			where: { shop: { id: shopId } },
 		});
+		console.log(result);
+		return result;
 	}
 
 	// 별점 불러오기
