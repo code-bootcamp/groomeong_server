@@ -39,7 +39,10 @@ export class ReviewsService {
 		}
 
 		return await this.reviewsRepository.save({
-			...createReviewInput,
+			contents: createReviewInput.contents,
+			star: createReviewInput.star,
+			// user: {id: createReviewInput.userId},
+			shop: { id: createReviewInput.shopId },
 		});
 	}
 
@@ -74,12 +77,27 @@ export class ReviewsService {
 	async findByShopId({
 		shopId, //
 	}: IReviewServiceFindByShopId): Promise<Review[]> {
-		const checkShop = this.shopsService.findById({ shopId });
+		const checkShop = await this.shopsService.findById({ shopId });
 		if (!checkShop) {
 			throw new NotFoundException('유효하지 않은 가게ID 입니다');
 		}
-		return this.reviewsRepository.find({
+		const result = await this.reviewsRepository.find({
 			where: { shop: { id: shopId } },
 		});
+		console.log(result);
+		return result;
+	}
+
+	// 별점 불러오기
+	async findStar({ shopId }): Promise<number> {
+		const reviews = await this.reviewsRepository.find({
+			where: { shop: { id: shopId } },
+		});
+		let result = 0;
+		reviews.forEach((el) => {
+			result += Number(el.star);
+		});
+
+		return result / reviews.length;
 	}
 }
