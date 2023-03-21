@@ -32,7 +32,7 @@ export class ReviewsResolver {
 	}
 
 	// 가게의 리뷰 모아보기
-	@Query(() => Review, {
+	@Query(() => [Review], {
 		description: 'Return: 가게ID 기준으로 모든 리뷰 불러오기',
 	})
 	async fetchReviewsByShopId(
