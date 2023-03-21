@@ -11,6 +11,7 @@ import {
 	IShopsServiceDelete,
 	IShopsServiceFindByAddress,
 	IShopsServiceFindById,
+	IShopsServiceFindByName,
 	IShopsServiceFindByPhone,
 	IShopsServiceFindDeleted,
 	IShopsServiceRestore,
@@ -44,23 +45,57 @@ export class ShopsService {
 
 	// 가게ID로 해당 가게 정보 찾기
 	async findById({ shopId }: IShopsServiceFindById): Promise<Shop> {
-		return await this.shopsRepository.findOne({
+		const myshop = await this.shopsRepository.findOne({
 			where: { id: shopId },
-			relations: ['reservation'],
+			relations: ['reservation', 'image', 'review'],
 		});
+
+		const reviews = myshop.review;
+		let sum = 0;
+		reviews.map((el) => {
+			sum += Number(el.star);
+		});
+
+		const _averageStar = Number((sum / reviews.length).toFixed(1));
+
+		return {
+			...myshop,
+			averageStar: _averageStar,
+		};
 	}
 
 	// DB의 모든 가게 정보 불러오기
 	async findAll(): Promise<Shop[]> {
-		return await this.shopsRepository.find({
-			relations: ['reservation'],
+		const allShops = await this.shopsRepository.find({
+			relations: ['reservation', 'image', 'review'],
 		});
+
+		return allShops;
+		// 엘라스틱서치 적용 후 서비스 구현 방향이 정해지고 난 뒤 로직 재구성하기
+	}
+	// 가게 이름(name)로 해당 가게 정보 찾기
+	async findByName({
+		shopName, //
+	}: IShopsServiceFindByName): Promise<Shop> {
+		const myShop = await this.shopsRepository.findOne({
+			where: { name: shopName },
+		});
+
+		if (!myShop) {
+			throw new NotFoundException(
+				`연락처가 ${shopName}인 가게를 찾을 수 없습니다`,
+			);
+		}
+		const shopId = myShop.id;
+		const result = this.findById({ shopId });
+		return result;
 	}
 
 	// 가게 연락처(phone)로 해당 가게 정보 찾기
 	async findByPhone({ phone }: IShopsServiceFindByPhone): Promise<Shop> {
 		const result = await this.shopsRepository.findOne({
 			where: { phone: phone },
+			relations: ['reservation', 'image', 'review'],
 		});
 
 		if (!result) {
@@ -76,6 +111,7 @@ export class ShopsService {
 	async findByAddress({ address }: IShopsServiceFindByAddress): Promise<Shop> {
 		const result = await this.shopsRepository.findOne({
 			where: { address: address },
+			relations: ['reservation', 'image', 'review'],
 		});
 
 		if (!result) {
@@ -127,7 +163,11 @@ export class ShopsService {
 			throw new NotFoundException(`ID가 ${shopId}인 가게를 찾을 수 없습니다`);
 		}
 
+		const myShop = await this.findById({ shopId });
+		console.log(myShop);
+
 		return this.shopsRepository.save({
+			...myShop,
 			...updateShopInput,
 		});
 	}

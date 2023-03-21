@@ -93,11 +93,13 @@ export class ReviewsService {
 		const reviews = await this.reviewsRepository.find({
 			where: { shop: { id: shopId } },
 		});
-		let result = 0;
+		let sum = 0;
 		reviews.forEach((el) => {
-			result += Number(el.star);
+			sum += Number(el.star);
 		});
 
-		return result / reviews.length;
+		const result = (sum / reviews.length).toFixed(1);
+
+		return Number(result);
 	}
 }

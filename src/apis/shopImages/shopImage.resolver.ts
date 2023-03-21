@@ -8,7 +8,7 @@ export class ShopImagesResolver {
 		private readonly shopImagesService: ShopImagesService, //
 	) {}
 
-	@Query(() => ShopImage, {
+	@Query(() => [ShopImage], {
 		description: 'Return: 가게ID를 기준으로 모든 가게이미지 배열 데이터',
 	})
 	async fetchShopImagesByShopId(
