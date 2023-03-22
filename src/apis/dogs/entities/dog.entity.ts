@@ -14,7 +14,6 @@ import {
 	Entity,
 	ManyToOne,
 	OneToMany,
-	OneToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DOG_TYPE } from '../enum/dog-type.enum';
