@@ -76,15 +76,15 @@ export class UsersResolver {
 		return this.usersService.update({ userId, updateUserInput });
 	}
 
-	// 회원가입 시 이메일 인증번호 전송
-	@Mutation(() => String, { description: '회원가입 시 이메일 인증번호 전송' })
+	// 이메일 인증번호 전송
+	@Mutation(() => String, { description: ' 이메일 인증번호 전송 ' })
 	getTokenEmail(
 		@Args('email') email: string, //
 	): Promise<string> {
 		return this.usersService.sendTokenEmail({ email });
 	}
 
-	// 인풋박스 인증번호 검증
+	// 이메일 인증번호 검증
 	@Mutation(() => Boolean, { description: '인증번호 검증' })
 	checkValidToken(
 		@Args('email') email: string, //

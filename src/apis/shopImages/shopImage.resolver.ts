@@ -20,7 +20,7 @@ export class ShopImagesResolver {
 	@Query(() => ShopImage, {
 		description: 'Return: 가게이미지ID를 기준으로 1개의 가게이미지 가져오기',
 	})
-	async fetchShopImagesById(
+	async fetchShopImageById(
 		@Args('shopImageId') shopImageId: string, //
 	): Promise<ShopImage> {
 		return await this.shopImagesService.findById({ shopImageId });
@@ -29,7 +29,7 @@ export class ShopImagesResolver {
 	@Mutation(() => ShopImage, {
 		description: 'Return: 신규 생성된 가게이미지 데이터',
 	})
-	async saveShopImage(
+	async createShopImage(
 		@Args('imageUrl') imageUrl: string,
 		@Args('isThumbnail') isThumbnail: boolean,
 		@Args('shopId') shopId: string,
