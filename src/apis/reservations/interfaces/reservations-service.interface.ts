@@ -4,6 +4,12 @@ export interface IReservationsServiceCreate {
 	createReservationInput: CreateReservationInput;
 }
 
+export interface IReservationsServiceCheckDuplication {
+	date: Date;
+	time: string;
+	shopId: string;
+}
+
 export interface IReservationsServiceFindById {
 	reservationId: string;
 }

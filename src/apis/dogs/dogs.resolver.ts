@@ -64,7 +64,9 @@ export class DogsResolver {
 	)
 	deleteDog(
 		@Args('id') id: string, //
+		@Context() context: IContext,
 	): Promise<boolean> {
-		return this.dogsService.deleteOneById({ id });
+		const userId = context.req.user.id;
+		return this.dogsService.deleteOneById({ id, userId });
 	}
 }

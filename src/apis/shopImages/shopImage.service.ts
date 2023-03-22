@@ -71,27 +71,23 @@ export class ShopImagesService {
 			);
 		}
 
-		const images = await this.shopImageRepository.find({
+		return await this.shopImageRepository.find({
 			where: { shop: { id: shopId } },
 		});
-
-		// const result = [];
-		// images.forEach((el) => {
-		// 	result.push({
-		// 		id: el.id,
-		// 		imageUrl: el.imageUrl,
-		// 		isThumbnail: el.isThumbnail,
-		// 	});
-		// });
-
-		// console.log(result);
-		console.log(images);
-		return images;
 	}
 
 	// 가게이미지ID로 DB테이블에서 이미지 삭제
 	async delete({ shopImageId }: IShopImagesServiceDelete): Promise<boolean> {
-		await this.findById({ shopImageId });
+		const checkImage = await this.shopImageRepository.findOne({
+			where: { id: shopImageId },
+		});
+
+		if (!checkImage) {
+			throw new NotFoundException(
+				`가게이미지ID가 ${shopImageId}인 이미지를 찾을 수 없습니다`,
+			);
+		}
+		console.log('찾았음');
 
 		const result = await this.shopImageRepository.delete({
 			id: shopImageId,

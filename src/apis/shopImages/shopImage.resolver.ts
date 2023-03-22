@@ -9,21 +9,21 @@ export class ShopImagesResolver {
 	) {}
 
 	@Query(() => ShopImage, {
-		description: 'Return: 가게ID를 기준으로 모든 가게이미지 배열 데이터',
-	})
-	async fetchShopImagesByShopId(
-		@Args('shopId') shopId: string, //
-	): Promise<ShopImage[]> {
-		return await this.shopImagesService.findByShopId({ shopId });
-	}
-
-	@Query(() => ShopImage, {
 		description: 'Return: 가게이미지ID를 기준으로 1개의 가게이미지 가져오기',
 	})
 	async fetchShopImageById(
 		@Args('shopImageId') shopImageId: string, //
 	): Promise<ShopImage> {
 		return await this.shopImagesService.findById({ shopImageId });
+	}
+
+	@Query(() => [ShopImage], {
+		description: 'Return: 가게ID를 기준으로 모든 가게이미지 배열 데이터',
+	})
+	fetchShopImagesByShopId(
+		@Args('shopId') shopId: string, //
+	): Promise<ShopImage[]> {
+		return this.shopImagesService.findByShopId({ shopId });
 	}
 
 	@Mutation(() => ShopImage, {
@@ -37,12 +37,12 @@ export class ShopImagesResolver {
 		return await this.shopImagesService.save({ imageUrl, isThumbnail, shopId });
 	}
 
-	@Mutation(() => ShopImage, {
+	@Mutation(() => Boolean, {
 		description: 'Return: 가게 이미지 삭제 완료 시, true',
 	})
-	async deleteShopImage(
+	deleteShopImage(
 		@Args('shopImageId') shopImageId: string, //
 	): Promise<boolean> {
-		return await this.shopImagesService.delete({ shopImageId });
+		return this.shopImagesService.delete({ shopImageId });
 	}
 }

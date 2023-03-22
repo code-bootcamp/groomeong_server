@@ -13,6 +13,7 @@ import {
 	DeleteDateColumn,
 	Entity,
 	ManyToOne,
+	OneToMany,
 	OneToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -78,8 +79,8 @@ export class Dog {
 	@Field(() => User)
 	user: User;
 
-	// 예약 엔티티와 OneToOne 관계 설정
-	// @OneToOne(() => Reservation, (reservation) => reservation.dog)
-	// @Field(() => Reservation)
-	// reservation: Reservation;
+	// Dog : Reservation = 1 : N
+	@OneToMany(() => Reservation, (reservation) => reservation.dog)
+	@Field(() => [Reservation])
+	reservation: Reservation[];
 }

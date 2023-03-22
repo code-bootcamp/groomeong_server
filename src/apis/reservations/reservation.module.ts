@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DogsService } from '../dogs/dogs.service';
+import { Dog } from '../dogs/entities/dog.entity';
 import { Shop } from '../shops/entities/shop.entity';
 import { ShopsService } from '../shops/shops.service';
 import { User } from '../users/entities/user.entity';
@@ -14,6 +16,7 @@ import { ReservationsService } from './reservation.service';
 			Reservation, //
 			User,
 			Shop,
+			Dog,
 		]),
 	],
 	providers: [
@@ -21,6 +24,7 @@ import { ReservationsService } from './reservation.service';
 		ReservationsService,
 		ShopsService,
 		UsersService,
+		DogsService,
 	],
 })
 export class ReservationsModule {}
