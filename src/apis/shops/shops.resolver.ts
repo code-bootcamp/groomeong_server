@@ -81,8 +81,7 @@ export class ShopsResolver {
 	createShop(
 		@Args('createShopInput') createShopInput: CreateShopInput,
 	): Promise<Shop> {
-		const address = createShopInput.address;
-		return this.shopsService.create({ address, createShopInput });
+		return this.shopsService.create({ createShopInput });
 	}
 
 	@Mutation(() => Shop, {
