@@ -1,4 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { Dog } from 'src/apis/dogs/entities/dog.entity';
 import { Shop } from 'src/apis/shops/entities/shop.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
@@ -25,26 +26,26 @@ export class Reservation {
 	@Field(() => String)
 	time: string;
 
-	// 예약 생성일자: DB에만 추가
-	@CreateDateColumn()
-	@Field(() => Date)
-	createAt?: Date;
-
-	@DeleteDateColumn({ nullable: true })
-	deleteAt: Date;
-
 	// Shop(own): 예약 = 1:N // OneToMany 받음
 	@ManyToOne(() => Shop, (shop) => shop.reservation)
 	@Field(() => Shop)
 	shop: Shop;
 
 	// User(own) : 예약 =  1:N
-	@ManyToOne(() => User, (user) => user.reservation, { nullable: true })
+	@ManyToOne(() => User, (user) => user.reservation)
 	@Field(() => User)
 	user: User;
 
-	// // Dog(own) : 예약 = 1:N
-	// @ManyToOne(() => Dog, (dog)=> dog.reservation, { nullable: false })
-	// @Field(() => Dog)
-	// dog: Dog;
+	// Dog : Reservation = 1 : N
+	@ManyToOne(() => Dog, (dog) => dog.reservation)
+	@Field(() => Dog)
+	dog: Dog;
+
+	// 예약 생성일자
+	@CreateDateColumn()
+	createAt?: Date;
+
+	// 예약 취소일자
+	@DeleteDateColumn({ nullable: true })
+	deleteAt: Date;
 }

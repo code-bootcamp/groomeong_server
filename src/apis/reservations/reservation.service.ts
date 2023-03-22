@@ -1,10 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+	ConflictException,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { DogsService } from '../dogs/dogs.service';
 import { ShopsService } from '../shops/shops.service';
 import { UsersService } from '../users/user.service';
 import { Reservation } from './entities/reservation.entity';
 import {
+	IReservationsServiceCheckDuplication,
 	IReservationsServiceCreate,
 	IReservationsServiceDelete,
 	IReservationsServiceFindAllByUserId,
@@ -19,27 +25,64 @@ export class ReservationsService {
 		private readonly reservationsRepository: Repository<Reservation>, //
 		private readonly usersService: UsersService,
 		private readonly shopsService: ShopsService,
+		private readonly dogsService: DogsService,
 	) {}
 
 	// 신규 예약 정보 생성
 	async create({
 		createReservationInput,
 	}: IReservationsServiceCreate): Promise<Reservation> {
-		const shopId = createReservationInput.shopId;
-		const userId = createReservationInput.userId;
-		const checkShop = this.shopsService.findById({ shopId });
+		const { date, time, shopId, userId, dogId } = createReservationInput;
+
+		const checkReservation = await this.checkDuplication({
+			date,
+			time,
+			shopId,
+		});
+		if (checkReservation) {
+			throw new ConflictException('이미 예약된 시간입니다');
+		}
+
+		const checkShop = await this.shopsService.findById({ shopId });
 		if (!checkShop) {
 			throw new NotFoundException('유효하지 않은 가게ID 입니다');
 		}
 
-		const checkUser = this.usersService.findOne({ userId });
+		const checkUser = await this.usersService.findOne({ userId });
 		if (!checkUser) {
 			throw new NotFoundException('유효하지 않은 회원ID 입니다');
 		}
 
+		await this.dogsService.findOneById({ id: dogId });
+
 		return await this.reservationsRepository.save({
 			...createReservationInput,
+			shop: {
+				id: shopId,
+			},
+			user: {
+				id: userId,
+			},
+			dog: {
+				id: dogId,
+			},
 		});
+	}
+
+	// 예약 가능 여부 확인하기
+	async checkDuplication({
+		date,
+		time,
+		shopId,
+	}: IReservationsServiceCheckDuplication): Promise<Reservation> {
+		const checkReservation = await this.reservationsRepository.findOneBy({
+			date,
+			time,
+			shop: {
+				id: shopId,
+			},
+		});
+		return checkReservation;
 	}
 
 	// 예약ID로 해당 예약정보 찾기
@@ -48,13 +91,11 @@ export class ReservationsService {
 	}: IReservationsServiceFindById): Promise<Reservation> {
 		const result = await this.reservationsRepository.findOne({
 			where: { id: reservationId },
-			// relations: ['shop', 'user', 'dog'],
+			relations: ['shop', 'user', 'dog'],
 		});
 
 		if (!result) {
-			throw new NotFoundException(
-				`예약ID가 ${reservationId}인 예약을 찾을 수 없습니다`,
-			);
+			throw new NotFoundException('예약을 찾을 수 없습니다');
 		}
 
 		return result;
@@ -68,7 +109,11 @@ export class ReservationsService {
 	}: IReservationsServiceFindAllByUserId): Promise<Reservation[]> {
 		const checkUser = await this.reservationsRepository.find({
 			where: { user: { id: userId } },
-			// relations: ['shop', 'user'],
+			relations: ['shop', 'user', 'dog'],
+			order: {
+				date: 'ASC',
+				time: 'ASC',
+			},
 		});
 
 		if (!checkUser) {
