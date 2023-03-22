@@ -14,7 +14,7 @@ export class ShopsResolver {
 
 	@Query(() => [Shop], {
 		description:
-			'Return : DB에 등록된 가게 중 검색값을 포함한 데이터. Null인 경우 모든 가게',
+			'Return : DB에 등록된 가게 중 검색값을 포함한 데이터(검색값이 Null인 경우 모든 가게). 이미지는 썸네일만 불러오며, 등록된 이미지가 있더라도 썸네일로 지정한 이미지가 없는 경우 Null(빈 배열)',
 	})
 	async fetchShops(
 		@Args({
