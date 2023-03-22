@@ -17,6 +17,9 @@ export class CreateShopInput {
 	@Field(() => String)
 	address: string;
 
+	@Field(() => String)
+	image?: string;
+  
 	@Field(() => Float, { nullable: true })
 	averageStar?: number;
 }

@@ -58,7 +58,7 @@ export class UsersService {
 		return this.userRepository.findOne({ where: { email } });
 	}
 
-	// 삭제된 유저 조회하기(삭제는 나중에)
+	// 삭제된 유저 조회하기
 	findAllWithDeleted(): Promise<User[]> {
 		return this.userRepository.find({
 			withDeleted: true,
@@ -189,7 +189,7 @@ export class UsersService {
 		return result.affected ? true : false;
 	}
 
-	// 인풋박스 인증번호 검증
+	// 이메일 인증번호 검증
 	async checkToken({ email, token }: IUsersServiceCheckToken) {
 		const myToken = await this.cacheManager.get(email);
 		return myToken === token ? true : false;

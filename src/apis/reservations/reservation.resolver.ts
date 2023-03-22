@@ -26,7 +26,7 @@ export class ReservationsResolver {
 	// // 예약-회원 조인 후 주석 해제 예정
 	@UseGuards(GqlAuthGuard('access'))
 	@Query(() => [Reservation], {
-		description: 'Return : 예약 정보(가게, 회원, 강아지 정보 포함)',
+		description: 'Return : 회원으로 된 예약 정보(가게, 회원, 강아지 정보 포함)',
 	})
 	fetchReservationsByUserId(
 		@Context() context: IContext, //
