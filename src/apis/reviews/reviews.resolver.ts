@@ -51,13 +51,13 @@ export class ReviewsResolver {
 	// 	//
 	// }
 
-	// 별점 평균값 구하기
-	@Query(() => Float, {
-		description: 'Return : 가게의 별점 (평균값, 소수점 숫자)',
-	})
-	async fetchAverageStar(
-		@Args('shopId') shopId: string, //
-	): Promise<number> {
-		return this.reviewsService.findStar({ shopId });
-	}
+	// // 별점 평균값 구하기 => 리뷰 작성 시 자동으로 shop에 저장되는 로직으로 변경되어 주석처리
+	// @Query(() => Float, {
+	// 	description: 'Return : 가게의 별점 (평균값, 소수점 숫자)',
+	// })
+	// async fetchAverageStar(
+	// 	@Args('shopId') shopId: string, //
+	// ): Promise<number> {
+	// 	return this.reviewsService.averageStar({ shopId });
+	// }
 }

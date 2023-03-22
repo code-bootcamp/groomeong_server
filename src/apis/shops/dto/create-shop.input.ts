@@ -1,4 +1,4 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, Float, InputType } from '@nestjs/graphql';
 
 @InputType()
 export class CreateShopInput {
@@ -16,4 +16,7 @@ export class CreateShopInput {
 
 	@Field(() => String)
 	address: string;
+
+	@Field(() => Float, { nullable: true })
+	averageStar?: number;
 }

@@ -39,9 +39,9 @@ export class Shop {
 	address: string;
 
 	// 리뷰 평균 점수
-	@Column({ nullable: true })
+	@Column({ type: 'decimal', nullable: true })
 	@Field(() => Float)
-	averageStar: number;
+	averageStar?: number | null;
 
 	// // 삭제 기능 생략되어 주석 처리함
 	// @DeleteDateColumn({ nullable: true })
