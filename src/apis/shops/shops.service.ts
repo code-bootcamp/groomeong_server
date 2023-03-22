@@ -66,36 +66,16 @@ export class ShopsService {
 			relations: ['reservation', 'image', 'review'],
 		});
 
-		// // 썸네일 이미지가 있는지 검증 -> 있다면 _isThumbnail에 담는다
-		// const _isThumbnail = allShops.flatMap((el) => {
-		// 	return el.image.filter((el) => el.isThumbnail === true);
-		// });
-
-		// // _isThumbnail이 없다면 image는 null
-		// if (!_isThumbnail) {
-		// 	allShops.forEach((el) => {
-		// 		el.image = null;
-		// 	});
-		// }
-
-		// // _isThumbnail가 있다면 image는 썸네일 이미지로 변경
-		// allShops.forEach((el) => {
-		// 	el.image = _isThumbnail;
-		// });
-
 		// 썸네일 이미지가 있는지 검증 -> 이미지들 중 하나라도 isThumbnail === true 면,
 		let checkThumbnail = 0;
 		allShops.forEach((el) => {
 			const idx = el.image.findIndex((el) => el.isThumbnail === true);
-			console.log('🟩🟩🟩', idx);
 			if (idx >= 0) {
 				el.image = [el.image[idx]];
-				console.log('🟪🟪🟪', el.image);
 				checkThumbnail = idx;
 			}
 		});
 
-		console.log('🟨🟨🟨🟨🟨🟨🟨🟨🟨', checkThumbnail);
 		// 썸네일 이미지가 없으면 각 가게의 이미지는 null 로 리턴
 		if (checkThumbnail < 0) {
 			allShops.forEach((el) => (el.image = null));
