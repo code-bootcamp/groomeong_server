@@ -8,6 +8,10 @@ export interface IShopImagesServiceFindById {
 	shopImageId: string;
 }
 
+export interface IShopImagesServiceFindThumbnail {
+	shopId: string;
+}
+
 export interface IShopImagesServiceFindByShopId {
 	shopId: string;
 }
