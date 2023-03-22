@@ -47,16 +47,6 @@ export class ShopsResolver {
 		return await this.shopsService.findById({ shopId });
 	}
 
-	@Query(() => Shop, {
-		description: 'Return : 입력한 shopName과 일치하는 가게 데이터 1개',
-	})
-	async fetchFirstShopByName(
-		@Args('shopName') shopName: string, //
-	): Promise<Shop> {
-		// 이름이 같은 가게가 있는 경우의 로직은 따로 작성 필요
-		return await this.shopsService.findByName({ shopName });
-	}
-
 	// // 삭제 기능 생략되어 주석 처리함
 	// @Query(() => [Shop], {
 	// 	description: 'Return : DB에 등록된 모든 삭제된 가게(Shop) 데이터',

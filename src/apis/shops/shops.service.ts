@@ -11,7 +11,6 @@ import {
 	IShopsServiceDelete,
 	IShopsServiceFindByAddress,
 	IShopsServiceFindById,
-	IShopsServiceFindByName,
 	IShopsServiceFindByPhone,
 	IShopsServiceFindDeleted,
 	IShopsServiceRestore,
@@ -70,23 +69,6 @@ export class ShopsService {
 
 		return allShops;
 		// 엘라스틱서치 적용 후 서비스 구현 방향이 정해지고 난 뒤 로직 재구성하기
-	}
-	// 가게 이름(name)로 해당 가게 정보 찾기
-	async findByName({
-		shopName, //
-	}: IShopsServiceFindByName): Promise<Shop> {
-		const myShop = await this.shopsRepository.findOne({
-			where: { name: shopName },
-		});
-
-		if (!myShop) {
-			throw new NotFoundException(
-				`연락처가 ${shopName}인 가게를 찾을 수 없습니다`,
-			);
-		}
-		const shopId = myShop.id;
-		const result = this.findById({ shopId });
-		return result;
 	}
 
 	// 가게 연락처(phone)로 해당 가게 정보 찾기
