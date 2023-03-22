@@ -26,17 +26,15 @@ export class ShopsService {
 	) {}
 
 	// 신규 가게 정보 생성
-	async create({
-		address,
-		createShopInput,
-	}: IShopsServiceCreate): Promise<Shop> {
+	async create({ createShopInput }: IShopsServiceCreate): Promise<Shop> {
+		const _address = createShopInput.address;
 		const checkShop = await this.shopsRepository.findOne({
-			where: { address: address },
+			where: { address: _address },
 		});
 
 		if (checkShop) {
 			throw new ConflictException(
-				`해당 주소(${address})로 등록된 가게가 있습니다`,
+				`해당 주소(${_address})로 등록된 가게가 있습니다`,
 			);
 		}
 

@@ -2,7 +2,6 @@ import { CreateShopInput } from '../dto/create-shop.input';
 import { UpdateShopInput } from '../dto/update-shop.input';
 
 export interface IShopsServiceCreate {
-	address: string;
 	createShopInput: CreateShopInput;
 }
 
