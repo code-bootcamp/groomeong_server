@@ -67,6 +67,23 @@ export class ShopsService {
 			relations: ['reservation', 'image', 'review'],
 		});
 
+		// 썸네일 이미지가 있는지 검증
+		const _isThumbnail = allShops.flatMap((el) => {
+			return el.image.filter((el) => el.isThumbnail === true);
+		});
+
+		// 썸네일 이미지가 있다면 image는 썸네일 이미지로 변경
+		if (!_isThumbnail) {
+			allShops.forEach((el) => {
+				el.image = null;
+			});
+		}
+
+		// 썸네일 이미지가 없다면 image는 null
+		allShops.forEach((el) => {
+			el.image = _isThumbnail;
+		});
+
 		return allShops;
 		// 엘라스틱서치 적용 후 서비스 구현 방향이 정해지고 난 뒤 로직 재구성하기
 	}

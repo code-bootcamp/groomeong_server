@@ -23,17 +23,17 @@ export class ShopsResolver {
 		})
 		search: string, //
 	): Promise<Shop[]> {
-		const result = await this.elasticsearchService.search({
-			index: 'myshop02',
-			query: {
-				match: {
-					address: search,
-				},
-			},
-		});
-		console.log(JSON.stringify(result, null, ' '));
-		// result에서 필요한 데이터만 뽑아 프론트에 전달하면 될듯?
-		// 엘라스틱서치 적용 시, 서비스 구현되었을때 '가게이름'만 나오는지, 아니면 '가게 정보'전체가 다 나오는지에 따라 로직 설정이 달라질 것.
+		// const result = await this.elasticsearchService.search({
+		// 	index: 'myshop02',
+		// 	query: {
+		// 		match: {
+		// 			address: search,
+		// 		},
+		// 	},
+		// });
+		// console.log(JSON.stringify(result, null, ' '));
+		// // result에서 필요한 데이터만 뽑아 프론트에 전달하면 될듯?
+		// // 엘라스틱서치 적용 시, 서비스 구현되었을때 '가게이름'만 나오는지, 아니면 '가게 정보'전체가 다 나오는지에 따라 로직 설정이 달라질 것.
 
 		return await this.shopsService.findAll();
 	}
