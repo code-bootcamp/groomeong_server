@@ -1,0 +1,45 @@
+version: '3.7'
+
+# 컴퓨터들
+services:
+  # 컴퓨터이름
+  my-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # volumes:
+    #   - ./src:/teamproject/src
+    ports:
+      - 3000:3000
+    env_file:
+      - ./.env.prod
+
+  # 컴퓨터이름
+  my-database:
+    # platform: linux/86_64
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: 'groo-meong.prod'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - 3306:3306
+
+  my-redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+
+  # elasticsearch:
+  #   # platform: linux/86_64
+  #   image: elasticsearch:7.17.0
+  #   environment:
+  #     discovery.type: single-node
+  #   ports:
+  #     - 9200:9200
+
+  # logstash:
+  #   # platform: linux/86_64
+  #   image: logstash:7.17.0
+  #   volumes:
+  #     - ./elk/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+  #     - ./elk/logstash/mysql-connector-java-8.0.28.jar:/usr/share/logstash/mysql-connector-java-8.0.28.jar
