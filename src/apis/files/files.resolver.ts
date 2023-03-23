@@ -36,10 +36,8 @@ export class FilesResolver {
 			type: () => GraphQLUpload,
 		})
 		image: FileUpload, //
-		@Args('dogId')
-		dogId: string,
 	): Promise<void | string[]> {
-		return this.filesService.uploadImage({ image: [image], dogId });
+		return this.filesService.uploadImage({ image: [image], dogId: 'default' });
 	}
 
 	@Mutation(
