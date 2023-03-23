@@ -55,6 +55,7 @@ export class User {
 	@Field(() => [Dog])
 	dogs: Dog[];
 
+	// reservation
 	@OneToMany(() => Reservation, (reservation) => reservation.user, {
 		nullable: true,
 	})

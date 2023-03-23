@@ -24,11 +24,7 @@ import {
 	IUsersServiceUpdate,
 } from './interface/users.interface';
 import { MailerService } from '@nestjs-modules/mailer';
-import {
-	getToday,
-	sendTokenTemplate,
-	welcomeTemplate,
-} from 'src/commons/utils/utils';
+import { sendTokenTemplate, welcomeTemplate } from 'src/commons/utils/utils';
 
 @Injectable()
 export class UsersService {
@@ -99,7 +95,11 @@ export class UsersService {
 
 	// 이메일이 정상인지 확인
 	checkValidationEmail({ email }: IUsersServiceCheckValidationEmail) {
-		if (email === undefined || email.includes('@') === false) {
+		if (
+			email === undefined ||
+			email.includes('@') === false ||
+			email.split('@')[0].length >= 20
+		) {
 			throw new UnprocessableEntityException('형식이 올바르지 않습니다!');
 		} else {
 			return true;
@@ -122,6 +122,9 @@ export class UsersService {
 		phone,
 	}: // image,
 	IUsersServiceCreate): Promise<User> {
+		//이메일 정상인지 확인
+		await this.checkValidationEmail({ email });
+
 		// 중복 계정 체크
 		await this.duplicationEmail({ email });
 		// 비밀번호 암호화해주기
@@ -163,7 +166,7 @@ export class UsersService {
 				html: mytemplate,
 			})
 			.catch((err) => {
-				throw new err();
+				throw new UnprocessableEntityException('연결이 원할하지 않습니다!');
 			});
 		return true;
 	}
@@ -173,8 +176,6 @@ export class UsersService {
 		updateUserInput,
 	}: IUsersServiceUpdate): Promise<User> {
 		const user = await this.findOne({ userId });
-		console.log('🐧🐧🐧🐧🐧', user);
-		console.log({ ...updateUserInput });
 		const result = await this.userRepository.save({
 			...user,
 			...updateUserInput,
@@ -189,7 +190,6 @@ export class UsersService {
 	async delete({
 		userId, //
 	}: IUsersServiceDelete) {
-		console.log('🚫🚫🚫🚫', { id: userId });
 		const result = await this.userRepository.softDelete({ id: userId });
 		return result.affected ? true : false;
 	}
@@ -198,10 +198,5 @@ export class UsersService {
 	async checkToken({ email, token }: IUsersServiceCheckToken) {
 		const myToken = await this.cacheManager.get(email);
 		return myToken === token ? true : false;
-		// if (myToken === token) {
-		// 	return true;
-		// } else {
-		// 	throw new UnprocessableEntityException('토큰이 잘못되었습니다');
-		// }
 	}
 }
