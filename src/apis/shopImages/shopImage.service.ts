@@ -11,6 +11,7 @@ import {
 	IShopImagesServiceDelete,
 	IShopImagesServiceFindById,
 	IShopImagesServiceFindByShopId,
+	IShopImagesServiceFindThumbnail,
 	IShopImagesServiceSave,
 } from './interfaces/shopImages-service.interface';
 
@@ -42,22 +43,42 @@ export class ShopImagesService {
 		});
 	}
 
-	// 가게이미지ID로 해당 이미지 찾기
-	async findById({
-		shopImageId,
-	}: IShopImagesServiceFindById): Promise<ShopImage> {
-		const result = await this.shopImageRepository.findOne({
-			where: { id: shopImageId },
+	// // 가게이미지ID로 해당 이미지 1개 찾기
+	// async findById({
+	// 	shopImageId,
+	// }: IShopImagesServiceFindById): Promise<ShopImage> {
+	// 	const result = await this.shopImageRepository.findOne({
+	// 		where: { id: shopImageId },
+	// 		relations: ['shop'],
+	// 	});
+
+	// 	if (!result) {
+	// 		throw new NotFoundException(
+	// 			`가게이미지ID가 ${shopImageId}인 이미지를 찾을 수 없습니다`,
+	// 		);
+	// 	}
+
+	// 	return result;
+	// }
+
+	// 가게ID로 썸네일 찾기
+	async findThumbnailByShopId({
+		shopId,
+	}: IShopImagesServiceFindThumbnail): Promise<ShopImage> {
+		const checkShop = await this.shopImageRepository.findOne({
+			where: { shop: { id: shopId } },
 			relations: ['shop'],
 		});
 
-		if (!result) {
+		if (!checkShop) {
 			throw new NotFoundException(
-				`가게이미지ID가 ${shopImageId}인 이미지를 찾을 수 없습니다`,
+				`가게ID가 ${shopId}인 이미지를 찾을 수 없습니다`,
 			);
 		}
 
-		return result;
+		return await this.shopImageRepository.findOne({
+			where: { shop: { id: shopId }, isThumbnail: true },
+		});
 	}
 
 	// 가게ID로 해당 이미지 찾기
