@@ -1,6 +1,10 @@
+import { forwardRef } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { ReviewsService } from '../reviews/reviews.service';
 import { CreateShopInput } from './dto/create-shop.input';
+import { ReturnShopOutput } from './dto/return-shop.output';
 import { UpdateShopInput } from './dto/update-shop.input';
 import { Shop } from './entities/shop.entity';
 import { ShopsService } from './shops.service';
@@ -38,13 +42,16 @@ export class ShopsResolver {
 		return await this.shopsService.findAll();
 	}
 
-	@Query(() => Shop, {
+	@Query(() => ReturnShopOutput, {
 		description: 'Return : 입력한 shopId와 일치하는 가게(Shop) 데이터',
 	})
 	async fetchShop(
 		@Args('shopId') shopId: string, //
-	): Promise<Shop> {
-		return await this.shopsService.findById({ shopId });
+	): Promise<ReturnShopOutput> {
+		const _Shop = await this.shopsService.findById({ shopId });
+		const hasReviewAuth = false;
+
+		return { ..._Shop, hasReviewAuth };
 	}
 
 	// // 삭제 기능 생략되어 주석 처리함

@@ -1,9 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+	ConflictException,
+	forwardRef,
+	Inject,
+	Injectable,
+	NotFoundException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/user.service';
 import { ShopsService } from '../shops/shops.service';
 import { Review } from './entities/review.entity';
+import { Reservation } from '../reservations/entities/reservation.entity';
 import {
 	IReviewServiceCreate,
 	IReviewServiceFindById,
@@ -16,33 +24,64 @@ export class ReviewsService {
 	constructor(
 		@InjectRepository(Review)
 		private readonly reviewsRepository: Repository<Review>, //
+
+		@InjectRepository(Reservation)
+		private readonly reservationsRepository: Repository<Reservation>,
+
 		private readonly shopsService: ShopsService,
-		private readonly usersService: UsersService,
 	) {}
 
 	// 리뷰 생성하기
 	async create({
+		userId,
 		createReviewInput, //
 	}: IReviewServiceCreate): Promise<Review> {
-		const userId = createReviewInput.userId;
 		const shopId = createReviewInput.shopId;
-		// 조인 완료 후 주석 해제하기
+		// 브라우저에서 보내준 가게ID가 DB의 예약에 등록된게 있는지 확인
+		// 없다면 유효하지 않은 예약
+		const reservationsByShop = //
+			(await this.shopsService.findById({ shopId })).reservation;
+		console.log('🟥🟥🟥', reservationsByShop);
 
-		// const checkUser = this.usersService.findOne({ id: userId });
-		// if (!checkUser) {
-		// 	throw new NotFoundException('유효하지 않은 작성자입니다');
-		// }
+		if (!reservationsByShop) {
+			throw new UnprocessableEntityException(
+				'해당 가게에 예약한 내역이 없습니다',
+			);
+		}
+		console.log('🟩🟩🟩', reservationsByShop);
 
-		const checkShop = this.shopsService.findById({ shopId });
-		if (!checkShop) {
-			throw new NotFoundException('유효하지 않은 가게입니다');
+		// DB 예약 목록들 중, 브라우저에서 보내준 userId와 user.id 가 일치하는 예약 찾기
+		const myReservations = await this.reservationsRepository.find({
+			where: { user: { id: userId }, shop: { id: shopId } },
+		});
+		// const myReservations = reservationsByShop.flatMap((el) => {
+		// 	return reservationsByUser.filter((ele) => ele.id === el.id);
+		// });
+		console.log('🟪🟪🟪', myReservations);
+		if (myReservations.length === 0) {
+			throw new UnprocessableEntityException(
+				'해당 가게에 예약한 내역이 없습니다',
+			);
+		}
+
+		// 정보가 일치하는 예약들 중, 리뷰 작성되지 않은 것이 있다면 리뷰저장 가능
+		const hasReview = [];
+		await myReservations.filter((el) => {
+			this.reviewsRepository.find({
+				where: { reservation: { id: el.id } },
+			});
+		});
+		if (hasReview.length !== 0) {
+			throw new UnprocessableEntityException(
+				'모든 예약 건에 리뷰를 작성하셨습니다',
+			);
 		}
 
 		// 리뷰 저장하기
 		const result = await this.reviewsRepository.save({
 			contents: createReviewInput.contents,
 			star: createReviewInput.star,
-			// user: {id: createReviewInput.userId},
+			reservation: { id: createReviewInput.reservationId },
 			shop: { id: createReviewInput.shopId },
 		});
 
@@ -63,12 +102,11 @@ export class ReviewsService {
 	async findById({ reviewId }: IReviewServiceFindById): Promise<Review> {
 		const result = await this.reviewsRepository.findOne({
 			where: { id: reviewId },
-			relations: ['shop'],
-			// relations: ['shop', 'user'],
+			relations: ['shop', 'reservation'],
 		});
 
 		if (!result) {
-			throw new NotFoundException('아이디를 찾을 수 없습니다');
+			throw new UnprocessableEntityException('아이디를 찾을 수 없습니다');
 		}
 
 		return result;
@@ -93,10 +131,13 @@ export class ReviewsService {
 	}: IReviewServiceFindByShopId): Promise<Review[]> {
 		const checkShop = await this.shopsService.findById({ shopId });
 		if (!checkShop) {
-			throw new NotFoundException('유효하지 않은 가게ID 입니다');
+			throw new UnprocessableEntityException('유효하지 않은 가게ID 입니다');
 		}
 		const result = await this.reviewsRepository.find({
 			where: { shop: { id: shopId } },
+			order: {
+				createAt: 'ASC',
+			},
 		});
 		console.log(result);
 		return result;
