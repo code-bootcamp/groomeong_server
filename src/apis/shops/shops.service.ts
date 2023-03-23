@@ -1,18 +1,21 @@
 import {
 	ConflictException,
+	forwardRef,
+	Inject,
 	Injectable,
 	NotFoundException,
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Review } from '../reviews/entities/review.entity';
+import { ReviewsService } from '../reviews/reviews.service';
 import { Shop } from './entities/shop.entity';
 import {
 	IShopsServiceCreate,
 	IShopsServiceDelete,
 	IShopsServiceFindByAddress,
 	IShopsServiceFindById,
-	IShopsServiceFindByName,
 	IShopsServiceFindByPhone,
 	IShopsServiceFindDeleted,
 	IShopsServiceGetLatLngByAddress,
@@ -66,21 +69,26 @@ export class ShopsService {
 
 	// 가게ID로 해당 가게 정보 찾기
 	async findById({ shopId }: IShopsServiceFindById): Promise<Shop> {
-		const myshop = await this.shopsRepository.findOne({
+		const myShop = await this.shopsRepository.findOne({
 			where: { id: shopId },
 			relations: ['reservation', 'image', 'review'],
 		});
 
-		const reviews = myshop.review;
+		if (!myShop) {
+			throw new UnprocessableEntityException(
+				`ID가 ${shopId}인 가게를 찾을 수 없습니다`,
+			);
+		}
+
+		const reviews = myShop.review;
 		let sum = 0;
 		reviews.map((el) => {
 			sum += Number(el.star);
 		});
-
 		const _averageStar = sum ? Number((sum / reviews.length).toFixed(1)) : 0;
 
 		return {
-			...myshop,
+			...myShop,
 			averageStar: _averageStar,
 		};
 	}
@@ -91,25 +99,30 @@ export class ShopsService {
 			relations: ['reservation', 'image', 'review'],
 		});
 
-		return allShops;
-		// 엘라스틱서치 적용 후 서비스 구현 방향이 정해지고 난 뒤 로직 재구성하기
-	}
-	// 가게 이름(name)로 해당 가게 정보 찾기
-	async findByName({
-		shopName, //
-	}: IShopsServiceFindByName): Promise<Shop> {
-		const myShop = await this.shopsRepository.findOne({
-			where: { name: shopName },
+		// 썸네일 이미지가 있는지 검증 -> 이미지들 중 하나라도 isThumbnail === true 면,
+		let checkThumbnail = 0;
+		allShops.forEach((el) => {
+			const idx = el.image.findIndex((el) => el.isThumbnail === true);
+			if (idx >= 0) {
+				el.image = [el.image[idx]];
+				checkThumbnail = idx;
+			}
 		});
 
-		if (!myShop) {
-			throw new NotFoundException(
-				`연락처가 ${shopName}인 가게를 찾을 수 없습니다`,
-			);
+		// 썸네일 이미지가 없으면 각 가게의 이미지는 null 로 리턴
+		if (checkThumbnail < 0) {
+			allShops.forEach((el) => (el.image = null));
 		}
-		const shopId = myShop.id;
-		const result = this.findById({ shopId });
-		return result;
+
+		//별점평균이 Null 일때 리턴을 위해 0으로 변환하기
+		allShops.forEach((el) => {
+			el.averageStar === null
+				? (el.averageStar = 0)
+				: (el.averageStar = el.averageStar);
+		});
+
+		return allShops;
+		// 엘라스틱서치 적용 후 서비스 구현 방향이 정해지고 난 뒤 로직 재구성하기
 	}
 
 	// 가게 연락처(phone)로 해당 가게 정보 찾기
@@ -120,7 +133,7 @@ export class ShopsService {
 		});
 
 		if (!result) {
-			throw new NotFoundException(
+			throw new UnprocessableEntityException(
 				`연락처가 ${phone}인 가게를 찾을 수 없습니다`,
 			);
 		}
@@ -136,7 +149,7 @@ export class ShopsService {
 		});
 
 		if (!result) {
-			throw new NotFoundException(
+			throw new UnprocessableEntityException(
 				`주소가 ${address}인 가게를 찾을 수 없습니다`,
 			);
 		}
@@ -181,7 +194,9 @@ export class ShopsService {
 		});
 
 		if (!checkShop) {
-			throw new NotFoundException(`ID가 ${shopId}인 가게를 찾을 수 없습니다`);
+			throw new UnprocessableEntityException(
+				`ID가 ${shopId}인 가게를 찾을 수 없습니다`,
+			);
 		}
 
 		const myShop = await this.findById({ shopId });

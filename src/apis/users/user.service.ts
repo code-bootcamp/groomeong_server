@@ -3,6 +3,7 @@ import {
 	ConflictException,
 	Inject,
 	Injectable,
+	NotFoundException,
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { Cache } from 'cache-manager';
@@ -47,10 +48,14 @@ export class UsersService {
 
 	// 하나 조회하기
 	async findOne({ userId }: IUsersServiceFindOne): Promise<User> {
-		return await this.userRepository.findOne({
+		const myUser = await this.userRepository.findOne({
 			where: { id: userId },
 			relations: { reservation: true },
 		});
+		if (!myUser) {
+			throw new NotFoundException(`ID가 ${userId}인 회원을 찾을 수 없습니다`);
+		}
+		return myUser;
 	}
 
 	// 중복 계정 체크를 위한 이메일 조회

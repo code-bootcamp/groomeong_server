@@ -1,7 +1,7 @@
 import {
 	ConflictException,
 	Injectable,
-	NotFoundException,
+	UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -13,6 +13,7 @@ import {
 	IReservationsServiceCheckDuplication,
 	IReservationsServiceCreate,
 	IReservationsServiceDelete,
+	IReservationsServiceFindAllByShopId,
 	IReservationsServiceFindAllByUserId,
 	IReservationsServiceFindById,
 	IReservationsServiceFindDeletedById,
@@ -45,12 +46,12 @@ export class ReservationsService {
 
 		const checkShop = await this.shopsService.findById({ shopId });
 		if (!checkShop) {
-			throw new NotFoundException('유효하지 않은 가게ID 입니다');
+			throw new UnprocessableEntityException('유효하지 않은 가게ID 입니다');
 		}
 
 		const checkUser = await this.usersService.findOne({ userId });
 		if (!checkUser) {
-			throw new NotFoundException('유효하지 않은 회원ID 입니다');
+			throw new UnprocessableEntityException('유효하지 않은 회원ID 입니다');
 		}
 
 		await this.dogsService.findOneById({ id: dogId });
@@ -95,15 +96,13 @@ export class ReservationsService {
 		});
 
 		if (!result) {
-			throw new NotFoundException('예약을 찾을 수 없습니다');
+			throw new UnprocessableEntityException('예약을 찾을 수 없습니다');
 		}
 
 		return result;
 	}
 
-	// // * 가게id, 날짜, 시간을 기준으로 찾는 함수 - 확장성 고려
-	// // * 다만, 현재 유저 관점의 서비스를 만들고 있으므로 이러한 함수들은 관리자 페이지에서 필요하다고 판단, 생성 생략했습니다
-	// // * User테이블과 조인 후 주석 해제 예정입니다
+	// 한 회원이 가진 모든 예약 찾기
 	async findAllByUserId({
 		userId,
 	}: IReservationsServiceFindAllByUserId): Promise<Reservation[]> {
@@ -117,8 +116,30 @@ export class ReservationsService {
 		});
 
 		if (!checkUser) {
-			throw new NotFoundException(
+			throw new UnprocessableEntityException(
 				`회원ID가 ${userId}인 예약을 찾을 수 없습니다`,
+			);
+		}
+
+		return checkUser;
+	}
+
+	// 한 가게가 가진 모든 예약 찾기
+	async findAllByShopId({
+		shopId,
+	}: IReservationsServiceFindAllByShopId): Promise<Reservation[]> {
+		const checkUser = await this.reservationsRepository.find({
+			where: { shop: { id: shopId } },
+			relations: ['shop', 'user', 'dog'],
+			order: {
+				date: 'ASC',
+				time: 'ASC',
+			},
+		});
+
+		if (!checkUser) {
+			throw new UnprocessableEntityException(
+				`가게ID가 ${shopId}인 예약을 찾을 수 없습니다`,
 			);
 		}
 
@@ -136,7 +157,7 @@ export class ReservationsService {
 		});
 
 		if (!result) {
-			throw new NotFoundException(
+			throw new UnprocessableEntityException(
 				`예약ID가 ${reservationId}인 예약을 찾을 수 없습니다`,
 			);
 		}
@@ -144,7 +165,7 @@ export class ReservationsService {
 		return result;
 	}
 
-	// // * User테이블과 조인 후 주석 해제 예정입니다
+	// // 삭제 기능 필요하다면 주석 해제
 	// async findDeletedByUserId({
 	// 	userId,
 	// }: IReservationsServiceFindAllByUserId): Promise<Reservation> {
@@ -172,7 +193,7 @@ export class ReservationsService {
 		});
 
 		if (!checkData) {
-			throw new NotFoundException(
+			throw new UnprocessableEntityException(
 				`예약ID가 ${reservationId}인 예약을 찾을 수 없습니다`,
 			);
 		}

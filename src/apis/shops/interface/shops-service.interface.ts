@@ -13,10 +13,6 @@ export interface IShopsServiceFindById {
 	shopId: string;
 }
 
-export interface IShopsServiceFindByName {
-	shopName: string;
-}
-
 export interface IShopsServiceFindByPhone {
 	phone: string;
 }

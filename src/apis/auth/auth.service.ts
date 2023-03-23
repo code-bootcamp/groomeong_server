@@ -72,7 +72,7 @@ export class AuthService {
 			const jwtAccessKey = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
 			console.log(
 				'🐧🐧🐧🐧🐧🐧🐧🐧🐧🐧🐧acc: ',
-				jwt.verify(accessToken, 'myAccessKey'),
+				jwt.verify(accessToken, process.env.JWT_ACCESS_KEY),
 			);
 			console.log('&&&&&&&&&&', refreshToken);
 
@@ -83,7 +83,7 @@ export class AuthService {
 			);
 			console.log(
 				'🐧🐧🐧🐧🐧🐧🐧🐧🐧🐧🐧 myRefreshKey :',
-				jwt.verify(refreshToken, 'myRefreshKey'),
+				jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY),
 			);
 
 			await this.cacheManager.set(`accessToken:${accessToken}`, 'accessToken', {

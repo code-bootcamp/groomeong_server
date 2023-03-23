@@ -9,7 +9,7 @@ export class CreateReviewInput {
 	star: number;
 
 	@Field(() => String)
-	userId: string;
+	reservationId: string;
 
 	@Field(() => String)
 	shopId: string;

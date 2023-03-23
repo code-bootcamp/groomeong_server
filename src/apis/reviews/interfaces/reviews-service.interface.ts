@@ -1,6 +1,7 @@
 import { CreateReviewInput } from '../dto/create-review.input';
 
 export interface IReviewServiceCreate {
+	userId: string;
 	createReviewInput: CreateReviewInput;
 }
 

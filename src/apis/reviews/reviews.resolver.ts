@@ -1,4 +1,14 @@
-import { Args, Mutation, Resolver, Query, Float } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import {
+	Args,
+	Mutation,
+	Resolver,
+	Query,
+	Float,
+	Context,
+} from '@nestjs/graphql';
+import { IContext } from 'src/commons/interface/context';
+import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { CreateReviewInput } from './dto/create-review.input';
 import { Review } from './entities/review.entity';
 import { ReviewsService } from './reviews.service';
@@ -9,14 +19,19 @@ export class ReviewsResolver {
 		private readonly reviewsService: ReviewsService, //
 	) {}
 
-	//리뷰 생성하기
+	//리뷰 생성하기 (조건: 로그인 한 유저여야 함. 예약ID가 일치해야함)
+	@UseGuards(GqlAuthGuard('access'))
 	@Mutation(() => Review, {
-		description: 'Return: 신규 생성된 리뷰 데이터',
+		description:
+			'Return: 신규 생성된 리뷰 데이터(로그인 한 유저만 생성 가능. 로그인 시 발행된 accessToken을 Header에 입력해야함)',
 	})
 	async createReview(
 		@Args('createReviewInput') createReviewInput: CreateReviewInput, //
+		@Context() context: IContext,
 	): Promise<Review> {
+		const _userId = context.req.user.id;
 		return await this.reviewsService.create({
+			userId: _userId,
 			createReviewInput,
 		});
 	}
@@ -49,15 +64,5 @@ export class ReviewsResolver {
 	// 	@Args('userId') userId: string, //
 	// ): Promise<[Review]> {
 	// 	//
-	// }
-
-	// // 별점 평균값 구하기 => 리뷰 작성 시 자동으로 shop에 저장되는 로직으로 변경되어 주석처리
-	// @Query(() => Float, {
-	// 	description: 'Return : 가게의 별점 (평균값, 소수점 숫자)',
-	// })
-	// async fetchAverageStar(
-	// 	@Args('shopId') shopId: string, //
-	// ): Promise<number> {
-	// 	return this.reviewsService.averageStar({ shopId });
 	// }
 }
