@@ -43,7 +43,8 @@ export class ShopsResolver {
 	}
 
 	@Query(() => ReturnShopOutput, {
-		description: 'Return : 입력한 shopId와 일치하는 가게(Shop) 데이터',
+		description:
+			'Return : 입력한 shopId와 일치하는 가게(Shop) 데이터. 리뷰 작성 가능 여부를 함께 돌려준다.',
 	})
 	async fetchShop(
 		@Args('shopId') shopId: string, //

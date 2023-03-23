@@ -1,14 +1,6 @@
-import {
-	ConflictException,
-	forwardRef,
-	Inject,
-	Injectable,
-	NotFoundException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UsersService } from '../users/user.service';
 import { ShopsService } from '../shops/shops.service';
 import { Review } from './entities/review.entity';
 import { Reservation } from '../reservations/entities/reservation.entity';
@@ -37,7 +29,34 @@ export class ReviewsService {
 		createReviewInput, //
 	}: IReviewServiceCreate): Promise<Review> {
 		const shopId = createReviewInput.shopId;
-		// 브라우저에서 보내준 shopId, userId가 DB의 예약에 등록된게 있는지 확인
+
+		//리뷰 권한 체크
+		this.checkReviewAuth({ shopId, userId });
+
+		// 리뷰 저장하기
+		const result = await this.reviewsRepository.save({
+			contents: createReviewInput.contents,
+			star: createReviewInput.star,
+			reservation: { id: createReviewInput.reservationId },
+			shop: { id: createReviewInput.shopId },
+		});
+
+		// 별점평균 계산하기
+		const _averageStar = await this.averageStar({ shopId });
+		console.log('🟨🟨🟨', _averageStar);
+
+		// shop 테이블에 별점평균 넣어서 저장하기
+		this.shopsService.update({
+			shopId: shopId, //
+			updateShopInput: { averageStar: Number(_averageStar) },
+		});
+
+		// 저장한 리뷰 리턴하기
+		return result;
+	}
+
+	//리뷰 권한 확인하기
+	async checkReviewAuth({ shopId, userId }): Promise<boolean> {
 		const myReservations = await this.reservationsRepository.find({
 			where: { user: { id: userId }, shop: { id: shopId } },
 		});
@@ -62,26 +81,7 @@ export class ReviewsService {
 			);
 		}
 
-		// 리뷰 저장하기
-		const result = await this.reviewsRepository.save({
-			contents: createReviewInput.contents,
-			star: createReviewInput.star,
-			reservation: { id: createReviewInput.reservationId },
-			shop: { id: createReviewInput.shopId },
-		});
-
-		// 별점평균 계산하기
-		const _averageStar = await this.averageStar({ shopId });
-		console.log('🟨🟨🟨', _averageStar);
-
-		// shop 테이블에 별점평균 넣어서 저장하기
-		const noReturn = this.shopsService.update({
-			shopId: shopId, //
-			updateShopInput: { averageStar: Number(_averageStar) },
-		});
-
-		// 저장한 리뷰 리턴하기
-		return result;
+		return true;
 	}
 
 	async findById({ reviewId }: IReviewServiceFindById): Promise<Review> {
