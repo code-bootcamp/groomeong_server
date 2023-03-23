@@ -17,6 +17,7 @@ import {
 	IShopsServiceRestore,
 	IShopsServiceUpdate,
 } from './interface/shops-service.interface';
+import axios from 'axios';
 
 @Injectable()
 export class ShopsService {
@@ -36,6 +37,16 @@ export class ShopsService {
 			throw new ConflictException(
 				`해당 주소(${_address})로 등록된 가게가 있습니다`,
 			);
+		}
+
+		try {
+			const result = await axios.get(
+				'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyDemyl3coO5cEeFXS4BJ66qocv23bakW0A&address=서울시 관악구 난곡로 167',
+			);
+			const { lat, lng } = result.data.results[0].geometry.location;
+			console.log(lat, lng);
+		} catch (error) {
+			console.error(error);
 		}
 
 		return await this.shopsRepository.save({ ...createShopInput });
