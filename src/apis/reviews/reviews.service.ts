@@ -37,26 +37,11 @@ export class ReviewsService {
 		createReviewInput, //
 	}: IReviewServiceCreate): Promise<Review> {
 		const shopId = createReviewInput.shopId;
-		// 브라우저에서 보내준 가게ID가 DB의 예약에 등록된게 있는지 확인
-		// 없다면 유효하지 않은 예약
-		const reservationsByShop = //
-			(await this.shopsService.findById({ shopId })).reservation;
-		console.log('🟥🟥🟥', reservationsByShop);
-
-		if (!reservationsByShop) {
-			throw new UnprocessableEntityException(
-				'해당 가게에 예약한 내역이 없습니다',
-			);
-		}
-		console.log('🟩🟩🟩', reservationsByShop);
-
-		// DB 예약 목록들 중, 브라우저에서 보내준 userId와 user.id 가 일치하는 예약 찾기
+		// 브라우저에서 보내준 shopId, userId가 DB의 예약에 등록된게 있는지 확인
 		const myReservations = await this.reservationsRepository.find({
 			where: { user: { id: userId }, shop: { id: shopId } },
 		});
-		// const myReservations = reservationsByShop.flatMap((el) => {
-		// 	return reservationsByUser.filter((ele) => ele.id === el.id);
-		// });
+
 		console.log('🟪🟪🟪', myReservations);
 		if (myReservations.length === 0) {
 			throw new UnprocessableEntityException(
