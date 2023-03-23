@@ -2,6 +2,7 @@ import {
 	ConflictException,
 	Injectable,
 	NotFoundException,
+	UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -14,6 +15,7 @@ import {
 	IShopsServiceFindByName,
 	IShopsServiceFindByPhone,
 	IShopsServiceFindDeleted,
+	IShopsServiceGetLatLngByAddress,
 	IShopsServiceRestore,
 	IShopsServiceUpdate,
 } from './interface/shops-service.interface';
@@ -39,17 +41,27 @@ export class ShopsService {
 			);
 		}
 
+		const [lat, lng] = await this.getLatLngByAddress({ address: _address });
+
+		return await this.shopsRepository.save({ ...createShopInput, lat, lng });
+	}
+
+	async getLatLngByAddress({
+		address,
+	}: IShopsServiceGetLatLngByAddress): Promise<string[]> {
 		try {
 			const result = await axios.get(
-				'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyDemyl3coO5cEeFXS4BJ66qocv23bakW0A&address=서울시 관악구 난곡로 167',
+				`https://maps.googleapis.com/maps/api/geocode/json?key=${process.env.GOOGLE_MAP_API_KEY}&region=kr&address=${address}`,
 			);
-			const { lat, lng } = result.data.results[0].geometry.location;
-			console.log(lat, lng);
+			const geometryResults = result.data.results;
+			const { lat, lng } =
+				geometryResults[geometryResults.length - 1].geometry.location;
+			return [lat, lng].map(String);
 		} catch (error) {
-			console.error(error);
+			throw new UnprocessableEntityException(
+				'위도, 경도 정보를 가져올 수 없습니다.',
+			);
 		}
-
-		return await this.shopsRepository.save({ ...createShopInput });
 	}
 
 	// 가게ID로 해당 가게 정보 찾기

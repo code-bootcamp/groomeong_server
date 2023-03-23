@@ -38,6 +38,14 @@ export class Shop {
 	@Field(() => String)
 	address: string;
 
+	@Column()
+	@Field(() => String)
+	lat: string;
+
+	@Column()
+	@Field(() => String)
+	lng: string;
+
 	// 리뷰 평균 점수
 	@Column({ type: 'decimal', nullable: true })
 	@Field(() => Float)

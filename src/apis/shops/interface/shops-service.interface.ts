@@ -5,6 +5,10 @@ export interface IShopsServiceCreate {
 	createShopInput: CreateShopInput;
 }
 
+export interface IShopsServiceGetLatLngByAddress {
+	address: string;
+}
+
 export interface IShopsServiceFindById {
 	shopId: string;
 }
