@@ -19,7 +19,7 @@ import { JwtKakaoStrategy } from './apis/auth/strategies/jwt-social-kakao.strate
 import { ReservationsModule } from './apis/reservations/reservation.module';
 import { ReviewsModule } from './apis/reviews/reviews.module';
 import { ShopImagesModule } from './apis/shopImages/shopImage.module';
-import { AddShopReviewModule } from './shop-review/shop-review.module';
+import { AddShopReviewModule } from './apis/shop-review/shop-review.module';
 
 @Module({
 	imports: [

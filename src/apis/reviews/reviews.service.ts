@@ -129,7 +129,7 @@ export class ReviewsService {
 		// }
 
 		// [ 회원이 이 가게에 작성한 리뷰 수 === 회원이 이 가게에 한 예약 수 ] 라면 작성 권한 없음
-		console.log('🟥🟥 reservationsByUser 🟥🟥', reservationsByUser);
+		// console.log('🟥🟥 reservationsByUser 🟥🟥', reservationsByUser);
 
 		if (reservationsByUser.length === 0) {
 			throw new UnprocessableEntityException(

@@ -1,12 +1,12 @@
-import { User } from '../users/entities/user.entity';
-import { UsersService } from '../users/user.service';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { CACHE_MANAGER, UnprocessableEntityException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { MockUsersRepository } from './auth.mocking.dummy';
-import { CACHE_MANAGER, UnprocessableEntityException } from '@nestjs/common';
-import { Cache } from 'cache-manager';
-import { MailerModule } from '@nestjs-modules/mailer';
+import { User } from 'src/apis/users/entities/user.entity';
+import { UsersService } from 'src/apis/users/user.service';
 import { Repository } from 'typeorm';
+import { AuthService } from '../auth.service';
+import { MockUsersRepository } from './auth.mocking.dummy';
 
 const EXAMPLE_ACCESS_TOKEN = 'exampleAccessToken';
 const EXAMPLE_AUTH = true;
@@ -28,11 +28,12 @@ type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('AuthResolver', () => {
 	let usersService: UsersService;
+	let authService: AuthService;
 	let mockUsersRepository: MockRepository<User>;
 	let cache: Cache;
 
 	beforeEach(async () => {
-		const usersModule = await Test.createTestingModule({
+		const module = await Test.createTestingModule({
 			imports: [
 				MailerModule.forRootAsync({
 					useFactory: () => ({
@@ -51,6 +52,7 @@ describe('AuthResolver', () => {
 			],
 			providers: [
 				UsersService,
+				AuthService,
 				{
 					provide: getRepositoryToken(User),
 					useClass: MockUsersRepository,
@@ -65,41 +67,45 @@ describe('AuthResolver', () => {
 			],
 		}).compile();
 
-		cache = usersModule.get(CACHE_MANAGER);
-		usersService = usersModule.get<UsersService>(UsersService);
-		mockUsersRepository = usersModule.get(getRepositoryToken(User));
+		cache = module.get(CACHE_MANAGER);
+		usersService = module.get<UsersService>(UsersService);
+		authService = module.get<AuthService>(AuthService);
+		mockUsersRepository = module.get(getRepositoryToken(User));
 	});
 
 	describe('login', () => {
-		it('브라우저에서 입력한 이메일로 유저 정보 찾아오기', () => {
+		it('브라우저에서 입력한 이메일로 유저 정보 찾아오기', async () => {
 			const email = EXAMPLE_USER.email;
 			const result = mockUsersRepository.findOne({ where: { email } });
 
 			expect(usersService.findOneByEmail({ email })).toStrictEqual(result);
 		});
 
-		// it(
-		// 	'찾아온 유저 정보의 비밀번호와 브라우저에서 입력된 비밀번호가 일치하지 않으면 에러던지기',
-		// ),
-		// 	() => {
-		//     const myPassword = EXAMPLE_USER.email;
-		// 		const dbpassword = asdf;
-		//     try {
-		//       //
-		//     } catch (error) {
-		//       expect(error).toBeInstanceOf(UnprocessableEntityException)
-		//     }
-		// 	};
+		it(
+			'찾아온 유저 정보의 비밀번호와 브라우저에서 입력된 비밀번호가 일치하지 않으면 에러던지기',
+		),
+			() => {
+				const email = EXAMPLE_USER.email;
+				const user = mockUsersRepository.findOne({ where: { email: email } });
+				const myPassword = EXAMPLE_USER.password;
+				const dbPassword = user.password;
+				try {
+					myPassword !== dbPassword;
+				} catch (error) {
+					expect(error).toBeInstanceOf(UnprocessableEntityException);
+				}
+			};
 
 		// it(
-		// 	'일치하는 유저가 있고 비밀번호도 맞았다면? accessToken 를 => JWT 만들어서 브라우저에 전달',
+		// 	'accessToken => JWT을 만들어서 브라우저에 전달',
 		// ),
 		// 	() => {
+
 		//     expect(). //JWT 리턴하려면 어떤 메서드를 사용?
 		// 	};
 	});
 
-	describe('logout', () => {});
+	// describe('logout', () => {});
 
-	describe('restoreAccessToken', () => {});
+	// describe('restoreAccessToken', () => {});
 });

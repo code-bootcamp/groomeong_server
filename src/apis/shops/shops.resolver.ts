@@ -73,35 +73,34 @@ export class ShopsResolver {
 	// @Query(() => [Shop], {
 	// 	description: 'Return : 모든 삭제된 가게',
 	// })
-	// async fetchShopsWithDeleted(): Promise<Shop[]> {
-	// 	return await this.shopsService.findAllDeleted();
+	// fetchShopsWithDeleted(): Promise<Shop[]> {
+	// 	return this.shopsService.findAllDeleted();
 	// }
 
 	// @Query(() => Shop, {
 	// 	description: 'Return : 삭제된 가게 1개',
 	// })
-	// async fetchShopWithDeleted(
+	// fetchShopWithDeleted(
 	// 	@Args('shopId') shopId: string, //
 	// ): Promise<Shop> {
-	// 	return await this.shopsService.findDeleted({ shopId });
+	// 	return this.shopsService.findDeleted({ shopId });
 	// }
 
 	// @Mutation(() => Boolean, {
-	// 	description:
-	// 		'Return : 가게 정보 삭제 완료 시 true',
+	// 	description: 'Return : 가게 정보 삭제 완료 시 true',
 	// })
-	// async deleteShop(
+	// deleteShop(
 	// 	@Args('shopId') shopId: string, //
 	// ): Promise<boolean> {
-	// 	return await this.shopsService.delete({ shopId });
+	// 	return this.shopsService.delete({ shopId });
 	// }
 
 	// @Mutation(() => Boolean, {
 	// 	description: 'Return : 가게 정보 복구 완료 시 true',
 	// })
-	// async restoreShop(
+	// restoreShop(
 	// 	@Args('shopId') shopId: string, //
 	// ): Promise<boolean> {
-	// 	return await this.shopsService.restore({ shopId });
+	// 	return this.shopsService.restore({ shopId });
 	// }
 }

@@ -1,7 +1,4 @@
-import { describe, expect, jest, test } from '@jest/globals';
-import { Shop } from '../shops/entities/shop.entity';
-
-class MockShopImageRepository {
+export class MockShopImageRepository {
 	mydb = [
 		{
 			//
@@ -84,9 +81,3 @@ class MockShopImageRepository {
 		);
 	}
 }
-
-// describe('', () => {
-// 	test(, () => {
-// 		expect().toBe();
-// 	});
-// });

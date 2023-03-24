@@ -1,7 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Context, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthGuard } from 'src/apis/auth/guards/gql-auth.guard';
-import { ReservationsService } from 'src/apis/reservations/reservation.service';
 import { ReturnShopOutput } from 'src/apis/shops/dto/return-shop.output';
 import { IContext } from 'src/commons/interface/context';
 import { AddShopReviewService } from './shop-review.service';
