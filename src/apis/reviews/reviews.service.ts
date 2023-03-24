@@ -26,7 +26,7 @@ export class ReviewsService {
 	}: IReviewServiceCreate): Promise<Review> {
 		const shopId = createReviewInput.shopId;
 
-		// //리뷰 권한 체크
+		// //리뷰 작성 권한 체크하기
 		// // -> 브라우저에서 유저의 권한 여부에 따라 다른 페이지를 보여준다면, create 시 권한 체크는 불필요하지 않은지?
 		// this.checkReviewAuth({ shopId, userId, reservationCountByUser });
 
@@ -38,11 +38,8 @@ export class ReviewsService {
 			shop: { id: createReviewInput.shopId },
 		});
 
-		// 별점평균 계산하기
+		// 가게의 별점평균 업데이트 하기
 		const _averageStar = await this.averageStar({ shopId });
-		console.log('🟨🟨 _averageStar 🟨🟨', _averageStar);
-
-		// shop 테이블에 별점평균 넣어서 저장하기
 		this.shopsService.update({
 			shopId: shopId, //
 			updateShopInput: { averageStar: Number(_averageStar) },
@@ -52,7 +49,55 @@ export class ReviewsService {
 		return result;
 	}
 
-	//fetchShop 시 리뷰 권한 확인하기 (--> /shop-review.resolver/fetchShopWithReviewAuth)
+	// 리뷰 가져오기
+	async find({ reviewId }: IReviewServiceFindById): Promise<Review> {
+		const result = await this.reviewsRepository.findOne({
+			where: { id: reviewId },
+			relations: ['shop', 'reservation'],
+		});
+
+		if (!result) {
+			throw new UnprocessableEntityException('아이디를 찾을 수 없습니다');
+		}
+
+		return result;
+	}
+
+	// 가게의 모든 리뷰 가져오기
+	async findByShopId({
+		shopId, //
+	}: IReviewServiceFindByShopId): Promise<Review[]> {
+		const checkShop = await this.shopsService.findById({ shopId });
+		if (!checkShop) {
+			throw new UnprocessableEntityException('유효하지 않은 가게ID 입니다');
+		}
+		const result = await this.reviewsRepository.find({
+			where: { shop: { id: shopId } },
+			order: {
+				createAt: 'ASC',
+			},
+		});
+		console.log(result);
+		return result;
+	}
+
+	// 가게의 별점평균 계산하기
+	async averageStar({ shopId }): Promise<number> {
+		const reviews = await this.reviewsRepository.find({
+			where: { shop: { id: shopId } },
+		});
+		let sum = 0;
+		reviews.forEach((el) => {
+			sum += Number(el.star);
+		});
+
+		const result = (sum / reviews.length).toFixed(1);
+
+		return Number(result);
+	}
+
+	//리뷰 작성 권한 체크하기(fetchShop 시)
+	// (--> /shop-review.resolver/fetchShopWithReviewAuth)
 	async checkReviewAuth({
 		reservationsByUser,
 		reviewsByUser,
@@ -93,64 +138,5 @@ export class ReviewsService {
 		}
 
 		return true;
-	}
-
-	async findById({ reviewId }: IReviewServiceFindById): Promise<Review> {
-		const result = await this.reviewsRepository.findOne({
-			where: { id: reviewId },
-			relations: ['shop', 'reservation'],
-		});
-
-		if (!result) {
-			throw new UnprocessableEntityException('아이디를 찾을 수 없습니다');
-		}
-
-		return result;
-	}
-
-	// // 조인 완료 후 주석 해제 예정
-	// // 내가 작성한 리뷰 모아보기(회원의 리뷰 모아보기)
-	// async findByUserId({ userId }: IReviewServiceFindByUserId): Promise<Review> {
-	// 	const checkUser = this.usersService.findOne({ userId });
-	// 	if (!checkUser) {
-	// 		throw new NotFoundException('유효하지 않은 회원ID 입니다');
-	// 	}
-
-	// 	return await this.reviewsRepository.find({
-	// 		where: { user: { id: userId } },
-	// 	});
-	// }
-
-	// 가게의 리뷰 모아보기
-	async findByShopId({
-		shopId, //
-	}: IReviewServiceFindByShopId): Promise<Review[]> {
-		const checkShop = await this.shopsService.findById({ shopId });
-		if (!checkShop) {
-			throw new UnprocessableEntityException('유효하지 않은 가게ID 입니다');
-		}
-		const result = await this.reviewsRepository.find({
-			where: { shop: { id: shopId } },
-			order: {
-				createAt: 'ASC',
-			},
-		});
-		console.log(result);
-		return result;
-	}
-
-	// 별점평균 계산하기
-	async averageStar({ shopId }): Promise<number> {
-		const reviews = await this.reviewsRepository.find({
-			where: { shop: { id: shopId } },
-		});
-		let sum = 0;
-		reviews.forEach((el) => {
-			sum += Number(el.star);
-		});
-
-		const result = (sum / reviews.length).toFixed(1);
-
-		return Number(result);
 	}
 }
