@@ -4,7 +4,7 @@ version: '3.7'
 services:
   # 컴퓨터이름
   my-backend:
-    image: asia.gcr.io/project-groomeong/tocatoca:1.0
+    image: asia.gcr.io/project-groomeong/tocatoca:1.6
     build:
       # platform: linux/x86_64
       context: .
@@ -31,7 +31,7 @@ services:
     ports:
       - 6379:6379
 
-  # elasticsearch:
+  # # elasticsearch:
   #   # platform: linux/86_64
   #   image: elasticsearch:7.17.0
   #   environment:
