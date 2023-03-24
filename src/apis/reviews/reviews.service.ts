@@ -34,6 +34,7 @@ export class ReviewsService {
 
 	// 가게의 모든 리뷰 가져오기
 	async findByShopId({
+		page,
 		shopId, //
 	}: IReviewServiceFindByShopId): Promise<Review[]> {
 		const checkShop = await this.shopsService.findById({ shopId });
@@ -42,6 +43,8 @@ export class ReviewsService {
 		}
 		const result = await this.reviewsRepository.find({
 			where: { shop: { id: shopId } },
+			skip: (page - 1) * 4,
+			take: 4,
 			order: {
 				createAt: 'ASC',
 			},

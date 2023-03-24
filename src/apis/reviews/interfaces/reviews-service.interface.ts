@@ -15,4 +15,5 @@ export interface IReviewServiceFindByUserId {
 
 export interface IReviewServiceFindByShopId {
 	shopId: string;
+	page: number;
 }

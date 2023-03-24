@@ -31,13 +31,6 @@ export class DogsService {
 	}
 
 	async findByUserId({ userId }: IDogsServiceFindByUserId): Promise<Dog[]> {
-		// const found = await this.dogsRepository.find({
-		// 	where: {
-		// 		user: {
-		// 			id: userId,
-		// 		},
-		// 	},
-		// });
 		const founds = await this.dogsRepository.findBy({
 			user: {
 				id: userId,

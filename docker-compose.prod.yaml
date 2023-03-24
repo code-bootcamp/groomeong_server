@@ -1,0 +1,32 @@
+version: '3.7'
+
+# 컴퓨터들
+services:
+  # 컴퓨터이름
+  my-backend:
+    image: asia.gcr.io/project-groomeong/tocatoca:1.0
+    build:
+      # platform: linux/x86_64
+      context: .
+      dockerfile: Dockerfile
+    # volumes:
+    #   - ./src:/teamproject/src
+    ports:
+      - 3000:3000
+    env_file:
+      - ./.env.prod
+
+  # 컴퓨터이름
+  my-database:
+    # platform: linux/86_64
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: 'groo-meong.prod'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - 3306:3306
+
+  my-redis:
+    image: redis:latest
+    ports:
+      - 6379:6379

@@ -1,6 +1,7 @@
 import {
 	ConflictException,
 	Injectable,
+	NotFoundException,
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,9 +14,11 @@ import {
 	IShopsServiceFindById,
 	IShopsServiceFindByPhone,
 	IShopsServiceFindDeleted,
+	IShopsServiceGetLatLngByAddress,
 	IShopsServiceRestore,
 	IShopsServiceUpdate,
 } from './interface/shops-service.interface';
+import axios from 'axios';
 
 @Injectable()
 export class ShopsService {
@@ -94,7 +97,27 @@ export class ShopsService {
 			);
 		}
 
-		return await this.shopsRepository.save({ ...createShopInput });
+		const [lat, lng] = await this.getLatLngByAddress({ address: _address });
+
+		return await this.shopsRepository.save({ ...createShopInput, lat, lng });
+	}
+
+	async getLatLngByAddress({
+		address,
+	}: IShopsServiceGetLatLngByAddress): Promise<string[]> {
+		try {
+			const result = await axios.get(
+				`https://maps.googleapis.com/maps/api/geocode/json?key=${process.env.GOOGLE_MAP_API_KEY}&region=kr&address=${address}`,
+			);
+			const geometryResults = result.data.results;
+			const { lat, lng } =
+				geometryResults[geometryResults.length - 1].geometry.location;
+			return [lat, lng].map(String);
+		} catch (error) {
+			throw new UnprocessableEntityException(
+				'위도, 경도 정보를 가져올 수 없습니다.',
+			);
+		}
 	}
 
 	// 가게 업데이트

@@ -24,10 +24,13 @@ export class ReviewsResolver {
 	@Query(() => [Review], {
 		description: 'Return: 가게ID 기준으로 모든 리뷰 불러오기',
 	})
-	async fetchReviewsByShop(
-		@Args('shopId') shopId: string, //
+	async fetchReviewsByShopId(
+		@Args({ name: 'page', defaultValue: 1, nullable: true })
+		page: number, //
+		@Args('shopId')
+    shopId: string, //
 	): Promise<Review[]> {
-		return await this.reviewsService.findByShopId({ shopId });
+		return await this.reviewsService.findByShopId({ page, shopId });
 	}
 
 	@UseGuards(GqlAuthGuard('access'))
