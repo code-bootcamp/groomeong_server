@@ -15,9 +15,9 @@ export class AddShopReviewResolver {
 	@UseGuards(GqlAuthGuard('access'))
 	@Query(() => ReturnShopOutput, {
 		description:
-			'Return : 입력한 shopId와 일치하는 가게(Shop) 데이터. 리뷰 작성 권한을 함께 돌려준다. (작성 가능하면 true, 불가하면 error)',
+			'Return : 가게 데이터 및 리뷰 작성 권한 여부. (리뷰 작성 가능하면 true, 불가하면 error)',
 	})
-	async fetchShopWithReviewAuth(
+	fetchShopWithReviewAuth(
 		@Args('shopId') shopId: string, //
 		@Context() context: IContext,
 	): Promise<ReturnShopOutput> {

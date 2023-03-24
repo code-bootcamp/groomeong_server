@@ -130,9 +130,16 @@ export class ReviewsService {
 
 		// [ 회원이 이 가게에 작성한 리뷰 수 === 회원이 이 가게에 한 예약 수 ] 라면 작성 권한 없음
 		console.log('🟥🟥 reservationsByUser 🟥🟥', reservationsByUser);
+
+		if (reservationsByUser.length === 0) {
+			throw new UnprocessableEntityException(
+				'리뷰 작성 불가 : 이 회원은 예약서비스를 이용한 기록이 0건 입니다',
+			);
+		}
+
 		if (reviewsByUser.length === reservationsByUser.length) {
 			throw new UnprocessableEntityException(
-				'모든 예약 건에 리뷰를 작성한 상태입니다',
+				'리뷰 작성 불가 : 이 회원은 모든 예약 건에 리뷰를 작성한 상태입니다',
 			);
 		}
 
