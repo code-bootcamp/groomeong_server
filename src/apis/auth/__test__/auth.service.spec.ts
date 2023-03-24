@@ -5,7 +5,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from 'src/apis/users/entities/user.entity';
 import { UsersService } from 'src/apis/users/user.service';
 import { Repository } from 'typeorm';
-import { AuthService } from '../auth.service';
 import { MockUsersRepository } from './auth.mocking.dummy';
 
 const EXAMPLE_ACCESS_TOKEN = 'exampleAccessToken';
@@ -23,12 +22,13 @@ const EXAMPLE_USER: User = {
 	dogs: [null],
 	reservation: [null],
 };
+const createAccessTokenMock = jest.fn(() => EXAMPLE_ACCESS_TOKEN);
 
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('AuthResolver', () => {
+	createAccessTokenMock.mockClear();
 	let usersService: UsersService;
-	let authService: AuthService;
 	let mockUsersRepository: MockRepository<User>;
 	let cache: Cache;
 
@@ -52,7 +52,6 @@ describe('AuthResolver', () => {
 			],
 			providers: [
 				UsersService,
-				AuthService,
 				{
 					provide: getRepositoryToken(User),
 					useClass: MockUsersRepository,
@@ -69,7 +68,6 @@ describe('AuthResolver', () => {
 
 		cache = module.get(CACHE_MANAGER);
 		usersService = module.get<UsersService>(UsersService);
-		authService = module.get<AuthService>(AuthService);
 		mockUsersRepository = module.get(getRepositoryToken(User));
 	});
 
@@ -81,28 +79,22 @@ describe('AuthResolver', () => {
 			expect(usersService.findOneByEmail({ email })).toStrictEqual(result);
 		});
 
-		it(
-			'찾아온 유저 정보의 비밀번호와 브라우저에서 입력된 비밀번호가 일치하지 않으면 에러던지기',
-		),
-			() => {
-				const email = EXAMPLE_USER.email;
-				const user = mockUsersRepository.findOne({ where: { email: email } });
-				const myPassword = EXAMPLE_USER.password;
-				const dbPassword = user.password;
-				try {
-					myPassword !== dbPassword;
-				} catch (error) {
-					expect(error).toBeInstanceOf(UnprocessableEntityException);
-				}
-			};
+		it('찾아온 유저 정보의 비밀번호와 브라우저에서 입력된 비밀번호가 일치하지 않으면 에러던지기', () => {
+			const email = EXAMPLE_USER.email;
+			const user = mockUsersRepository.findOne({ where: { email: email } });
+			const myPassword = EXAMPLE_USER.password;
+			const dbPassword = user.password;
+			try {
+				myPassword !== dbPassword;
+			} catch (error) {
+				expect(error).toBeInstanceOf(UnprocessableEntityException);
+			}
+		});
 
-		// it(
-		// 	'accessToken => JWT을 만들어서 브라우저에 전달',
-		// ),
-		// 	() => {
-
-		//     expect(). //JWT 리턴하려면 어떤 메서드를 사용?
-		// 	};
+		it('accessToken => JWT을 만들기', () => {
+			const jwtAccessKey = createAccessTokenMock();
+			expect(jwtAccessKey).toBe(EXAMPLE_ACCESS_TOKEN); //JWT 리턴하려면 어떤 메서드를 사용?
+		});
 	});
 
 	// describe('logout', () => {});
