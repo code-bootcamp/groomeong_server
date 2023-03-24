@@ -17,8 +17,6 @@ export class AuthResolver {
 		@Args('password') password: string,
 		@Context() context: IContext,
 	): Promise<string> {
-		console.log('🐶🐶🐶🐶🐶', password);
-		console.log('@@@@ refreshToken');
 		return this.authService.login({
 			email,
 			password,

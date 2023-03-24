@@ -16,6 +16,7 @@ import {
 	IUsersServiceCheckValidationEmail,
 	IUsersServiceCreate,
 	IUsersServiceDelete,
+	IUsersServiceDuplicationEmail,
 	IUsersServiceFindOne,
 	IUsersServiceFindOneByEmail,
 	IUsersServiceFindUserDog,
@@ -106,11 +107,15 @@ export class UsersService {
 		}
 	}
 
-	// 중복검사 ============>>> 이거부터 다시 시작 <<================
-	async duplicationEmail({ email }) {
+	// 이메일 중복검사
+	async duplicationEmail({
+		email,
+	}: IUsersServiceDuplicationEmail): Promise<boolean> {
 		const user = await this.findOneByEmail({ email });
 		if (user) {
 			throw new ConflictException('이미 등록된 이메일입니다!!');
+		} else {
+			return true;
 		}
 	}
 
@@ -125,8 +130,6 @@ export class UsersService {
 		//이메일 정상인지 확인
 		await this.checkValidationEmail({ email });
 
-		// 중복 계정 체크
-		await this.duplicationEmail({ email });
 		// 비밀번호 암호화해주기
 		const hasedPassword = await bcrypt.hash(password, 10);
 
@@ -139,7 +142,6 @@ export class UsersService {
 			email,
 			password: hasedPassword,
 			phone,
-			// image,
 		});
 	}
 

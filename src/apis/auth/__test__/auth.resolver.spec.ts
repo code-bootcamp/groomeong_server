@@ -1,12 +1,13 @@
-import { User } from '../users/entities/user.entity';
-import { UsersService } from '../users/user.service';
+import { User } from '../../users/entities/user.entity';
+import { UsersService } from '../../users/user.service';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { MockUsersRepository } from './auth.mocking.dummy';
+
 import { CACHE_MANAGER, UnprocessableEntityException } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { Repository } from 'typeorm';
+import { MockUsersRepository } from './auth.mocking.dummy';
 
 const EXAMPLE_ACCESS_TOKEN = 'exampleAccessToken';
 const EXAMPLE_AUTH = true;
@@ -99,7 +100,7 @@ describe('AuthResolver', () => {
 		// 	};
 	});
 
-	describe('logout', () => {});
+	// describe('logout', () => {});
 
-	describe('restoreAccessToken', () => {});
+	// describe('restoreAccessToken', () => {});
 });

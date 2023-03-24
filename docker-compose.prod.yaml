@@ -4,7 +4,9 @@ version: '3.7'
 services:
   # 컴퓨터이름
   my-backend:
+    image: asia.gcr.io/project-groomeong/tocatoca:1.0
     build:
+      # platform: linux/x86_64
       context: .
       dockerfile: Dockerfile
     # volumes:

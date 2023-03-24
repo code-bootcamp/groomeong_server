@@ -32,6 +32,13 @@ export class UsersResolver {
 		return this.usersService.findAllWithDeleted();
 	}
 
+	@Query(() => Boolean, { description: ' Return: 중복 계정 확인하기 ' })
+	duplicateEmail(
+		@Args('email') email: string, //
+	): Promise<boolean> {
+		return this.usersService.duplicationEmail({ email });
+	}
+
 	// 로그인 된 유저 조회하기 (마이페이지가 들어가기 위함)
 	@UseGuards(GqlAuthGuard('access'))
 	@Query(() => User, {
@@ -40,11 +47,6 @@ export class UsersResolver {
 	fetchLoginUser(
 		@Context() context: IContext, //
 	): Promise<User> {
-		console.log('🐼🐼🐼🐼🐼🐼🐼🐼');
-		// console.log(context.req.user);
-		// console.log(context.req.user.email);
-		console.log('🐼🐼🐼🐼🐼🐼🐼🐼');
-
 		return this.usersService.findUserDog({ email: context.req.user.email });
 	}
 
@@ -55,18 +57,17 @@ export class UsersResolver {
 		@Args('email') email: string,
 		@Args('password') password: string,
 		@Args('phone') phone: string,
-		// @Args('image') image: string,
 	): Promise<User> {
 		return this.usersService.create({
 			name, //
 			email,
 			password,
 			phone,
-			// image,
 		});
 	}
 
 	// 회원 수정하기
+	@UseGuards(GqlAuthGuard('access'))
 	@Mutation(() => User, { description: ' Return: 회원정보 업데이트 ' })
 	updateUser(
 		@Args('userId') userId: string,
