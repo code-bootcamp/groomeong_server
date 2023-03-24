@@ -38,7 +38,6 @@ export class AuthService {
 		res,
 	}: IAuthServiceLogin): Promise<string> {
 		// 의존성주입한 usersService 에서 email 찾아오기
-		console.log('⭐️⭐️⭐️⭐️서비스로직⭐️⭐️⭐️⭐️');
 		const user = await this.usersService.findOneByEmail({ email });
 
 		// 일치하는 유저가 없으면 에러던지기!!
@@ -70,26 +69,16 @@ export class AuthService {
 
 			// accessToken 토큰
 			const jwtAccessKey = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
-			console.log(
-				'🐧🐧🐧🐧🐧🐧🐧🐧🐧🐧🐧acc: ',
-				jwt.verify(accessToken, process.env.JWT_ACCESS_KEY),
-			);
-			console.log('&&&&&&&&&&', refreshToken);
 
 			// refresh 토큰
 			const jwtRefreshKey = jwt.verify(
 				refreshToken,
 				process.env.JWT_REFRESH_KEY,
 			);
-			console.log(
-				'🐧🐧🐧🐧🐧🐧🐧🐧🐧🐧🐧 myRefreshKey :',
-				jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY),
-			);
 
 			await this.cacheManager.set(`accessToken:${accessToken}`, 'accessToken', {
 				ttl: jwtAccessKey['exp'] - jwtAccessKey['iat'],
 			});
-			console.log(accessToken);
 
 			await this.cacheManager.set(
 				`refreshToken:${refreshToken}`,
@@ -170,7 +159,7 @@ export class AuthService {
 
 		// 3. 로그인 브라우저 전송
 		this.setRefreshToken({ user, res, req });
-		res.redirect('http://localhost:3000/login/google');
+		res.redirect('http://localhost:3000/');
 		// 페이지 수정 꼭 하기! 배포될때!!🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗
 	}
 }

@@ -51,9 +51,11 @@ export class ReviewsResolver {
 		description: 'Return: 가게ID 기준으로 모든 리뷰 불러오기',
 	})
 	async fetchReviewsByShopId(
+		@Args({ name: 'page', defaultValue: 1, nullable: true })
+		page: number, //
 		@Args('shopId') shopId: string, //
 	): Promise<Review[]> {
-		return await this.reviewsService.findByShopId({ shopId });
+		return await this.reviewsService.findByShopId({ page, shopId });
 	}
 
 	// // 회원의 리뷰 모아보기

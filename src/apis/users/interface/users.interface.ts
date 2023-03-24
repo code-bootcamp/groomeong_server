@@ -47,3 +47,7 @@ export interface IUsersServiceCheckToken {
 	email: string;
 	token: string;
 }
+
+export interface IUsersServiceDuplicationEmail {
+	email: string;
+}
