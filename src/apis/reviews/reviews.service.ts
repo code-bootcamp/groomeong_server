@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ShopsService } from '../shops/shops.service';
 import { Review } from './entities/review.entity';
-import { Reservation } from '../reservations/entities/reservation.entity';
 import {
 	IReviewServiceCreate,
 	IReviewServiceFindById,
@@ -17,9 +16,6 @@ export class ReviewsService {
 		@InjectRepository(Review)
 		private readonly reviewsRepository: Repository<Review>, //
 
-		@InjectRepository(Reservation)
-		private readonly reservationsRepository: Repository<Reservation>,
-
 		private readonly shopsService: ShopsService,
 	) {}
 
@@ -30,8 +26,9 @@ export class ReviewsService {
 	}: IReviewServiceCreate): Promise<Review> {
 		const shopId = createReviewInput.shopId;
 
-		//리뷰 권한 체크
-		this.checkReviewAuth({ shopId, userId });
+		// //리뷰 권한 체크
+		// // -> 브라우저에서 유저의 권한 여부에 따라 다른 페이지를 보여준다면, create 시 권한 체크는 불필요하지 않은지?
+		// this.checkReviewAuth({ shopId, userId, reservationCountByUser });
 
 		// 리뷰 저장하기
 		const result = await this.reviewsRepository.save({
@@ -43,7 +40,7 @@ export class ReviewsService {
 
 		// 별점평균 계산하기
 		const _averageStar = await this.averageStar({ shopId });
-		console.log('🟨🟨🟨', _averageStar);
+		console.log('🟨🟨 _averageStar 🟨🟨', _averageStar);
 
 		// shop 테이블에 별점평균 넣어서 저장하기
 		this.shopsService.update({
@@ -55,29 +52,43 @@ export class ReviewsService {
 		return result;
 	}
 
-	//리뷰 권한 확인하기
-	async checkReviewAuth({ shopId, userId }): Promise<boolean> {
-		const myReservations = await this.reservationsRepository.find({
-			where: { user: { id: userId }, shop: { id: shopId } },
-		});
+	//fetchShop 시 리뷰 권한 확인하기 (--> /shop-review.resolver/fetchShopWithReviewAuth)
+	async checkReviewAuth({
+		reservationsByUser,
+		reviewsByUser,
+	}): Promise<boolean> {
+		// // 이 가게가 가진 리뷰(리뷰 ⊃ 가게)
+		// const reviewsOnShop = await this.reviewsRepository.find({
+		// 	where: { shop: { id: shopId } },
+		// });
+		// console.log('🟩🟩 shopId 🟩🟩', shopId);
+		// console.log('🟩🟩 ByShop 🟩🟩', reviewsOnShop);
 
-		console.log('🟪🟪🟪', myReservations);
-		if (myReservations.length === 0) {
-			throw new UnprocessableEntityException(
-				'해당 가게에 예약한 내역이 없습니다',
-			);
-		}
+		// // 이 유저가 작성한 리뷰(리뷰 ⊃ 회원)
+		// const reviewsByUser = await this.reviewsRepository.find({
+		// 	where: { reservation: { user: { id: userId } } },
+		// });
+		// console.log('🟨🟨 userId 🟨🟨', userId);
+		// console.log('🟨🟨 ByUser 🟨🟨', reviewsByUser);
 
-		// 정보가 일치하는 예약들 중, 리뷰 작성되지 않은 것이 있다면 리뷰저장 가능
-		const hasReview = [];
-		await myReservations.filter((el) => {
-			this.reviewsRepository.find({
-				where: { reservation: { id: el.id } },
-			});
-		});
-		if (hasReview.length !== 0) {
+		// // 회원이 이 가게에 작성한 리뷰
+		// // [ 가게가 가진 리뷰 ∩ 유저가 작성한 리뷰 ] 인 경우만 모으기
+		// const reviewsOnShopByUser = reviewsOnShop.flatMap((el) => {
+		// 	return reviewsByUser.filter((ele) => ele.id === el.id);
+		// });
+
+		// console.log('🟪🟪 reviewsOnShopByUser 🟪🟪', reviewsByUser);
+		// if (reviewsByUser.length === 0) {
+		// 	throw new UnprocessableEntityException(
+		// 		'해당 가게에 대해 작성한 리뷰가 없습니다',
+		// 	);
+		// }
+
+		// [ 회원이 이 가게에 작성한 리뷰 수 === 회원이 이 가게에 한 예약 수 ] 라면 작성 권한 없음
+		console.log('🟥🟥 reservationsByUser 🟥🟥', reservationsByUser);
+		if (reviewsByUser.length === reservationsByUser.length) {
 			throw new UnprocessableEntityException(
-				'모든 예약 건에 리뷰를 작성하셨습니다',
+				'모든 예약 건에 리뷰를 작성한 상태입니다',
 			);
 		}
 

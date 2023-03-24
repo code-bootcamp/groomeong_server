@@ -1,8 +1,5 @@
-import { forwardRef } from '@nestjs/common';
-import { Inject } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
-import { ReviewsService } from '../reviews/reviews.service';
 import { CreateShopInput } from './dto/create-shop.input';
 import { ReturnShopOutput } from './dto/return-shop.output';
 import { UpdateShopInput } from './dto/update-shop.input';
@@ -43,8 +40,7 @@ export class ShopsResolver {
 	}
 
 	@Query(() => ReturnShopOutput, {
-		description:
-			'Return : 입력한 shopId와 일치하는 가게(Shop) 데이터. 리뷰 작성 가능 여부를 함께 돌려준다.',
+		description: 'Return : 입력한 shopId와 일치하는 가게(Shop) 데이터.',
 	})
 	async fetchShop(
 		@Args('shopId') shopId: string, //
