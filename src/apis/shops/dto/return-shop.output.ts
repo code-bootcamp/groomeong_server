@@ -1,4 +1,4 @@
-import { Field, ObjectType, PartialType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Shop } from '../entities/shop.entity';
 
 @ObjectType()

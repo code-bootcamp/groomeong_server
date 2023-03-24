@@ -8,28 +8,19 @@ export class ShopImagesResolver {
 		private readonly shopImagesService: ShopImagesService, //
 	) {}
 
-	// @Query(() => ShopImage, {
-	// 	description: 'Return: 가게이미지ID를 기준으로 1개의 가게이미지 가져오기',
-	// })
-	// async fetchShopImageById(
-	// 	@Args('shopImageId') shopImageId: string, //
-	// ): Promise<ShopImage> {
-	// 	return await this.shopImagesService.findById({ shopImageId });
-	// }
-
 	@Query(() => ShopImage, {
-		description: 'Return: 가게ID를 기준으로 썸네일 가져오기',
+		description: 'Return: 입력한 가게의 썸네일 가게이미지(1개)',
 	})
-	fetchThumbnailById(
+	fetchThumbnailByShop(
 		@Args('shopId') shopId: string, //
 	): Promise<ShopImage> {
 		return this.shopImagesService.findThumbnailByShopId({ shopId });
 	}
 
 	@Query(() => [ShopImage], {
-		description: 'Return: 가게ID를 기준으로 모든 가게이미지 배열 데이터',
+		description: 'Return: 입력한 가게의 모든 가게이미지',
 	})
-	fetchShopImagesByShopId(
+	fetchShopImagesByShop(
 		@Args('shopId') shopId: string, //
 	): Promise<ShopImage[]> {
 		return this.shopImagesService.findByShopId({ shopId });

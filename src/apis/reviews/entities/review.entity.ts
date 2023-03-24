@@ -33,7 +33,7 @@ export class Review {
 	// 예약(own) : 리뷰 = 1 : 1 // FK컬럼이 생기는 곳 = 리뷰
 	@JoinColumn()
 	@OneToOne(() => Reservation)
-	reservation?: Reservation;
+	reservation: Reservation;
 
 	// // 가게 : 리뷰 = 1:N //OneToMany 받음
 	@ManyToOne(() => Shop, (shop) => shop.review)

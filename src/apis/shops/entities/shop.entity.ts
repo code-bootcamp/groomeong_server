@@ -52,7 +52,7 @@ export class Shop {
 	@Field(() => Float)
 	averageStar?: number;
 
-	// // 삭제 기능 생략되어 주석 처리함
+	// // <--- 삭제 기능 추가되면 주석 해제 --->
 	// @DeleteDateColumn({ nullable: true })
 	// @Field(() => Date)
 	// deleteAt?: Date;

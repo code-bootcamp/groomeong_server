@@ -12,30 +12,6 @@ export class ReservationsResolver {
 		private readonly reservationsService: ReservationsService, //
 	) {}
 
-	// 예약ID로 예약정보 가져오기
-	@Query(() => Reservation, {
-		description: 'Return : 예약 정보(가게, 회원, 강아지 정보 포함)',
-	})
-	async fetchReservation(
-		@Args('reservationId') reservationId: string, //
-	): Promise<Reservation> {
-		return await this.reservationsService.findById({ reservationId });
-	}
-
-	// // 회원ID로 예약정보 가져오기
-	// // 예약-회원 조인 후 주석 해제 예정
-	@UseGuards(GqlAuthGuard('access'))
-	@Query(() => [Reservation], {
-		description: 'Return : 회원으로 된 예약 정보(가게, 회원, 강아지 정보 포함)',
-	})
-	fetchReservationsByUserId(
-		@Context() context: IContext, //
-	): Promise<Reservation[]> {
-		const userId = context.req.user.id;
-		console.log(userId, '@@@@');
-		return this.reservationsService.findAllByUserId({ userId });
-	}
-
 	//예약 생성하기
 	@Mutation(() => Reservation, { description: 'Return: 생성된 신규 예약 정보' })
 	async createReservation(
@@ -47,7 +23,42 @@ export class ReservationsResolver {
 		});
 	}
 
-	//예약 생성하기
+	// 예약ID로 예약정보 가져오기
+	@Query(() => Reservation, {
+		description: 'Return : 예약 정보',
+	})
+	fetchReservation(
+		@Args('reservationId') reservationId: string, //
+	): Promise<Reservation> {
+		return this.reservationsService.findOne({ reservationId });
+	}
+
+	// 회원의 모든 예약 가져오기
+	@UseGuards(GqlAuthGuard('access'))
+	@Query(() => [Reservation], {
+		description: 'Return : 한 회원의 예약 정보',
+	})
+	fetchReservationsByUser(
+		@Context() context: IContext, //
+	): Promise<Reservation[]> {
+		const userId = context.req.user.id;
+		console.log(userId, '@@@@');
+		return this.reservationsService.findAllByUserId({ userId });
+	}
+
+	// 가게의 모든 예약 가져오기
+	@Query(() => [Reservation], {
+		description: 'Return : 한 가게의 예약 정보',
+	})
+	fetchReservationsByShop(
+		@Context() context: IContext, //
+	): Promise<Reservation[]> {
+		const userId = context.req.user.id;
+		console.log(userId, '@@@@');
+		return this.reservationsService.findAllByUserId({ userId });
+	}
+
+	//예약 삭제하기
 	@Mutation(() => Boolean, { description: ' Return: 예약 삭제하기' })
 	deleteReservation(
 		@Args('reservationId') reservationId: string, //

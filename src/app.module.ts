@@ -20,10 +20,13 @@ import { ReservationsModule } from './apis/reservations/reservation.module';
 import { ReviewsModule } from './apis/reviews/reviews.module';
 import { ShopImagesModule } from './apis/shopImages/shopImage.module';
 import { AppController } from './app.controller';
+import { AddShopReviewModule } from './apis/shop-review/shop-review.module';
 
 @Module({
 	imports: [
-		AuthModule, //
+		AddShopReviewModule,
+		ShopsModule, //
+		AuthModule,
 		DogsModule,
 		FilesModule,
 		ReservationsModule,

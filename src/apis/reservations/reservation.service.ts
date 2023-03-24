@@ -87,12 +87,16 @@ export class ReservationsService {
 	}
 
 	// 예약ID로 해당 예약정보 찾기
-	async findById({
+	async findOne({
 		reservationId,
 	}: IReservationsServiceFindById): Promise<Reservation> {
 		const result = await this.reservationsRepository.findOne({
 			where: { id: reservationId },
 			relations: ['shop', 'user', 'dog'],
+			order: {
+				date: 'ASC',
+				time: 'ASC',
+			},
 		});
 
 		if (!result) {
@@ -102,11 +106,11 @@ export class ReservationsService {
 		return result;
 	}
 
-	// 한 회원이 가진 모든 예약 찾기
+	// 회원의 모든 예약 가져오기
 	async findAllByUserId({
 		userId,
 	}: IReservationsServiceFindAllByUserId): Promise<Reservation[]> {
-		const checkUser = await this.reservationsRepository.find({
+		const result = await this.reservationsRepository.find({
 			where: { user: { id: userId } },
 			relations: ['shop', 'user', 'dog'],
 			order: {
@@ -115,20 +119,20 @@ export class ReservationsService {
 			},
 		});
 
-		if (!checkUser) {
+		if (!result) {
 			throw new UnprocessableEntityException(
 				`회원ID가 ${userId}인 예약을 찾을 수 없습니다`,
 			);
 		}
 
-		return checkUser;
+		return result;
 	}
 
-	// 한 가게가 가진 모든 예약 찾기
+	// 가게의 모든 예약 가져오기
 	async findAllByShopId({
 		shopId,
 	}: IReservationsServiceFindAllByShopId): Promise<Reservation[]> {
-		const checkUser = await this.reservationsRepository.find({
+		const result = await this.reservationsRepository.find({
 			where: { shop: { id: shopId } },
 			relations: ['shop', 'user', 'dog'],
 			order: {
@@ -137,54 +141,16 @@ export class ReservationsService {
 			},
 		});
 
-		if (!checkUser) {
-			throw new UnprocessableEntityException(
-				`가게ID가 ${shopId}인 예약을 찾을 수 없습니다`,
-			);
-		}
-
-		return checkUser;
-	}
-
-	// 삭제된 예약의 예약ID로 해당 예약 정보 가져오기
-	async findDeletedById({
-		reservationId,
-	}: IReservationsServiceFindDeletedById): Promise<Reservation> {
-		const result = await this.reservationsRepository.findOne({
-			where: { id: reservationId },
-			withDeleted: true,
-			// relations: ['shop', 'user', 'dog'],
-		});
-
 		if (!result) {
 			throw new UnprocessableEntityException(
-				`예약ID가 ${reservationId}인 예약을 찾을 수 없습니다`,
+				`가게ID가 ${shopId}인 예약을 찾을 수 없습니다`,
 			);
 		}
 
 		return result;
 	}
 
-	// // 삭제 기능 필요하다면 주석 해제
-	// async findDeletedByUserId({
-	// 	userId,
-	// }: IReservationsServiceFindAllByUserId): Promise<Reservation> {
-	// 	const result = await this.reservationsRepository.find({
-	// 		where: { user: { id: userId } },
-	// 		withDeleted: true,
-	// 		// relations: ['shop', 'user', 'dog'],
-	// 	});
-
-	// 	if (!result) {
-	// 		throw new NotFoundException(
-	// 			`회원ID가 ${userId}인 예약을 찾을 수 없습니다`,
-	// 		);
-	// 	}
-
-	// 	return result;
-	// }
-
-	//예약ID로 해당 예약 정보 삭제
+	//예약 삭제하기
 	async delete({
 		reservationId,
 	}: IReservationsServiceDelete): Promise<boolean> {
@@ -204,4 +170,43 @@ export class ReservationsService {
 
 		return result.affected ? true : false;
 	}
+
+	// // <--- 기능 필요하다면 주석 해제 --->
+	// // 삭제된 예약 정보 가져오기
+	// async findDeletedById({
+	// 	reservationId,
+	// }: IReservationsServiceFindDeletedById): Promise<Reservation> {
+	// 	const result = await this.reservationsRepository.findOne({
+	// 		where: { id: reservationId },
+	// 		withDeleted: true,
+	// 		// relations: ['shop', 'user', 'dog'],
+	// 	});
+
+	// 	if (!result) {
+	// 		throw new UnprocessableEntityException(
+	// 			`예약ID가 ${reservationId}인 예약을 찾을 수 없습니다`,
+	// 		);
+	// 	}
+
+	// 	return result;
+	// }
+
+	// // 유저의 삭제된 예약 정보 가져오기
+	// async findDeletedByUserId({
+	// 	userId,
+	// }: IReservationsServiceFindAllByUserId): Promise<Reservation> {
+	// 	const result = await this.reservationsRepository.find({
+	// 		where: { user: { id: userId } },
+	// 		withDeleted: true,
+	// 		// relations: ['shop', 'user', 'dog'],
+	// 	});
+
+	// 	if (!result) {
+	// 		throw new NotFoundException(
+	// 			`회원ID가 ${userId}인 예약을 찾을 수 없습니다`,
+	// 		);
+	// 	}
+
+	// 	return result;
+	// }
 }
