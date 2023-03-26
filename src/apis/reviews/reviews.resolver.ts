@@ -28,7 +28,7 @@ export class ReviewsResolver {
 		@Args({ name: 'page', defaultValue: 1, nullable: true })
 		page: number, //
 		@Args('shopId')
-    shopId: string, //
+		shopId: string, //
 	): Promise<Review[]> {
 		return await this.reviewsService.findByShopId({ page, shopId });
 	}

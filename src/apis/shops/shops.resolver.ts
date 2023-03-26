@@ -17,23 +17,24 @@ export class ShopsResolver {
 		description:
 			'Return : DB에 등록된 가게 중 검색값을 포함한 데이터(검색값이 Null인 경우 모든 가게). 이미지는 썸네일만 불러오며, 등록된 이미지가 있더라도 썸네일로 지정한 이미지가 없는 경우 Null(빈 배열)',
 	})
-	fetchShops(
+	async fetchShops(
 		@Args({
 			name: 'search',
 			nullable: true,
 		})
 		search: string, //
 	): Promise<Shop[]> {
-		// <--- 엘라스틱서치 적용 시 주석 해제 --->
-		// const result = await this.elasticsearchService.search({
-		// 	index: 'myshop02',
-		// 	query: {
-		// 		match: {
-		// 			address: search,
-		// 		},
-		// 	},
-		// });
-		// console.log(JSON.stringify(result, null, ' '));
+		const searchResult = await this.elasticsearchService.search({
+			index: 'autocomplete-shop-2',
+			query: {
+				bool: {
+					should: [{ prefix: { address: search } }],
+				},
+			},
+		});
+		console.log(JSON.stringify(searchResult, null, ' '));
+		searchResult.hits.hits.forEach((hit) => console.log(hit._source));
+
 		// // result에서 필요한 데이터만 뽑아 프론트에 전달하면 될듯?
 		// // 엘라스틱서치 적용 시, 서비스 구현되었을때 '가게이름'만 나오는지, 아니면 '가게 정보'전체가 다 나오는지에 따라 로직 설정이 달라질 것.
 
