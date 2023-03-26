@@ -13,6 +13,8 @@ export class ShopsResolver {
 		private readonly elasticsearchService: ElasticsearchService, //
 	) {}
 
+	autocompleteIndex = 'autocomplete-shop-28';
+
 	@Query(() => [Shop], {
 		description:
 			'Return : DB에 등록된 가게 중 검색값을 포함한 데이터(검색값이 Null인 경우 모든 가게). 이미지는 썸네일만 불러오며, 등록된 이미지가 있더라도 썸네일로 지정한 이미지가 없는 경우 Null(빈 배열)',
@@ -25,7 +27,7 @@ export class ShopsResolver {
 		search: string, //
 	): Promise<Shop[]> {
 		const searchResult = await this.elasticsearchService.search({
-			index: 'autocomplete-shop-2',
+			index: this.autocompleteIndex,
 			query: {
 				bool: {
 					should: [{ prefix: { address: search } }],
@@ -35,9 +37,6 @@ export class ShopsResolver {
 		console.log(JSON.stringify(searchResult, null, ' '));
 		searchResult.hits.hits.forEach((hit) => console.log(hit._source));
 
-		// // result에서 필요한 데이터만 뽑아 프론트에 전달하면 될듯?
-		// // 엘라스틱서치 적용 시, 서비스 구현되었을때 '가게이름'만 나오는지, 아니면 '가게 정보'전체가 다 나오는지에 따라 로직 설정이 달라질 것.
-
 		return this.shopsService.findAll();
 	}
 
@@ -45,9 +44,19 @@ export class ShopsResolver {
 		description:
 			'Return : 입력한 shopId와 일치하는 가게 데이터. 리뷰 작성 권한 확인 안 해줌 ',
 	})
-	fetchShop(
+	async fetchShop(
 		@Args('shopId') shopId: string, //
 	): Promise<Shop> {
+		const searchResult = await this.elasticsearchService.search({
+			index: this.autocompleteIndex,
+			query: {
+				match: {
+					_id: shopId,
+				},
+			},
+		});
+		console.log(JSON.stringify(searchResult, null, ' '));
+
 		return this.shopsService.findById({ shopId });
 	}
 

@@ -24,6 +24,20 @@
 			"address": {
 				"type": "text",
 				"analyzer": "my_ngram_analyzer"
+			},
+			"images": {
+				"properties": {
+					"type": "nested",
+					"id": {
+						"type": "text"
+					},
+					"isthumbnail": {
+						"type": "integer"
+					},
+					"imageurl": {
+						"type": "text"
+					}
+				}
 			}
 		}
 	}
