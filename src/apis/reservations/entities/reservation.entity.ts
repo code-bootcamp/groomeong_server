@@ -45,6 +45,9 @@ export class Reservation {
 	dog: Dog;
 
 	// Reservation : Review = 1 : 1
+	@OneToOne(() => Review, (review) => review.reservation)
+	@Field(() => Review, { nullable: true })
+	review: Review;
 
 	// 예약 생성일자
 	@CreateDateColumn()
