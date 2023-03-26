@@ -1,4 +1,4 @@
-export class MockShopImageRepository {
+export class MockShopImagesRepository {
 	mydb = [
 		{
 			//
