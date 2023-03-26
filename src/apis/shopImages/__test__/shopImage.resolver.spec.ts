@@ -28,7 +28,7 @@ const Example_ShopIamge = {
 
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
-describe('AuthResolver', () => {
+describe('shopImagesResolver', () => {
 	let mockShopImagesRepository: MockShopImagesRepository;
 
 	beforeEach(async () => {
@@ -55,7 +55,7 @@ describe('AuthResolver', () => {
 		mockShopImagesRepository = module.get(getRepositoryToken(ShopImage));
 	});
 
-	describe('AuthResolver', () => {
+	describe('shopImagesResolver', () => {
 		it('가게이미지 중 썸네일 리턴해야함', async () => {
 			const shopId = Example_ShopIamge.id;
 			const myThumbnail = await mockShopImagesRepository.findOne({
