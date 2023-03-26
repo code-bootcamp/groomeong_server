@@ -55,7 +55,7 @@ describe('AuthResolver', () => {
 		mockShopImagesRepository = module.get(getRepositoryToken(ShopImage));
 	});
 
-	describe('fetchThumbnailByShop', () => {
+	describe('AuthResolver', () => {
 		it('가게이미지 중 썸네일 리턴해야함', async () => {
 			const shopId = Example_ShopIamge.id;
 			const myThumbnail = await mockShopImagesRepository.findOne({
