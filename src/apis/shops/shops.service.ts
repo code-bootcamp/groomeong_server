@@ -1,7 +1,6 @@
 import {
 	ConflictException,
 	Injectable,
-	NotFoundException,
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -27,12 +26,15 @@ export class ShopsService {
 		private readonly shopsRepository: Repository<Shop>, //
 	) {}
 
-	// DB의 모든 가게 정보 불러오기
-	async findAll(): Promise<Shop[]> {
+	// DB의 모든 가게 정보 불러오기 + 페이징 추가
+	async findAll({ page, count }): Promise<Shop[]> {
 		const allShops = await this.shopsRepository.find({
 			relations: ['reservation', 'image', 'review'],
+			skip: (page - 1) * count,
+			take: count,
 		});
 
+		// <---------- 썸네일 이미지 관련 로직 ---------->
 		// 썸네일 이미지가 있는지 확인
 		// 썸네일이 있으면 각 가게의 image = 썸네일 이미지
 		let checkThumbnail = 0;
@@ -49,6 +51,7 @@ export class ShopsService {
 			allShops.forEach((el) => (el.image = null));
 		}
 
+		// <---------- 별점 관련 로직 ---------->
 		// 별점평균이 Null인 경우, 리턴 타입이 number 이므로 0으로 변환하기
 		allShops.forEach((el) => {
 			el.averageStar === null
@@ -64,26 +67,25 @@ export class ShopsService {
 	//
 	//
 
-	async pagingShops() {
-		//
-		const totalData = await this.findAll();
-		const totalPostCount: number = totalData.length;
-		const totalPageCount: number = Math.ceil(totalPostCount / 5);
-
-		const pages = new Array(totalPageCount);
-		let posts = [];
-		let i = 0;
-		while (i < totalPageCount) {
-			posts = [];
-			for (let j = i * 5; j < j + 5 * 5; j++) {
-				posts.push(totalData[j]);
-			}
-			pages[i] = [i, posts]; // [페이지, [페이지의 포스트들]]
-			i++;
-		}
-
-		console.log('🟥🟥pages🟥🟥', pages);
-	}
+	// async findAllWithPage({ shopsPerPage }): Promise<PagedShopOutput[]> {
+	// 	const allShops = await this.findAll();
+	// 	const allShopsCount: number = allShops.length;
+	// 	const allPageCount: number = Math.ceil(allShopsCount / shopsPerPage);
+	// 	const pagedShops = [];
+	// 	let i = 0;
+	// 	while (i < allPageCount) {
+	// 		for (
+	// 			let j = i * shopsPerPage;
+	// 			j < i * shopsPerPage + shopsPerPage && j < allShopsCount;
+	// 			j++
+	// 		) {
+	// 			pagedShops.push({ page: i + 1, shop: allShops[j] });
+	// 		}
+	// 		i++;
+	// 	}
+	// 	console.log('🟥🟥 pagedShops 🟥🟥', pagedShops);
+	// 	return pagedShops;
+	// }
 
 	//
 	//

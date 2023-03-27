@@ -1,7 +1,6 @@
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { CreateShopInput } from './dto/create-shop.input';
-import { PagedShopOutput, ReturnShopOutput } from './dto/return-shop.output';
 import { UpdateShopInput } from './dto/update-shop.input';
 import { Shop } from './entities/shop.entity';
 import { ShopsService } from './shops.service';
@@ -25,6 +24,8 @@ export class ShopsResolver {
 			nullable: true,
 		})
 		search: string, //
+		@Args('page') page: number,
+		@Args('count') count: number,
 	): Promise<Shop[]> {
 		const searchResult = await this.elasticsearchService.search({
 			index: this.autocompleteIndex,
@@ -37,57 +38,10 @@ export class ShopsResolver {
 		console.log(JSON.stringify(searchResult, null, ' '));
 		searchResult.hits.hits.forEach((hit) => console.log(hit._source));
 
-		return this.shopsService.findAll();
+		return this.shopsService.findAll({ page, count });
 	}
 
-	@Query(() => [PagedShopOutput], {
-		description:
-			'Return : [페이지, [페이지의 포스트들]], DB에 등록된 가게 중 검색값을 포함한 데이터(검색값이 Null인 경우 모든 가게). 이미지는 썸네일만 불러오며, 등록된 이미지가 있더라도 썸네일로 지정한 이미지가 없는 경우 Null(빈 배열)',
-	})
-	async fetchShopsWithPaging(
-		@Args({
-			name: 'search',
-			nullable: true,
-		})
-		search: string, //
-		@Args('postsPerPage') postsPerPage: number,
-	): Promise<PagedShopOutput[]> {
-		// const searchResult = await this.elasticsearchService.search({
-		// 	index: this.autocompleteIndex,
-		// 	query: {
-		// 		bool: {
-		// 			should: [{ prefix: { address: search } }],
-		// 		},
-		// 	},
-		// });
-		// console.log(JSON.stringify(searchResult, null, ' '));
-		// searchResult.hits.hits.forEach((hit) => console.log(hit._source));
-
-		const allShopsData = await this.shopsService.findAll();
-		const allDataCount: number = allShopsData.length;
-		console.log(allDataCount);
-		const allPageCount: number = Math.ceil(allDataCount / postsPerPage);
-
-		const pagedShops = []; //페이지 수만큼 자리가 있는 배열 생성
-		let i = 0;
-		while (i < allPageCount) {
-			// 페이지 수만큼 반복한다
-			for (
-				let j = i * postsPerPage;
-				j < i * postsPerPage + postsPerPage && j < allDataCount;
-				j++
-			) {
-				// 1페이지 ---> 가게 0번 ~ 4번 해당
-				// i = 1 ---> j = [0,1,2,3,4]
-				pagedShops.push({ page: i + 1, shop: allShopsData[j] });
-			}
-			i++;
-		}
-		console.log('🟥🟥 pagedShops 🟥🟥', pagedShops);
-		return pagedShops;
-	}
-
-	@Query(() => ReturnShopOutput, {
+	@Query(() => Shop, {
 		description:
 			'Return : 입력한 shopId와 일치하는 가게 데이터. 리뷰 작성 권한 확인 안 해줌 ',
 	})
