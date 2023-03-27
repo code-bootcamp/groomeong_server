@@ -24,7 +24,7 @@ services:
   #   image: redis:latest
   #   ports:
   #     - 6379:6379
-  
+
   # elasticsearch:
   #   image: elasticsearch:7.17.0
   #   environment:

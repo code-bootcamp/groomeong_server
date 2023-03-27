@@ -1,6 +1,10 @@
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { CreateShopInput } from './dto/create-shop.input';
+import {
+	AutocompleteShopsOutput,
+	ReturnShopOutput,
+} from './dto/return-shop.output';
 import { UpdateShopInput } from './dto/update-shop.input';
 import { Shop } from './entities/shop.entity';
 import { ShopsService } from './shops.service';
@@ -12,32 +16,41 @@ export class ShopsResolver {
 		private readonly elasticsearchService: ElasticsearchService, //
 	) {}
 
-	autocompleteIndex = 'autocomplete-shop-28';
+	@Query(() => [AutocompleteShopsOutput], {
+		nullable: true,
+		description:
+			'Return : 검색값(주소: 구, 동 검색 가능)을 포함한 데이터 배열(리뷰 점수 높은 순 정렬). 주소를 포함하는 데이터가 없는 경우 null.',
+	})
+	async autocompleteShops(
+		@Args({
+			name: 'search',
+			nullable: true,
+		})
+		searchKeyword: string, //
+	): Promise<AutocompleteShopsOutput[]> {
+		const searchResult = await this.elasticsearchService.search({
+			index: 'autocomplete-shop-1',
+			query: {
+				multi_match: {
+					query: searchKeyword,
+					type: 'most_fields',
+					fields: ['address.analyzed', 'address'],
+				},
+			},
+		});
+		return this.shopsService.sortByAvgStar({
+			hits: searchResult.hits.hits,
+		});
+	}
 
 	@Query(() => [Shop], {
 		description:
 			'Return : DB에 등록된 가게 중 검색값을 포함한 데이터(검색값이 Null인 경우 모든 가게). 이미지는 썸네일만 불러오며, 등록된 이미지가 있더라도 썸네일로 지정한 이미지가 없는 경우 Null(빈 배열)',
 	})
 	async fetchShops(
-		@Args({
-			name: 'search',
-			nullable: true,
-		})
-		search: string, //
 		@Args('page') page: number,
 		@Args('count') count: number,
 	): Promise<Shop[]> {
-		const searchResult = await this.elasticsearchService.search({
-			index: this.autocompleteIndex,
-			query: {
-				bool: {
-					should: [{ prefix: { address: search } }],
-				},
-			},
-		});
-		console.log(JSON.stringify(searchResult, null, ' '));
-		searchResult.hits.hits.forEach((hit) => console.log(hit._source));
-
 		return this.shopsService.findAll({ page, count });
 	}
 
@@ -48,16 +61,6 @@ export class ShopsResolver {
 	async fetchShop(
 		@Args('shopId') shopId: string, //
 	): Promise<Shop> {
-		const searchResult = await this.elasticsearchService.search({
-			index: this.autocompleteIndex,
-			query: {
-				match: {
-					_id: shopId,
-				},
-			},
-		});
-		console.log(JSON.stringify(searchResult, null, ' '));
-
 		return this.shopsService.findById({ shopId });
 	}
 
