@@ -74,6 +74,7 @@ import { AddShopReviewModule } from './apis/shop-review/shop-review.module';
 		}),
 		CacheModule.register<RedisClientOptions>({
 			store: redisStore,
+			// url: `redis://${process.env.REDIS_URL}:6379`,
 			url: 'redis://my-redis:6379',
 			isGlobal: true,
 		}),

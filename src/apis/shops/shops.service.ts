@@ -19,6 +19,7 @@ import {
 	IShopsServiceUpdate,
 } from './interface/shops-service.interface';
 import axios from 'axios';
+import { districtCode } from 'src/commons/utils/addresscode';
 
 @Injectable()
 export class ShopsService {
@@ -131,9 +132,18 @@ export class ShopsService {
 			);
 		}
 
+		// 구지역을 코드로 뽑기 위한 로직
+		const district = _address.split(' ')[1];
+		const code = await districtCode({ district });
+
 		const [lat, lng] = await this.getLatLngByAddress({ address: _address });
 
-		return await this.shopsRepository.save({ ...createShopInput, lat, lng });
+		return await this.shopsRepository.save({
+			...createShopInput,
+			lat,
+			lng,
+			code,
+		});
 	}
 
 	async getLatLngByAddress({

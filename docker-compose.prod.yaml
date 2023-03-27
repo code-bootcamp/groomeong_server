@@ -2,7 +2,8 @@ version: '3.7'
 
 services:
   my-backend:
-    image: asia.gcr.io/project-groomeong/tocatoca:2.1
+    image: asia.gcr.io/project-groomeong/tocatoca:2.9
+    platform: linux/x86_64
     build:
       context: .
       dockerfile: Dockerfile.prod
@@ -23,3 +24,17 @@ services:
   #   image: redis:latest
   #   ports:
   #     - 6379:6379
+  
+  # elasticsearch:
+  #   image: elasticsearch:7.17.0
+  #   environment:
+  #     discovery.type: single-node
+  #   ports:
+  #     - 9200:9200
+
+  # logstash:
+  #   image: logstash:7.17.0
+  #   volumes:
+  #     - ./elk/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+  #     - ./elk/logstash/mysql-connector-java-8.0.28.jar:/usr/share/logstash/mysql-connector-java-8.0.28.jar
+  #     - ./elk/logstash/auto_template.json:/usr/share/logstash/auto_template.json
