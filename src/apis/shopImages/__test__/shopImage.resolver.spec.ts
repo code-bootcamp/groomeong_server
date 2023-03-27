@@ -72,12 +72,26 @@ describe('shopImagesResolver', () => {
 	});
 
 	describe('createShopImage', () => {
-		it('가게이미지 리턴해야함', async () => {
+		it('생성한 가게이미지 리턴해야함', async () => {
 			const input = Example_ShopImage;
 			const result = await mockShopImagesResolver.save({
 				imageUrl: Example_ShopImage.imageUrl,
 				isThumbnail: Example_ShopImage.isThumbnail,
 				shopId: Example_ShopImage.shop.id,
+			});
+
+			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('imageUrl');
+			expect(result).toHaveProperty('isThumbnail');
+			expect(result).toHaveProperty('shop');
+		});
+	});
+
+	describe('updateShopImage', () => {
+		it('업데이트한 가게이미지 리턴해야함', async () => {
+			const updateShopImageInput = Example_ShopImage;
+			const result = await mockShopImagesResolver.updateShopImage({
+				updateShopImageInput,
 			});
 
 			expect(result).toHaveProperty('id');

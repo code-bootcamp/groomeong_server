@@ -1,22 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ShopImage } from '../entities/shopImages.entity';
-import { ShopImagesResolver } from '../shopImage.resolver';
-import { ShopImagesService } from '../shopImage.service';
-import { MockShopImagesRepository } from './shopImage.moking.dummy';
 
-const shopImageResolverFetchThumbnailByShop = //
-	jest.fn(() => ShopImage);
-const shopImageResolverFetchShopImagesByShop = jest.fn(() =>
-	//
-	jest.fn(() => ShopImage),
-);
-const shopImageResolverCreateShopImage = jest.fn(() =>
-	//
-	jest.fn(() => ShopImage),
-);
-const shopImageResolverDeleteShopImage = jest.fn(() => true);
 const Example_ShopIamge = {
 	id: '1e31187d-5c71-4bff-b124-d01081306e07',
 	imageUrl: 'Test-url-222-asdfsadfasdf-asdfsadf',
@@ -25,8 +10,7 @@ const Example_ShopIamge = {
 		id: '69f836c4-e0e4-4841-960d-2be40d150c44',
 	},
 };
-
-type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
+const { findThumbnailByShopId,findByShopId,save, update, delete} = require('../shopImage.service')
 
 describe('shopImagesService', () => {
 	let mockShopImagesRepository: MockShopImagesRepository;
