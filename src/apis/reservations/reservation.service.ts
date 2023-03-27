@@ -112,7 +112,7 @@ export class ReservationsService {
 	}: IReservationsServiceFindAllByUserId): Promise<Reservation[]> {
 		const result = await this.reservationsRepository.find({
 			where: { user: { id: userId } },
-			relations: ['shop', 'user', 'dog'],
+			relations: ['shop', 'user', 'dog', 'review'],
 			order: {
 				date: 'ASC',
 				time: 'ASC',
