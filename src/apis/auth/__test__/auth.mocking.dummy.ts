@@ -1,4 +1,4 @@
-export class MockUsersRepository {
+export class MockAuthRepository {
 	user = [
 		{
 			id: '3e3f6340-1164-4b5b-a2fd-e067f180f59f',

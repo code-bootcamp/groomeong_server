@@ -1,38 +1,54 @@
-import { Test } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { MockUsersRepository } from './auth.mocking.dummy';
-import { CACHE_MANAGER, UnprocessableEntityException } from '@nestjs/common';
-import { Cache } from 'cache-manager';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { Repository } from 'typeorm';
-import { UsersService } from 'src/apis/users/user.service';
+import { CACHE_MANAGER } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from 'src/apis/users/entities/user.entity';
+import { UsersService } from 'src/apis/users/user.service';
+import { Repository } from 'typeorm';
+import { AuthResolver } from '../auth.resolver';
+import { AuthService } from '../auth.service';
+import { MockUsersRepository } from './auth.mocking.dummy';
 
-const EXAMPLE_ACCESS_TOKEN = 'exampleAccessToken';
-const EXAMPLE_AUTH = true;
-const EXAMPLE_USER: User = {
-	id: 'exampleUserId',
-	name: 'exampleUserName',
-	email: 'a@a.com',
-	password: 'exampleUserPassword',
-	phone: 'exampleUserPhone',
-	image: 'exampleUserImage',
-	createAt: new Date(),
-	deleteAt: new Date(),
-	updateAt: new Date(),
-	dogs: [null],
-	reservation: [null],
+const EXAMPLE_AUTH = {
+	token: EXAMPLE_TOKEN,
 };
+const EXAMPLE_ACCESS_TOKEN = 'exampleAccessToken';
+const EXAMPLE_REFRESH_TOKEN = 'exampleRefreshToken';
+// const EXAMPLE_ACCESS_TOKEN_NEW = 'new-exampleAccessToken';
+// const EXAMPLE_REFRESH_TOKEN_NEW = 'new-exampleRefreshToken';
+const EXAMPLE_USER_INPUT = {
+	email: 'a@a.com',
+	password: 'password1',
+};
+const EXAMPLE_Req = {
+	headers: {
+		authorization: `Bearer exampleAccessToken`,
+		cookie: `refreshToken=exampleRefreshToken`,
+	},
+};
+const EXAMPLE_Res = {
+	headers: {
+		cookie: `refreshToken=exampleRefreshToken}`,
+	},
+};
+
+const authServiceLoginMock = jest.fn(() => EXAMPLE_ACCESS_TOKEN);
+const authServiceLogoutMock = jest.fn(() => console.log('로그아웃에 성공!!'));
+const authServiceRestoreAccessToken = jest.fn(() => EXAMPLE_ACCESS_TOKEN);
+const authServiceGetAccessToken = jest.fn(() => EXAMPLE_ACCESS_TOKEN);
+const authServiceSetRefreshToken = jest.fn(() => EXAMPLE_REFRESH_TOKEN);
+const authServiceLoginOAuth = jest.fn(() => console.log('로그인 화면 전송!!'));
 
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('AuthResolver', () => {
+	let authService: AuthService;
 	let usersService: UsersService;
-	let mockUsersRepository: MockRepository<User>;
+	let mockUsersRepository: MockUsersRepository;
 	let cache: Cache;
 
 	beforeEach(async () => {
-		const usersModule = await Test.createTestingModule({
+		const module: TestingModule = await Test.createTestingModule({
 			imports: [
 				MailerModule.forRootAsync({
 					useFactory: () => ({
@@ -50,6 +66,19 @@ describe('AuthResolver', () => {
 				}),
 			],
 			providers: [
+				AuthResolver,
+				{
+					provide: AuthService,
+					useClass: jest.fn(() => ({
+						//
+						login: authServiceLoginMock,
+						logout: authServiceLogoutMock,
+						restoreAccessToken: authServiceRestoreAccessToken,
+						getAccessToken: authServiceGetAccessToken,
+						setRefreshToken: authServiceSetRefreshToken,
+						loginOAuth: authServiceLoginOAuth,
+					})),
+				},
 				UsersService,
 				{
 					provide: getRepositoryToken(User),
@@ -65,41 +94,18 @@ describe('AuthResolver', () => {
 			],
 		}).compile();
 
-		cache = usersModule.get(CACHE_MANAGER);
-		usersService = usersModule.get<UsersService>(UsersService);
-		mockUsersRepository = usersModule.get(getRepositoryToken(User));
+		cache = module.get(CACHE_MANAGER);
+		authService = module.get<AuthService>(AuthService);
+		usersService = module.get<UsersService>(UsersService);
+		mockUsersRepository = module.get(getRepositoryToken(User));
 	});
 
 	describe('login', async () => {
-		it('브라우저에서 입력한 이메일로 유저 정보 찾아오기', () => {
-			const email = EXAMPLE_USER.email;
-			const result = mockUsersRepository.findOne({ where: { email } });
+		it('accessToken(JWT) 리턴', async () => {
+			const email = EXAMPLE_USER_INPUT.email;
+			const user = await usersService.findOneByEmail({ email });
 
-			expect(usersService.findOneByEmail({ email })).toStrictEqual(result);
+			expect().toEqual(user);
 		});
-
-		it(
-			'찾아온 유저 정보의 비밀번호와 브라우저에서 입력된 비밀번호가 일치하지 않으면 에러던지기',
-		),
-			() => {
-				const myPassword = EXAMPLE_USER.email;
-				const dbpassword = mockUsersRepository.findOne({ where: { email } });
-				try {
-					//
-				} catch (error) {
-					expect(error).toBeInstanceOf(UnprocessableEntityException);
-				}
-			};
-
-		// it(
-		// 	'일치하는 유저가 있고 비밀번호도 맞았다면? accessToken 를 => JWT 만들어서 브라우저에 전달',
-		// ),
-		// 	() => {
-		//     expect(). //JWT 리턴하려면 어떤 메서드를 사용?
-		// 	};
 	});
-
-	describe('logout', () => {});
-
-	describe('restoreAccessToken', () => {});
 });
