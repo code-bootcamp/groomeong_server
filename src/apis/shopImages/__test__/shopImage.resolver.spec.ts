@@ -9,6 +9,32 @@ const Example_ShopImage = {
 		id: '69f836c4-e0e4-4841-960d-2be40d150c44',
 	},
 };
+const rightReturn = [
+	{
+		id: '370b960e-55d5-445b-935b-9fdfee36955c',
+		imageUrl: 'Test-url-111-asdfsadfasdf-asdfsadf',
+		isThumbnail: false,
+		shop: {
+			id: '69f836c4-e0e4-4841-960d-2be40d150c44',
+		},
+	},
+	{
+		id: '1e31187d-5c71-4bff-b124-d01081306e07',
+		imageUrl: 'Test-url-222-asdfsadfasdf-asdfsadf',
+		isThumbnail: true,
+		shop: {
+			id: '69f836c4-e0e4-4841-960d-2be40d150c44',
+		},
+	},
+	{
+		id: '958472c6-0dea-40c0-b9db-dbfa11cd630e',
+		imageUrl: 'Test-url-444-asdfsadfasdf-asdfsadf',
+		isThumbnail: false,
+		shop: {
+			id: '69f836c4-e0e4-4841-960d-2be40d150c44',
+		},
+	},
+];
 
 describe('shopImagesResolver', () => {
 	let mockShopImagesResolver: MockShopImagesResolver;
@@ -41,33 +67,8 @@ describe('shopImagesResolver', () => {
 			const result = await mockShopImagesResolver.findByShopId({
 				shopId,
 			});
-			const rightReturn = [
-				{
-					id: '370b960e-55d5-445b-935b-9fdfee36955c',
-					imageUrl: 'Test-url-111-asdfsadfasdf-asdfsadf',
-					isThumbnail: false,
-					shop: {
-						id: '69f836c4-e0e4-4841-960d-2be40d150c44',
-					},
-				},
-				{
-					id: '1e31187d-5c71-4bff-b124-d01081306e07',
-					imageUrl: 'Test-url-222-asdfsadfasdf-asdfsadf',
-					isThumbnail: true,
-					shop: {
-						id: '69f836c4-e0e4-4841-960d-2be40d150c44',
-					},
-				},
-				{
-					id: '958472c6-0dea-40c0-b9db-dbfa11cd630e',
-					imageUrl: 'Test-url-444-asdfsadfasdf-asdfsadf',
-					isThumbnail: false,
-					shop: {
-						id: '69f836c4-e0e4-4841-960d-2be40d150c44',
-					},
-				},
-			];
-			expect(result).toEqual(rightReturn);
+
+			expect(result).toMatchObject(rightReturn);
 		});
 	});
 

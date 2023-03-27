@@ -2,6 +2,7 @@ import {
 	ConflictException,
 	Injectable,
 	NotFoundException,
+	UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -29,15 +30,17 @@ export class ShopImagesService {
 	}: IShopImagesServiceFindThumbnail): Promise<ShopImage> {
 		const checkShop = await this.shopImageRepository.findOne({
 			where: { shop: { id: shopId } },
-			relations: ['shop'],
 		});
 
 		if (!checkShop) {
-			throw new NotFoundException(`썸네일 이미지를 찾을 수 없습니다`);
+			throw new UnprocessableEntityException(
+				`썸네일 이미지를 찾을 수 없습니다`,
+			);
 		}
 
 		return await this.shopImageRepository.findOne({
 			where: { shop: { id: shopId }, isThumbnail: true },
+			relations: ['shop'],
 		});
 	}
 
@@ -48,7 +51,7 @@ export class ShopImagesService {
 		const checkShop = await this.shopsService.findById({ shopId });
 
 		if (!checkShop) {
-			throw new NotFoundException(
+			throw new UnprocessableEntityException(
 				`가게ID가 ${shopId} 인 가게 정보를 찾을 수 없습니다`,
 			);
 		}
@@ -101,7 +104,7 @@ export class ShopImagesService {
 		});
 
 		if (!checkImage) {
-			throw new NotFoundException(
+			throw new UnprocessableEntityException(
 				`가게이미지ID가 ${shopImageId}인 이미지를 찾을 수 없습니다`,
 			);
 		}

@@ -108,7 +108,7 @@ export class MockShopImagesResolver {
 }
 
 // <========== 서비스 ==========>
-export class MockShopImagesService {
+export class MockShopImagesRepository {
 	mydb = [
 		{
 			id: '370b960e-55d5-445b-935b-9fdfee36955c',
@@ -143,4 +143,43 @@ export class MockShopImagesService {
 			},
 		},
 	];
+
+	findOne({ where, relations }) {
+		const shopId = where.shop.id;
+		const shopImage = this.mydb.filter(
+			(el) => el.shop.id === shopId && el.isThumbnail === true,
+		);
+		if (shopImage.length) {
+			return shopImage[0];
+		}
+		return null;
+	}
+
+	find({ where }) {
+		return this.mydb.filter((el) => el.shop.id === where.shop.id);
+	}
+
+	save({ imageUrl: imageUrl, isThumbnail: isThumbnail, shop: { id: shopId } }) {
+		const _id = this.uuidv4();
+		this.mydb.push({
+			id: _id,
+			imageUrl,
+			isThumbnail,
+			shop: { id: shopId },
+		});
+		const _save = this.mydb.filter((el) => el.id === _id)[0];
+		return _save;
+	}
+
+	// 테스트용 id 생성을 위한 함수
+	uuidv4() {
+		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+			/[xy]/g,
+			function (c) {
+				const r = (Math.random() * 16) | 0,
+					v = c == 'x' ? r : (r & 0x3) | 0x8;
+				return v.toString(16);
+			},
+		);
+	}
 }
