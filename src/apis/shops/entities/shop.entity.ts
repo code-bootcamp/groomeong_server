@@ -52,11 +52,6 @@ export class Shop {
 	@Field(() => Float)
 	averageStar?: number;
 
-	// // <--- 삭제 기능 추가되면 주석 해제 --->
-	// @DeleteDateColumn({ nullable: true })
-	// @Field(() => Date)
-	// deleteAt?: Date;
-
 	// 가게(own):예약 = 1:N
 	@OneToMany(() => Reservation, (reservation) => reservation.shop, {
 		nullable: true,
@@ -81,4 +76,9 @@ export class Shop {
 	// logstash 데이터 폴링 기준 칼럼
 	@UpdateDateColumn()
 	updatedAt: Date;
+
+	// // <--- 삭제 기능 추가되면 주석 해제 --->
+	// @DeleteDateColumn({ nullable: true })
+	// @Field(() => Date)
+	// deleteAt?: Date;
 }

@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Shop } from './entities/shop.entity';
+import { ShopImagesService } from '../shopImages/shopImage.service';
 import {
 	IShopsServiceCreate,
 	IShopsServiceDelete,
@@ -172,11 +173,13 @@ export class ShopsService {
 		const _averageStar = myShop.averageStar === 0 ? null : myShop.averageStar;
 		console.log(myShop);
 
-		return this.shopsRepository.save({
+		const result = this.shopsRepository.save({
 			...myShop,
 			...updateShopInput,
 			averageStar: _averageStar,
 		});
+
+		return result;
 	}
 
 	// // <--- 기능 필요하면 주석 해제 --->
