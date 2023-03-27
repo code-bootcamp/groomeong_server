@@ -1,4 +1,4 @@
-import { Field, Float, ObjectType } from '@nestjs/graphql';
+import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Reservation } from 'src/apis/reservations/entities/reservation.entity';
 import { Review } from 'src/apis/reviews/entities/review.entity';
 import { ShopImage } from 'src/apis/shopImages/entities/shopImages.entity';
@@ -38,6 +38,10 @@ export class Shop {
 	@Column({ length: 100 })
 	@Field(() => String)
 	address: string;
+
+	@Column()
+	@Field(() => Int)
+	code: number;
 
 	@Column()
 	@Field(() => String)

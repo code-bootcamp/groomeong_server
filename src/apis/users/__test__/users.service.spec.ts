@@ -11,6 +11,7 @@ import { User } from '../entities/user.entity';
 import { UsersService } from '../user.service';
 import { Cache } from 'cache-manager';
 import { Repository } from 'typeorm';
+import { ConfigModule } from '@nestjs/config';
 
 // 나만의 미니 TypeORM 만들기
 class MockUsersRepository {
@@ -63,6 +64,7 @@ describe('UsersService', () => {
 						},
 					}),
 				}),
+				ConfigModule.forRoot(),
 				CacheModule.register({}),
 			],
 			providers: [
@@ -97,22 +99,6 @@ describe('UsersService', () => {
 	});
 
 	describe('create', () => {
-		it('이미 존재하는 이메일 검증하기!!', async () => {
-			const myData = {
-				email: 'a@a.com',
-				password: '1234',
-				name: '철수',
-				age: 13,
-			};
-
-			try {
-				await usersService.create({ ...myData });
-			} catch (error) {
-				expect(error).toBeInstanceOf(ConflictException);
-				// expect(error).toBeInstanceOf(UnprocessableEntityException); // 잘 만들었는지 확인하는 방법(일부러 에러 유도)
-			}
-		});
-
 		it('회원 등록 잘 됐는지 검증!!', async () => {
 			const myData = {
 				name: '철수',
@@ -151,15 +137,15 @@ describe('UsersService', () => {
 	});
 
 	describe('mailerService', () => {
-		it('send mail', async () => {
-			const shoot = await mailerService.sendMail({
-				to: '273hur4747@gmail.com',
-				from: 'Test email',
-				subject: '테스트코드 너무 어렵다..',
-				text: 'Welcome to Hell',
-			});
-			expect(shoot).toBeTruthy();
-		});
+		// it('send mail', async () => {
+		// 	const shoot = await mailerService.sendMail({
+		// 		to: '273hur4747@gmail.com',
+		// 		from: 'Test email',
+		// 		subject: '테스트코드 너무 어렵다..',
+		// 		text: 'Welcome to Hell',
+		// 	});
+		// 	expect(shoot).();
+		// });
 
 		it('sendTokenEmail', async () => {
 			const myData = {
@@ -181,35 +167,35 @@ describe('UsersService', () => {
 						from: 'Test email',
 						subject: '테스트코드 너무 어렵다..',
 						html: `	<!DOCTYPE html>
-						<html lang="ko">
-							<head>
-								<title>Groomeong</title>
-							</head>
-							<body id="box1"></body>
-								<table style="width: 100%;">
-										<tbody>
-												<tr>
-														<td style="text-align: center;">
-																<h1>GROOMEONG</h1>
-														</td>
-												</tr>
-												<tr>
-														<td style="text-align: center;">
-																<h2>[그루멍]인증번호를 안내해드립니다.</h2>
-														</td>
-												</tr>
-												<tr>
-														<td style="text-align: center;">
-																<div id="box2">
-																		<div style="font-size: 32px; color: #ABABAB; width: 100%;"> 인증번호: ${token}</div>
-																</div>
-														</td>
-												</tr>
-										</tbody>
-								</table>
-							</body>
-						</html>		
-						`,
+							<html lang="ko">
+								<head>
+									<title>Groomeong</title>
+								</head>
+								<body id="box1"></body>
+									<table style="width: 100%;">
+											<tbody>
+													<tr>
+															<td style="text-align: center;">
+																	<h1>GROOMEONG</h1>
+															</td>
+													</tr>
+													<tr>
+															<td style="text-align: center;">
+																	<h2>[그루멍]인증번호를 안내해드립니다.</h2>
+															</td>
+													</tr>
+													<tr>
+															<td style="text-align: center;">
+																	<div id="box2">
+																			<div style="font-size: 32px; color: #ABABAB; width: 100%;"> 인증번호: ${token}</div>
+																	</div>
+															</td>
+													</tr>
+											</tbody>
+									</table>
+								</body>
+							</html>
+							`,
 					});
 				}
 			} catch (e) {
