@@ -4,6 +4,7 @@ import { ReviewsService } from 'src/apis/reviews/reviews.service';
 import { Shop } from 'src/apis/shops/entities/shop.entity';
 import { ShopsService } from 'src/apis/shops/shops.service';
 import { Repository } from 'typeorm';
+import { ShopWithAuthOutput } from './dto/return-shop-review.output';
 
 @Injectable()
 export class AddShopReviewService {
@@ -14,7 +15,7 @@ export class AddShopReviewService {
 		private readonly shopsRepository: Repository<Shop>, //
 	) {}
 
-	public async AddShopWithReviewAuth({ shopId, userId }) {
+	async AddShopWithReviewAuth({ shopId, userId }): Promise<ShopWithAuthOutput> {
 		// 예약자가 userId인 가게
 		const reservationsByUser = await this.shopsRepository.find({
 			where: { id: shopId, reservation: { user: { id: userId } } },
