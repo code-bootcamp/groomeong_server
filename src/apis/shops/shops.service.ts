@@ -58,7 +58,38 @@ export class ShopsService {
 
 		return allShops;
 	}
+	//
+	//
+	//
+	//
+	//
 
+	async pagingShops() {
+		//
+		const totalData = await this.findAll();
+		const totalPostCount: number = totalData.length;
+		const totalPageCount: number = Math.ceil(totalPostCount / 5);
+
+		const pages = new Array(totalPageCount);
+		let posts = [];
+		let i = 0;
+		while (i < totalPageCount) {
+			posts = [];
+			for (let j = i * 5; j < j + 5 * 5; j++) {
+				posts.push(totalData[j]);
+			}
+			pages[i] = [i, posts]; // [페이지, [페이지의 포스트들]]
+			i++;
+		}
+
+		console.log('🟥🟥pages🟥🟥', pages);
+	}
+
+	//
+	//
+	//
+	//
+	//
 	// 가게 데이터 찾기
 	async findById({ shopId }: IShopsServiceFindById): Promise<Shop> {
 		const myShop = await this.shopsRepository.findOne({
