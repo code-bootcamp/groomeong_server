@@ -2,25 +2,24 @@ version: '3.7'
 
 services:
   my-backend:
-    image: asia.gcr.io/project-groomeong/tocatoca:1.6
+    image: asia.gcr.io/project-groomeong/tocatoca:2.1
     build:
       context: .
-      dockerfile: Dockerfile
-    ports:
-      - 3000:3000
-    env_file:
-      - ./.env.prod
+      dockerfile: Dockerfile.prod
+    # ports:
+    #   - 3000:3000
+    # env_file:
+    #   - ./.env.prod
 
-  my-database:
-    image: mysql:latest
-    environment:
-      MYSQL_DATABASE: 'groo-meong.prod'
-      MYSQL_ROOT_PASSWORD: 'root'
-    ports:
-      - 3306:3306
+  # my-database:
+  #   image: mysql:latest
+  #   environment:
+  #     MYSQL_DATABASE: 'groomeong-prod'
+  #     MYSQL_ROOT_PASSWORD: 'root'
+  #   ports:
+  #     - 3306:3306
 
-  my-redis:
-    image: redis:latest
-    ports:
-      - 6379:6379
-      
+  # my-redis:
+  #   image: redis:latest
+  #   ports:
+  #     - 6379:6379

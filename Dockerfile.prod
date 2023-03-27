@@ -1,0 +1,11 @@
+FROM node:14
+
+COPY ./package.json /teamproject/
+COPY ./yarn.lock /teamproject/
+WORKDIR /teamproject/
+RUN yarn install --production
+
+COPY . /teamproject/
+
+RUN yarn build
+CMD yarn start:prod
