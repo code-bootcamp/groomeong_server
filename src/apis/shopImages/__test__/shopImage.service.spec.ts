@@ -1,23 +1,12 @@
+import {
+	ConflictException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { ShopImage } from '../entities/shopImages.entity';
-import { ShopImagesResolver } from '../shopImage.resolver';
 import { ShopImagesService } from '../shopImage.service';
 import { MockShopImagesRepository } from './shopImage.moking.dummy';
 
-const shopImageResolverFetchThumbnailByShop = //
-	jest.fn(() => ShopImage);
-const shopImageResolverFetchShopImagesByShop = jest.fn(() =>
-	//
-	jest.fn(() => ShopImage),
-);
-const shopImageResolverCreateShopImage = jest.fn(() =>
-	//
-	jest.fn(() => ShopImage),
-);
-const shopImageResolverDeleteShopImage = jest.fn(() => true);
-const Example_ShopIamge = {
+const Example_ShopImage = {
 	id: '1e31187d-5c71-4bff-b124-d01081306e07',
 	imageUrl: 'Test-url-222-asdfsadfasdf-asdfsadf',
 	isThumbnail: true,
@@ -25,47 +14,135 @@ const Example_ShopIamge = {
 		id: '69f836c4-e0e4-4841-960d-2be40d150c44',
 	},
 };
+const rightReturn = [
+	{
+		id: '370b960e-55d5-445b-935b-9fdfee36955c',
+		imageUrl: 'Test-url-111-asdfsadfasdf-asdfsadf',
+		isThumbnail: false,
+		shop: {
+			id: '69f836c4-e0e4-4841-960d-2be40d150c44',
+		},
+	},
+	{
+		id: '1e31187d-5c71-4bff-b124-d01081306e07',
+		imageUrl: 'Test-url-222-asdfsadfasdf-asdfsadf',
+		isThumbnail: true,
+		shop: {
+			id: '69f836c4-e0e4-4841-960d-2be40d150c44',
+		},
+	},
+	{
+		id: '958472c6-0dea-40c0-b9db-dbfa11cd630e',
+		imageUrl: 'Test-url-444-asdfsadfasdf-asdfsadf',
+		isThumbnail: false,
+		shop: {
+			id: '69f836c4-e0e4-4841-960d-2be40d150c44',
+		},
+	},
+];
 
-type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
+const mockShopImagesService = {
+	findThumbnailByShopId: jest.fn((shopId: string) => {
+		return Example_ShopImage;
+	}),
+};
 
 describe('shopImagesService', () => {
 	let mockShopImagesRepository: MockShopImagesRepository;
-	let shopImageService: ShopImagesService;
+	let shopImagesService: ShopImagesService;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [
-				//
-			],
 			providers: [
-				//
-				ShopImagesService,
 				{
 					provide: ShopImagesService,
-					useClass: jest.fn(() => ({
-						//
-					})),
+					useValue: mockShopImagesService,
+				},
+				{
+					provide: MockShopImagesRepository,
+					useClass: MockShopImagesRepository,
 				},
 			],
 		}).compile();
 
-		mockShopImagesRepository = module.get(getRepositoryToken(ShopImage));
-		shopImageService = module.get<ShopImagesService>(ShopImagesService);
+		shopImagesService = module.get<ShopImagesService>(ShopImagesService);
+		mockShopImagesRepository = module.get(MockShopImagesRepository);
 	});
+	const shopId = Example_ShopImage.shop.id;
+	const imageUrl = Example_ShopImage.imageUrl;
+	const isThumbnail = Example_ShopImage.isThumbnail;
+	const checkShop = jest.fn(({ shopId }) => Example_ShopImage);
+	const checkURL = jest.fn(({ imageUrl }) => Example_ShopImage);
 
 	describe('findThumbnailByShopId', () => {
-		it('가게ID로 썸네일 찾기', async () => {});
+		it('checkShop을 통과하면 findOne 진행', async () => {
+			try {
+				await checkShop({ shopId });
+			} catch (error) {
+				expect(error).toThrow(UnprocessableEntityException);
+			}
+
+			const result = mockShopImagesRepository.findOne({
+				where: { shop: { id: shopId }, isThumbnail: true },
+				relations: ['shop'],
+			});
+			expect(checkShop).toBeCalledTimes(1);
+			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('imageUrl');
+			expect(result).toHaveProperty('isThumbnail');
+			expect(result).toHaveProperty('shop');
+			expect(result).toEqual(Example_ShopImage);
+		});
 	});
 
 	describe('findByShopId', () => {
-		it('가게ID로 해당 이미지 찾기', async () => {});
+		it('checkShop을 통과하면 find 진행', async () => {
+			try {
+				await checkShop({ shopId });
+			} catch (error) {
+				expect(error).toThrow(UnprocessableEntityException);
+			}
+
+			const result = mockShopImagesRepository.find({
+				where: { shop: { id: shopId } },
+			});
+
+			expect(checkShop).toBeCalledTimes(1);
+			expect(result).toMatchObject(rightReturn);
+		});
 	});
 
 	describe('save', () => {
-		it('DB테이블에 신규 이미지 저장', async () => {});
+		it('DB테이블에 신규 이미지 저장', async () => {
+			try {
+				await checkURL({ shopId });
+			} catch (error) {
+				expect(error).toThrow(ConflictException);
+			}
+
+			const result = mockShopImagesRepository.save({
+				imageUrl: imageUrl,
+				isThumbnail: isThumbnail,
+				shop: { id: shopId },
+			});
+
+			expect(checkURL).toBeCalledTimes(1);
+			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('imageUrl');
+			expect(result).toHaveProperty('isThumbnail');
+			expect(result).toHaveProperty('shop');
+		});
 	});
 
-	describe('DB테이블에서 이미지 삭제', () => {
-		it('ddd', async () => {});
+	describe('update', () => {
+		it('DB테이블에서 이미지 업데이트', async () => {
+			//
+		});
+	});
+
+	describe('delete', () => {
+		it('DB테이블에서 이미지 삭제', async () => {
+			//
+		});
 	});
 });

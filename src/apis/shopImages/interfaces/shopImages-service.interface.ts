@@ -1,3 +1,5 @@
+import { UpdateShopImageInput } from '../dto/update-shopImage.input';
+
 export interface IShopImagesServiceSave {
 	imageUrl: string;
 	isThumbnail: boolean;
@@ -14,6 +16,10 @@ export interface IShopImagesServiceFindThumbnail {
 
 export interface IShopImagesServiceFindByShopId {
 	shopId: string;
+}
+
+export interface IShopImagesServiceUpdate {
+	updateShopImageInput: UpdateShopImageInput;
 }
 
 export interface IShopImagesServiceDelete {

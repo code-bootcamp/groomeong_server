@@ -1,4 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { UpdateShopImageInput } from './dto/update-shopImage.input';
 import { ShopImage } from './entities/shopImages.entity';
 import { ShopImagesService } from './shopImage.service';
 
@@ -35,6 +36,15 @@ export class ShopImagesResolver {
 		@Args('shopId') shopId: string,
 	): Promise<ShopImage> {
 		return await this.shopImagesService.save({ imageUrl, isThumbnail, shopId });
+	}
+
+	@Mutation(() => ShopImage, {
+		description: 'Return: 업데이트된 가게이미지 데이터',
+	})
+	async updateShopImage(
+		@Args('updateShopImageInput') updateShopImageInput: UpdateShopImageInput,
+	): Promise<ShopImage> {
+		return await this.shopImagesService.update({ updateShopImageInput });
 	}
 
 	@Mutation(() => Boolean, {
