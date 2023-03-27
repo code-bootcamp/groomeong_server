@@ -19,6 +19,7 @@ import {
 	IShopsServiceUpdate,
 } from './interface/shops-service.interface';
 import axios from 'axios';
+import { AutocompleteShopsOutput } from './dto/return-shop.output';
 
 @Injectable()
 export class ShopsService {
@@ -26,6 +27,19 @@ export class ShopsService {
 		@InjectRepository(Shop)
 		private readonly shopsRepository: Repository<Shop>, //
 	) {}
+
+	// 리뷰 평점 순으로 검색 결과 반환
+	sortByAvgStar({ hits: _hits }): AutocompleteShopsOutput[] {
+		if (_hits.length === 0) {
+			return null;
+		}
+
+		const hits = _hits.map((hit) => hit._source);
+		hits.sort((a, b) => {
+			return b.averagestar - a.averagestar;
+		});
+		return hits;
+	}
 
 	// DB의 모든 가게 정보 불러오기
 	async findAll(): Promise<Shop[]> {

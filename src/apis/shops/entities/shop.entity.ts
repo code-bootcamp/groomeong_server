@@ -19,7 +19,7 @@ export class Shop {
 	@Field(() => String)
 	id: string;
 
-	@Column({ length: 10 })
+	@Column({ length: 30 })
 	@Field(() => String)
 	name: string;
 
