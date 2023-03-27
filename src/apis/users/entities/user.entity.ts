@@ -27,7 +27,7 @@ export class User {
 	email: string;
 
 	@Column({ length: 100 })
-	@Field(() => String)
+	// @Field(() => String)
 	password: string;
 
 	@Column({ length: 16 })
