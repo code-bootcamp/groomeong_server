@@ -12,6 +12,7 @@ import {
 	IShopImagesServiceFindByShopId,
 	IShopImagesServiceFindThumbnail,
 	IShopImagesServiceSave,
+	IShopImagesServiceUpdate,
 } from './interfaces/shopImages-service.interface';
 
 @Injectable()
@@ -74,6 +75,22 @@ export class ShopImagesService {
 			imageUrl: imageUrl,
 			isThumbnail: isThumbnail,
 			shop: { id: shopId },
+		});
+	}
+
+	// DB테이블에서 이미지 업데이트
+	async update({
+		updateShopImageInput,
+	}: IShopImagesServiceUpdate): Promise<ShopImage> {
+		await this.shopImageRepository.delete({
+			id: updateShopImageInput.id,
+			imageUrl: updateShopImageInput.imageUrl,
+		});
+		return await this.shopImageRepository.save({
+			id: updateShopImageInput.id,
+			imageUrl: updateShopImageInput.imageUrl,
+			isThumbnail: updateShopImageInput.isThumbnail,
+			shop: { id: updateShopImageInput.shopId },
 		});
 	}
 
