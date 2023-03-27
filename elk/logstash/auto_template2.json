@@ -1,0 +1,34 @@
+{
+	"template": "auto-*",
+	"index_patterns": ["autocomplete-shop-*"],
+	"order": "1",
+	"settings": {
+		"analysis": {
+			"analyzer": {
+				"nori": {
+					"type": "custom",
+					"tokenizer": "nori_mixed"
+				}
+			},
+			"tokenizer": {
+				"nori_mixed": {
+					"type": "nori_tokenizer",
+					"decompound_mode": "mixed"
+				}
+			}
+		}
+	},
+	"mappings": {
+		"properties": {
+			"address": {
+				"type": "text",
+				"fields": {
+					"analyzed": {
+						"type": "text",
+						"analyzer": "nori"
+					}
+				}
+			}
+		}
+	}
+}
