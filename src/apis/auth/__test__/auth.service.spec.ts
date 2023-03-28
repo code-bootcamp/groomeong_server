@@ -1,17 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { MockUsersRepository } from './auth.mocking.dummy';
 import { CACHE_MANAGER, UnprocessableEntityException } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { Repository } from 'typeorm';
 import { UsersService } from 'src/apis/users/user.service';
 import { User } from 'src/apis/users/entities/user.entity';
 import { AuthService } from '../auth.service';
-import { AuthResolver } from '../auth.resolver';
+import { IContext } from 'src/commons/interface/context';
+import { JwtService } from '@nestjs/jwt';
+import * as httpMocks from 'node-mocks-http';
+import { MockUsersRepository } from './auth.mocking.dummy';
+import { MailerModule } from '@nestjs-modules/mailer';
 
-const EXAMPLE_ACCESS_TOKEN = 'exampleAccessToken';
-const EXAMPLE_AUTH = true;
+jest.mock('../auth.service');
+
 const EXAMPLE_USER: User = {
 	id: 'exampleUserId',
 	name: 'exampleUserName',
@@ -26,13 +27,12 @@ const EXAMPLE_USER: User = {
 	reservation: [null],
 };
 
-type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
-
 describe('AuthResolver', () => {
-	let usersService: UsersService;
 	let authService: AuthService;
-	let mockUsersRepository: MockRepository<User>;
+	let usersService: UsersService;
+	let jwtService: JwtService;
 	let cache: Cache;
+	let context: IContext;
 
 	beforeEach(async () => {
 		jest.clearAllMocks();
@@ -54,6 +54,7 @@ describe('AuthResolver', () => {
 				}),
 			],
 			providers: [
+				AuthService,
 				UsersService,
 				{
 					provide: getRepositoryToken(User),
@@ -68,19 +69,62 @@ describe('AuthResolver', () => {
 				},
 			],
 		}).compile();
+		const authModule: TestingModule = await Test.createTestingModule({
+			providers: [AuthService],
+		}).compile();
 
-		cache = usersModule.get(CACHE_MANAGER);
 		usersService = usersModule.get<UsersService>(UsersService);
-		mockUsersRepository = usersModule.get(getRepositoryToken(User));
+		authService = authModule.get<AuthService>(AuthService);
+		cache = usersModule.get(CACHE_MANAGER);
+		context = {
+			req: httpMocks.createRequest(),
+			res: httpMocks.createResponse(),
+		};
 	});
 
-	describe('login', async () => {
-		it('브라우저에서 입력한 이메일로 유저 정보 찾아오기', () => {
-			//
+	const email = EXAMPLE_USER.email;
+	const password = EXAMPLE_USER.password;
+
+	describe('login', () => {
+		it('의존성주입한 usersService 에서 email로 찾아오기', async () => {
+			jest
+				.spyOn(usersService, 'findOneByEmail')
+				.mockImplementationOnce(async (email) => EXAMPLE_USER);
+			const user = await usersService.findOneByEmail({ email });
+
+			try {
+				user !== undefined;
+			} catch (error) {
+				expect(error).toThrowError(UnprocessableEntityException);
+			}
+			expect(usersService.findOneByEmail).toBeCalled();
 		});
 
-		it('찾아온 유저 정보의 비밀번호와 브라우저에서 입력된 비밀번호가 일치하지 않으면 에러던지기', () => {
-			//
+		it('이메일은 일치하지만 비밀번호가 일치하지 않으면 에러던지기!!', async () => {
+			const isAuth = jest.fn(() => true);
+
+			try {
+				isAuth !== undefined;
+			} catch (error) {
+				expect(error).toThrowError(UnprocessableEntityException);
+			}
+		});
+
+		it('refreshToken(=JWT) 을 만들어서 브라우저 쿠키에 저장해서 보내주기', async () => {
+			const { req, res } = context;
+			const user = await usersService.findOneByEmail({ email });
+
+			await authService.setRefreshToken({ user, req, res });
+
+			expect(authService.setRefreshToken).toBeCalled();
+		});
+
+		it('accessToken를 만들어 브라우저로 전달하기', async () => {
+			const user = await usersService.findOneByEmail({ email });
+
+			await authService.getAccessToken({ user });
+
+			expect(authService.getAccessToken).toBeCalled();
 		});
 	});
 

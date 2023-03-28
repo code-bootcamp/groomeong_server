@@ -4,19 +4,22 @@ import * as httpMocks from 'node-mocks-http';
 import { CanActivate } from '@nestjs/common';
 import { GqlAuthGuard } from '../guards/gql-auth.guard';
 import { IContext } from 'src/commons/interface/context';
+import { User } from 'src/apis/users/entities/user.entity';
 
 jest.mock('../auth.service');
 
-const Example_user = {
-	id: '3e3f6340-1164-4b5b-a2fd-e067f180f59f',
-	name: 'name1',
+const EXAMPLE_USER: User = {
+	id: 'exampleUserId',
+	name: 'exampleUserName',
 	email: 'a@a.com',
-	password: '$2b$10$vQ5ylnvTEafMPbiFg0d2.uTudcTLspBsLzD/kKGHIhgZhAo0QxtBi',
-	phone: '01011112222',
-	image: null,
-	createAt: '2023-03-22 12:54:33.782589',
-	deleteAt: null,
-	updateAt: '2023-03-22 12:54:33.782589',
+	password: 'exampleUserPassword',
+	phone: 'exampleUserPhone',
+	image: 'exampleUserImage',
+	createAt: new Date(),
+	deleteAt: new Date(),
+	updateAt: new Date(),
+	dogs: [null],
+	reservation: [null],
 };
 
 describe('AuthResolver', () => {
@@ -41,8 +44,8 @@ describe('AuthResolver', () => {
 	describe('login', () => {
 		it('login 함수 실행', async () => {
 			await authService.login({
-				email: Example_user.email,
-				password: Example_user.password,
+				email: EXAMPLE_USER.email,
+				password: EXAMPLE_USER.password,
 				req: context.req,
 				res: context.res,
 			});
