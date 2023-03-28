@@ -171,6 +171,16 @@ export class MockShopImagesRepository {
 		return _save;
 	}
 
+	delete({ shopImageId }) {
+		const shopImage = this.mydb.filter((el) => el.id === shopImageId);
+		const shopImageIdx = this.mydb.findIndex((el) => el.id === shopImageId);
+		if (shopImage.length) {
+			this.mydb.splice(shopImageIdx, 1);
+			return true;
+		}
+		return false;
+	}
+
 	// 테스트용 id 생성을 위한 함수
 	uuidv4() {
 		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
