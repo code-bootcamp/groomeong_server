@@ -21,7 +21,7 @@
 	},
 	"dependencies": {
 		"@apollo/server": "^4.5.0",
-		"@elastic/elasticsearch": "^8.6.0",
+		"@elastic/elasticsearch": "7.13.0",
 		"@google-cloud/storage": "^6.9.3",
 		"@nestjs-modules/mailer": "^1.8.1",
 		"@nestjs/apollo": "^10.1.7",
@@ -29,7 +29,7 @@
 		"@nestjs/common": "^9.0.0",
 		"@nestjs/config": "^2.2.0",
 		"@nestjs/core": "^9.0.0",
-		"@nestjs/elasticsearch": "^9.0.0",
+		"@nestjs/elasticsearch": "^7.0.0",
 		"@nestjs/graphql": "^10.1.7",
 		"@nestjs/jwt": "^10.0.1",
 		"@nestjs/passport": "^9.0.2",

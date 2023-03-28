@@ -29,17 +29,20 @@ export class ShopsResolver {
 		searchKeyword: string, //
 	): Promise<AutocompleteShopsOutput[]> {
 		const searchResult = await this.elasticsearchService.search({
-			index: 'autocomplete-shop-1',
-			query: {
-				multi_match: {
-					query: searchKeyword,
-					type: 'most_fields',
-					fields: ['address.analyzed', 'address'],
+			index: 'auto_shop_1',
+			body: {
+				query: {
+					multi_match: {
+						query: searchKeyword,
+						type: 'most_fields',
+						fields: ['address.analyzed', 'address'],
+					},
 				},
 			},
 		});
+
 		return this.shopsService.sortByAvgStar({
-			hits: searchResult.hits.hits,
+			hits: searchResult.body.hits.hits,
 		});
 	}
 
