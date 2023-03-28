@@ -9,7 +9,7 @@ import { ShopsModule } from './apis/shops/shops.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './apis/users/user.module';
 import { JwtAccessStrategy } from './apis/auth/strategies/jwt-access.strategy';
-import { JwtRefreshStrategy } from './apis/auth/strategies/jwt-refresh.stratehy';
+import { JwtRefreshStrategy } from './apis/auth/strategies/jwt-refresh.strategy';
 import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
 import { JwtGoogleStrategy } from './apis/auth/strategies/jwt-social-google.strategy';
@@ -74,8 +74,7 @@ import { AddShopReviewModule } from './apis/shop-review/shop-review.module';
 		}),
 		CacheModule.register<RedisClientOptions>({
 			store: redisStore,
-			// url: `redis://${process.env.REDIS_URL}:6379`,
-			url: 'redis://my-redis:6379',
+			url: `redis://${process.env.REDIS_URL}:6379`,
 			isGlobal: true,
 		}),
 	],

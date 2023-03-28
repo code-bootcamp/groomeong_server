@@ -2,20 +2,19 @@ version: '3.7'
 
 services:
   my-backend:
-    image: asia.gcr.io/project-groomeong/tocatoca:2.9
-    platform: linux/x86_64
+    image: asia.gcr.io/project-groomeong/tocatoca:3.3
     build:
       context: .
       dockerfile: Dockerfile.prod
     # ports:
     #   - 3000:3000
     # env_file:
-    #   - ./.env.prod
+    #   - ./.env.prodmy3
 
   # my-database:
   #   image: mysql:latest
   #   environment:
-  #     MYSQL_DATABASE: 'groomeong-prod'
+  #     MYSQL_DATABASE: 'groomeongprod'
   #     MYSQL_ROOT_PASSWORD: 'root'
   #   ports:
   #     - 3306:3306
@@ -32,9 +31,8 @@ services:
   #   ports:
   #     - 9200:9200
 
-  # logstash:
-  #   image: logstash:7.17.0
-  #   volumes:
-  #     - ./elk/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-  #     - ./elk/logstash/mysql-connector-java-8.0.28.jar:/usr/share/logstash/mysql-connector-java-8.0.28.jar
-  #     - ./elk/logstash/auto_template.json:/usr/share/logstash/auto_template.json
+  logstash:
+    image: asia.gcr.io/project-groomeong/logstash:1.0
+    build:
+      context: .
+      dockerfile: Dockerfile.logstash
