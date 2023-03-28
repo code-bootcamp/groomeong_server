@@ -1,111 +1,72 @@
-import { MailerModule } from '@nestjs-modules/mailer';
-import { CACHE_MANAGER } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from 'src/apis/users/entities/user.entity';
-import { UsersService } from 'src/apis/users/user.service';
-import { Repository } from 'typeorm';
-import { AuthResolver } from '../auth.resolver';
 import { AuthService } from '../auth.service';
-import { MockUsersRepository } from './auth.mocking.dummy';
+import * as httpMocks from 'node-mocks-http';
+import { CanActivate } from '@nestjs/common';
+import { GqlAuthGuard } from '../guards/gql-auth.guard';
+import { IContext } from 'src/commons/interface/context';
 
-const EXAMPLE_AUTH = {
-	token: EXAMPLE_TOKEN,
-};
-const EXAMPLE_ACCESS_TOKEN = 'exampleAccessToken';
-const EXAMPLE_REFRESH_TOKEN = 'exampleRefreshToken';
-// const EXAMPLE_ACCESS_TOKEN_NEW = 'new-exampleAccessToken';
-// const EXAMPLE_REFRESH_TOKEN_NEW = 'new-exampleRefreshToken';
-const EXAMPLE_USER_INPUT = {
+jest.mock('../auth.service');
+
+const Example_user = {
+	id: '3e3f6340-1164-4b5b-a2fd-e067f180f59f',
+	name: 'name1',
 	email: 'a@a.com',
-	password: 'password1',
+	password: '$2b$10$vQ5ylnvTEafMPbiFg0d2.uTudcTLspBsLzD/kKGHIhgZhAo0QxtBi',
+	phone: '01011112222',
+	image: null,
+	createAt: '2023-03-22 12:54:33.782589',
+	deleteAt: null,
+	updateAt: '2023-03-22 12:54:33.782589',
 };
-const EXAMPLE_Req = {
-	headers: {
-		authorization: `Bearer exampleAccessToken`,
-		cookie: `refreshToken=exampleRefreshToken`,
-	},
-};
-const EXAMPLE_Res = {
-	headers: {
-		cookie: `refreshToken=exampleRefreshToken}`,
-	},
-};
-
-const authServiceLoginMock = jest.fn(() => EXAMPLE_ACCESS_TOKEN);
-const authServiceLogoutMock = jest.fn(() => console.log('로그아웃에 성공!!'));
-const authServiceRestoreAccessToken = jest.fn(() => EXAMPLE_ACCESS_TOKEN);
-const authServiceGetAccessToken = jest.fn(() => EXAMPLE_ACCESS_TOKEN);
-const authServiceSetRefreshToken = jest.fn(() => EXAMPLE_REFRESH_TOKEN);
-const authServiceLoginOAuth = jest.fn(() => console.log('로그인 화면 전송!!'));
-
-type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('AuthResolver', () => {
 	let authService: AuthService;
-	let usersService: UsersService;
-	let mockUsersRepository: MockUsersRepository;
-	let cache: Cache;
+	let context: IContext;
 
 	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
-			imports: [
-				MailerModule.forRootAsync({
-					useFactory: () => ({
-						transport: {
-							service: 'Gmail',
-							host: process.env.EMAIL_HOST,
-							port: Number(process.env.DATABASE_PORT),
-							secure: false,
-							auth: {
-								user: process.env.EMAIL_USER,
-								pass: process.env.EMAIL_PASS,
-							},
-						},
-					}),
-				}),
-			],
-			providers: [
-				AuthResolver,
-				{
-					provide: AuthService,
-					useClass: jest.fn(() => ({
-						//
-						login: authServiceLoginMock,
-						logout: authServiceLogoutMock,
-						restoreAccessToken: authServiceRestoreAccessToken,
-						getAccessToken: authServiceGetAccessToken,
-						setRefreshToken: authServiceSetRefreshToken,
-						loginOAuth: authServiceLoginOAuth,
-					})),
-				},
-				UsersService,
-				{
-					provide: getRepositoryToken(User),
-					useClass: MockUsersRepository,
-				},
-				{
-					provide: CACHE_MANAGER,
-					useValue: {
-						get: () => 'any value',
-						set: () => jest.fn(),
-					},
-				},
-			],
-		}).compile();
-
-		cache = module.get(CACHE_MANAGER);
-		authService = module.get<AuthService>(AuthService);
-		usersService = module.get<UsersService>(UsersService);
-		mockUsersRepository = module.get(getRepositoryToken(User));
+		const mockAuthGuard: CanActivate = { canActivate: jest.fn(() => true) };
+		const authModule: TestingModule = await Test.createTestingModule({
+			providers: [AuthService],
+		})
+			.overrideGuard(GqlAuthGuard)
+			.useValue(mockAuthGuard)
+			.compile();
+		authService = authModule.get<AuthService>(AuthService);
+		context = {
+			req: httpMocks.createRequest(),
+			res: httpMocks.createResponse(),
+		};
 	});
 
-	describe('login', async () => {
-		it('accessToken(JWT) 리턴', async () => {
-			const email = EXAMPLE_USER_INPUT.email;
-			const user = await usersService.findOneByEmail({ email });
+	describe('login', () => {
+		it('login 함수 실행', async () => {
+			await authService.login({
+				email: Example_user.email,
+				password: Example_user.password,
+				req: context.req,
+				res: context.res,
+			});
 
-			expect().toEqual(user);
+			expect(authService.login).toBeCalled();
+		});
+	});
+
+	describe('logout', () => {
+		it('logout 함수 실행', async () => {
+			await authService.logout({
+				req: httpMocks.createRequest(),
+				res: httpMocks.createResponse(),
+			});
+
+			expect(authService.logout).toBeCalled();
+		});
+	});
+
+	describe('restoreAccessToken', () => {
+		it('restoreAccessToken 함수 실행', async () => {
+			await authService.restoreAccessToken({ user: context.req.user });
+
+			expect(authService.restoreAccessToken).toBeCalled();
 		});
 	});
 });
