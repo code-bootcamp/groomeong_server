@@ -76,7 +76,7 @@ import { HttpExceptionFilter } from './commons/filter/http-exception.filter';
 		}),
 		CacheModule.register<RedisClientOptions>({
 			store: redisStore,
-			url: `redis://${process.env.REDIS_URL}:6379`,
+			url: `redis://${process.env.REDIS_HOST}:6379`,
 			isGlobal: true,
 		}),
 	],
