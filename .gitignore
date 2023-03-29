@@ -1,6 +1,6 @@
 .dockerignore
 project-groomeong-34231f48bd14.json
-logstash.conf
+logstash.*
 mysql-connector-java-8.0.28.jar
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,macos

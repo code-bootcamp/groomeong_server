@@ -13,7 +13,7 @@ import { ShopsService } from './shops.service';
 		ElasticsearchModule.register({
 			// node: 'http://elasticsearch:9200', // 로컬
 
-			// 배포 설정
+			// 배포
 			node: 'https://search-groomeong-elasticsearch-7mvk7xnf5m2a6tcx6p5ro5qste.ap-southeast-2.es.amazonaws.com:443',
 			auth: {
 				username: process.env.OPENSEARCH_ID,
