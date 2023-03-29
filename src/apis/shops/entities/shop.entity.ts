@@ -77,8 +77,8 @@ export class Shop {
 	@UpdateDateColumn()
 	updatedAt: Date;
 
-	// // <--- 삭제 기능 추가되면 주석 해제 --->
-	// @DeleteDateColumn({ nullable: true })
-	// @Field(() => Date)
-	// deleteAt?: Date;
+	// 삭제 일시
+	@DeleteDateColumn({ nullable: true })
+	@Field(() => Date)
+	deletedAt?: Date;
 }
