@@ -86,9 +86,20 @@ export class ShopsResolver {
 		return this.shopsService.update({ shopId, updateShopInput });
 	}
 
+	//가게 삭제
+	@Mutation(() => Boolean, {
+		description: 'Return : 가게 정보 삭제 완료 시 true',
+	})
+	deleteShop(
+		@Args('shopId') shopId: string, //
+	): Promise<boolean> {
+		return this.shopsService.delete({ shopId });
+	}
+
 	// // <--- 기능 필요하면 주석 해제 --->
+	// //삭제된 가게 리스트 불러오기
 	// @Query(() => [Shop], {
-	// 	description: 'Return : 모든 삭제된 가게',
+	// 	description: 'Return : 모든 삭제된 가게 목록',
 	// })
 	// fetchShopsWithDeleted(): Promise<Shop[]> {
 	// 	return this.shopsService.findAllDeleted();
@@ -101,15 +112,6 @@ export class ShopsResolver {
 	// 	@Args('shopId') shopId: string, //
 	// ): Promise<Shop> {
 	// 	return this.shopsService.findDeleted({ shopId });
-	// }
-
-	// @Mutation(() => Boolean, {
-	// 	description: 'Return : 가게 정보 삭제 완료 시 true',
-	// })
-	// deleteShop(
-	// 	@Args('shopId') shopId: string, //
-	// ): Promise<boolean> {
-	// 	return this.shopsService.delete({ shopId });
 	// }
 
 	// @Mutation(() => Boolean, {
