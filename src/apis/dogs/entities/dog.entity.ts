@@ -68,10 +68,10 @@ export class Dog {
 	@Field(() => String, { nullable: true })
 	image: string;
 
-	@CreateDateColumn({ nullable: true })
+	@CreateDateColumn()
 	createdAt: Date;
 
-	@DeleteDateColumn({ nullable: true })
+	@DeleteDateColumn()
 	deletedAt: Date;
 
 	@ManyToOne(() => User, (user) => user.dogs)
@@ -79,7 +79,14 @@ export class Dog {
 	user: User;
 
 	// Dog : Reservation = 1 : N
-	@OneToMany(() => Reservation, (reservation) => reservation.dog)
-	@Field(() => [Reservation])
+	@OneToMany(
+		() => Reservation,
+		(reservation) => reservation.dog, //
+		{ nullable: true },
+	)
+	@Field(
+		() => [Reservation], //
+		{ nullable: true },
+	)
 	reservation: Reservation[];
 }
