@@ -19,7 +19,7 @@ services:
     # platform: linux/86_64
     image: mysql:latest
     environment:
-      MYSQL_DATABASE: 'groomeong'
+      MYSQL_DATABASE: 'groo-meong'
       MYSQL_ROOT_PASSWORD: 'root'
     ports:
       - 3306:3306
