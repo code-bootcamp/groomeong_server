@@ -41,6 +41,7 @@ describe('UsersService', () => {
 	let usersService: UsersService;
 	let mailerService: MailerService;
 	let cacheManager: Cache;
+	let mockUsersRepository: Repository<User>;
 
 	beforeEach(async () => {
 		const usersModule = await Test.createTestingModule({
@@ -88,6 +89,10 @@ describe('UsersService', () => {
 
 		mailerService = usersModule.get<MailerService>(MailerService);
 		usersService = usersModule.get<UsersService>(UsersService);
+
+		mockUsersRepository = usersModule.get<Repository<User>>(
+			getRepositoryToken(User),
+		);
 	});
 
 	describe('create', () => {
@@ -129,21 +134,11 @@ describe('UsersService', () => {
 	});
 
 	describe('mailerService', () => {
-		// it('send mail', async () => {
-		// 	const shoot = await mailerService.sendMail({
-		// 		to: '273hur4747@gmail.com',
-		// 		from: 'Test email',
-		// 		subject: '테스트코드 너무 어렵다..',
-		// 		text: 'Welcome to Hell',
-		// 	});
-		// 	expect(shoot).();
-		// });
-
 		it('sendTokenEmail', async () => {
 			const myData = {
 				name: '철수',
 				email: 'bbb@bbb.com',
-				password: '1234',
+				hasedPassword: '1234',
 				phone: '01012341234',
 			};
 
@@ -193,6 +188,23 @@ describe('UsersService', () => {
 			} catch (e) {
 				expect(e).toBeInstanceOf(UnprocessableEntityException);
 			}
+		});
+	});
+
+	describe('update', () => {
+		it('업데이트가 잘 되었는지 확인', async () => {
+			const myData = {
+				id: '1',
+				email: 'a@a.com',
+				password: '1111',
+				name: '짱구2',
+				phone: '01022221237',
+			};
+
+			const user = await usersService.findOne({ userId: myData.id });
+			const result = await mockUsersRepository.save({ ...myData });
+
+			expect(myData).toEqual(result);
 		});
 	});
 });

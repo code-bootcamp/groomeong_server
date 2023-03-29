@@ -23,6 +23,7 @@ import {
 	IUsersServiceSendEmail,
 	IUsersServiceSendTokenEmail,
 	IUsersServiceUpdate,
+	IUsersServiceUpdatePwd,
 } from './interface/users.interface';
 import { MailerService } from '@nestjs-modules/mailer';
 import { sendTokenTemplate, welcomeTemplate } from 'src/commons/utils/utils';
@@ -178,15 +179,16 @@ export class UsersService {
 		updateUserInput,
 	}: IUsersServiceUpdate): Promise<User> {
 		const user = await this.findOne({ userId });
+
+		const hasedPassword = await bcrypt.hash(updateUserInput.password, 10);
+
 		const result = await this.userRepository.save({
 			...user,
 			...updateUserInput,
+			password: hasedPassword,
 		});
 		return result;
 	}
-
-	// 이메일 인증 후 비밀번호 수정
-	// updatePwdSendToken({ email, password }) {}
 
 	// 유저 삭제하기(삭제는 나중에)
 	async delete({

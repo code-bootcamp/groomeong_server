@@ -51,3 +51,8 @@ export interface IUsersServiceCheckToken {
 export interface IUsersServiceDuplicationEmail {
 	email: string;
 }
+
+export interface IUsersServiceUpdatePwd {
+	userId: string;
+	updateUserInput: UpdateUserInput;
+}
