@@ -118,10 +118,11 @@ export class AuthService {
 
 		// const originList = [
 		// 	'http://localhost:3000',
-		// 	// 가비아에서 배포된 도매인 주소 http:// .....
+		// 	'http://groomeong.store', // 프론트 도메인 주소??
+		// 	'https://groomeong.store', // 프론트 도메인 주소??
 		// 	// ssl 된 주소 https:// .....
 		// ];
-		// const origin = req.header.origin;
+		// const origin = req.headers.origin;
 		// if (originList.includes(origin)) {
 		// 	// 리소스에 엑세스하기 위해 코드 요청을 허용하도록 브라우저에 알리는 응답
 		// 	res.setHeader('Access-Control-Allow-Origin', origin);
@@ -144,7 +145,7 @@ export class AuthService {
 
 		// res.setHeader(
 		// 	'Set-Cookie',
-		// 	`refreshToken=${refreshToken}; path=/; domain=.그루멍 주소 ; Secure; httpOnly; SameSite=None;`,
+		// 	`refreshToken=${refreshToken}; path=/; domain=www.groomeong.shop ; Secure; httpOnly; SameSite=None;`,
 		// );
 	}
 
@@ -159,7 +160,8 @@ export class AuthService {
 
 		// 3. 로그인 브라우저 전송
 		this.setRefreshToken({ user, res, req });
+		console.log(user, req, res, '@@@@@@@@@@@@');
 		res.redirect('http://localhost:3000/');
-		// 페이지 수정 꼭 하기! 배포될때!!🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗
+		// 페이지 수정 꼭 하기! 배포될때!!🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗 프론트 메인 페이지
 	}
 }

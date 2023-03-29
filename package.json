@@ -6,6 +6,7 @@
 	"private": true,
 	"license": "UNLICENSED",
 	"scripts": {
+		"prebuild": "rimraf dist",
 		"build": "nest build",
 		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
 		"start": "nest start",
@@ -21,7 +22,7 @@
 	},
 	"dependencies": {
 		"@apollo/server": "^4.5.0",
-		"@elastic/elasticsearch": "^8.6.0",
+		"@elastic/elasticsearch": "7.13.0",
 		"@google-cloud/storage": "^6.9.3",
 		"@nestjs-modules/mailer": "^1.8.1",
 		"@nestjs/apollo": "^10.1.7",
@@ -29,11 +30,12 @@
 		"@nestjs/common": "^9.0.0",
 		"@nestjs/config": "^2.2.0",
 		"@nestjs/core": "^9.0.0",
-		"@nestjs/elasticsearch": "^9.0.0",
+		"@nestjs/elasticsearch": "7.0.0",
 		"@nestjs/graphql": "^10.1.7",
 		"@nestjs/jwt": "^10.0.1",
 		"@nestjs/passport": "^9.0.2",
 		"@nestjs/platform-express": "^9.0.0",
+		"@nestjs/schematics": "^9.0.0",
 		"@nestjs/typeorm": "^9.0.1",
 		"add": "^2.0.6",
 		"apollo-server-express": "^3.11.1",
@@ -47,6 +49,7 @@
 		"graphql-upload": "^13.0.0",
 		"handlebars": "^4.7.7",
 		"jsonwebtoken": "^9.0.0",
+		"moment-timezone": "^0.5.42",
 		"mysql2": "^3.2.0",
 		"nodemailer": "^6.9.1",
 		"passport": "^0.6.0",
@@ -61,8 +64,6 @@
 		"yarn": "^1.22.19"
 	},
 	"devDependencies": {
-		"@nestjs/cli": "^9.0.0",
-		"@nestjs/schematics": "^9.0.0",
 		"@nestjs/testing": "^9.0.0",
 		"@types/bcrypt": "^5.0.0",
 		"@types/cache-manager-redis-store": "^2.0.1",
