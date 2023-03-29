@@ -27,10 +27,16 @@ export class ReviewsResolver {
 	async fetchReviewsByShopId(
 		@Args({ name: 'page', defaultValue: 1, nullable: true })
 		page: number, //
+		@Args({ name: 'page', defaultValue: 1, nullable: true })
+		count: number, //
 		@Args('shopId')
 		shopId: string, //
 	): Promise<Review[]> {
-		return await this.reviewsService.findByShopId({ page, shopId });
+		return await this.reviewsService.findByShopIdWithPage({
+			page,
+			count,
+			shopId,
+		});
 	}
 
 	@UseGuards(GqlAuthGuard('access'))

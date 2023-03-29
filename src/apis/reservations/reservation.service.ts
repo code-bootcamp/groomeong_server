@@ -6,8 +6,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DogsService } from '../dogs/dogs.service';
+import { Review } from '../reviews/entities/review.entity';
+import { ReviewsService } from '../reviews/reviews.service';
 import { ShopsService } from '../shops/shops.service';
+import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/user.service';
+import { returnUserWithReviewOutput } from './dto/return-reservation.output';
 import { Reservation } from './entities/reservation.entity';
 import {
 	IReservationsServiceCheckDuplication,
@@ -17,6 +21,7 @@ import {
 	IReservationsServiceFindAllByUserId,
 	IReservationsServiceFindById,
 	IReservationsServiceFindDeletedById,
+	IReservationsServiceFindForShopDetailPage,
 } from './interfaces/reservations-service.interface';
 
 @Injectable()
@@ -27,6 +32,8 @@ export class ReservationsService {
 		private readonly usersService: UsersService,
 		private readonly shopsService: ShopsService,
 		private readonly dogsService: DogsService,
+		@InjectRepository(Review)
+		private readonly reviewsRepository: Repository<Review>,
 	) {}
 
 	// 신규 예약 정보 생성
@@ -148,6 +155,58 @@ export class ReservationsService {
 		}
 
 		return result;
+	}
+
+	// 가게 상세페이지용 : 가게의 모든 리뷰작성자 프로필과 리뷰 가져오기
+	async findForShopDetailPage({
+		shopId,
+	}: IReservationsServiceFindForShopDetailPage): Promise<
+		returnUserWithReviewOutput[]
+	> {
+		// 해당 가게의 예약들
+		const myBooks = await this.reservationsRepository.find({
+			where: { shop: { id: shopId } },
+			relations: ['shop', 'user'],
+		});
+		// 예약과 연결된 유저ID들
+		const userIds = [];
+		const userIds1 = myBooks.forEach((el) => {
+			if (!userIds.includes(el.user.id)) {
+				userIds.push(el.user.id);
+			}
+		});
+
+		// 예약의 리뷰들
+		const myReviews: Review[] = [];
+		for (let i = 0; i < myBooks.length; i++) {
+			const reviews = await this.reviewsRepository.find({
+				where: { shop: { id: shopId }, reservation: { id: myBooks[i].id } },
+				relations: ['shop', 'reservation'],
+			});
+			if (reviews[0] !== undefined) {
+				myReviews.push(reviews[0]);
+			}
+		}
+
+		const fetchList: returnUserWithReviewOutput[] = [];
+		// 유저-리뷰 매핑 // 가독성을 위해 우선 for문 사용
+		for (let i = 0; i < userIds.length; i++) {
+			for (let j = 0; j < myReviews.length; j++) {
+				const resultBook = await this.reservationsRepository.find({
+					where: {
+						shop: { id: shopId },
+						user: { id: userIds[i] },
+					},
+					relations: ['user'],
+				});
+				const _user = resultBook[0].user;
+				const _review = myReviews[j];
+				if (resultBook[0].id === myReviews[0].reservation.id)
+					fetchList.push({ profile: _user, review: _review });
+			}
+		}
+
+		return fetchList;
 	}
 
 	//예약 삭제하기
