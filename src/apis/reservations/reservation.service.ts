@@ -63,7 +63,7 @@ export class ReservationsService {
 
 		await this.dogsService.findOneById({ id: dogId });
 
-		return await this.reservationsRepository.save({
+		const result = await this.reservationsRepository.save({
 			...createReservationInput,
 			shop: {
 				id: shopId,
@@ -74,6 +74,11 @@ export class ReservationsService {
 			dog: {
 				id: dogId,
 			},
+		});
+
+		return this.reservationsRepository.findOne({
+			where: { id: result.id },
+			relations: ['dog', 'shop', 'user'],
 		});
 	}
 
