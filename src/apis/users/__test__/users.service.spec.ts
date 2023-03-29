@@ -37,15 +37,10 @@ class MockUsersRepository {
 	}
 }
 
-// class MockMailerRepositry {
-// 	mydbemail;
-// }
-
 describe('UsersService', () => {
 	let usersService: UsersService;
 	let mailerService: MailerService;
 	let cacheManager: Cache;
-	let userRepository: Repository<User>;
 
 	beforeEach(async () => {
 		const usersModule = await Test.createTestingModule({
@@ -93,9 +88,6 @@ describe('UsersService', () => {
 
 		mailerService = usersModule.get<MailerService>(MailerService);
 		usersService = usersModule.get<UsersService>(UsersService);
-		userRepository = usersModule.get<Repository<User>>(
-			getRepositoryToken(User),
-		);
 	});
 
 	describe('create', () => {
@@ -107,7 +99,7 @@ describe('UsersService', () => {
 				phone: '01012341234',
 			};
 
-			const result = await userRepository.save({ ...myData });
+			const result = await usersService.create({ ...myData });
 
 			expect(result).toStrictEqual({
 				name: '철수',
