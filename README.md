@@ -39,6 +39,8 @@
 
 # Flow Chart
 
+![DBflowChart](https://user-images.githubusercontent.com/120294031/228220540-12e5d386-68f5-46b0-bce8-3d92ba8d380a.png)
+
 <br><br>
 
 # ERD

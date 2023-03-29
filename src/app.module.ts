@@ -21,6 +21,8 @@ import { ReviewsModule } from './apis/reviews/reviews.module';
 import { ShopImagesModule } from './apis/shopImages/shopImage.module';
 import { AppController } from './app.controller';
 import { AddShopReviewModule } from './apis/shop-review/shop-review.module';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './commons/filter/http-exception.filter';
 
 @Module({
 	imports: [
@@ -83,6 +85,10 @@ import { AddShopReviewModule } from './apis/shop-review/shop-review.module';
 		JwtRefreshStrategy,
 		JwtGoogleStrategy,
 		JwtKakaoStrategy,
+		{
+			provide: APP_FILTER,
+			useClass: HttpExceptionFilter,
+		},
 	],
 	controllers: [AppController],
 })
