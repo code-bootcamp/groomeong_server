@@ -1,5 +1,4 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { isNullableType } from 'graphql';
 import { Shop } from '../entities/shop.entity';
 
 @ObjectType()
