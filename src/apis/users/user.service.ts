@@ -20,6 +20,7 @@ import {
 	IUsersServiceFindOne,
 	IUsersServiceFindOneByEmail,
 	IUsersServiceFindUserDog,
+	IUsersServiceResetPassword,
 	IUsersServiceSendEmail,
 	IUsersServiceSendTokenEmail,
 	IUsersServiceUpdate,
@@ -173,6 +174,7 @@ export class UsersService {
 			});
 		return true;
 	}
+
 	// 회원 수정하기
 	async update({
 		userId, //
@@ -180,14 +182,31 @@ export class UsersService {
 	}: IUsersServiceUpdate): Promise<User> {
 		const user = await this.findOne({ userId });
 
-		const hasedPassword = await bcrypt.hash(updateUserInput.password, 10);
-
+		if (updateUserInput.password) {
+			updateUserInput.password = await bcrypt.hash(
+				updateUserInput.password,
+				10,
+			);
+		}
 		const result = await this.userRepository.save({
 			...user,
 			...updateUserInput,
-			password: hasedPassword,
 		});
 		return result;
+	}
+
+	// 비밀번호 찾기(초기화하기)
+	async resetPassword({
+		email,
+		newPassword,
+	}: IUsersServiceResetPassword): Promise<User> {
+		const theUser = await this.userRepository.findOne({
+			where: { email },
+		});
+
+		theUser.password = await bcrypt.hash(newPassword, 10);
+
+		return await this.userRepository.save(theUser);
 	}
 
 	// 유저 삭제하기(삭제는 나중에)

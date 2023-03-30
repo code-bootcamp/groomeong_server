@@ -56,3 +56,8 @@ export interface IUsersServiceUpdatePwd {
 	userId: string;
 	updateUserInput: UpdateUserInput;
 }
+
+export interface IUsersServiceResetPassword {
+	email: string;
+	newPassword: string;
+}
