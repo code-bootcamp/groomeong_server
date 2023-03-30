@@ -51,9 +51,9 @@ export class Reservation {
 
 	// 예약 생성일자
 	@CreateDateColumn()
-	createAt?: Date;
+	createdAt?: Date;
 
 	// 예약 취소일자
 	@DeleteDateColumn({ nullable: true })
-	deleteAt: Date;
+	deletedAt: Date;
 }

@@ -138,7 +138,7 @@ describe('UsersService', () => {
 			const myData = {
 				name: '철수',
 				email: 'bbb@bbb.com',
-				hasedPassword: '1234',
+				password: '1234',
 				phone: '01012341234',
 			};
 
