@@ -1,0 +1,32 @@
+steps:
+  - name: docker/compose:1.29.0
+    args:
+      - -f
+      - docker-compose.prod.yaml
+      - build
+
+  - name: docker/compose:1.29.0
+    args:
+      - -f
+      - docker-compose.prod.yaml
+      - push
+
+  - name: gcr.io/cloud-builders/kubectl
+    args:
+      - set
+      - image
+      - deployment/groomeong-backend
+      - backend-sha256-1=asia.gcr.io/project-groomeong/backend:1.6
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=asia-northeast3
+      - CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-5
+
+  - name: gcr.io/cloud-builders/kubectl
+    args:
+      - set
+      - image
+      - deployment/groomeong-logstash
+      - logstash-sha256-1=asia.gcr.io/project-groomeong/logstash:1.1
+    env:
+      - CLOUDSDK_COMPUTE_ZONE=asia-northeast3
+      - CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-5
