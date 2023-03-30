@@ -51,14 +51,20 @@ export class User {
 	updateAt: Date;
 
 	// Dog
-	@OneToMany(() => Dog, (dogs) => dogs.user)
-	@Field(() => [Dog])
+	@OneToMany(
+		() => Dog,
+		(dogs) => dogs.user, //
+		{ nullable: true },
+	)
+	@Field(() => [Dog], { nullable: true })
 	dogs: Dog[];
 
 	// reservation
-	@OneToMany(() => Reservation, (reservation) => reservation.user, {
-		nullable: true,
-	})
-	@Field(() => [Reservation])
+	@OneToMany(
+		() => Reservation,
+		(reservation) => reservation.user, //
+		{ nullable: true },
+	)
+	@Field(() => [Reservation], { nullable: true })
 	reservation: Reservation[];
 }
