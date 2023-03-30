@@ -77,8 +77,17 @@ export class UsersResolver {
 		return this.usersService.update({ userId, updateUserInput });
 	}
 
+	// 비밀번호 찾기(초기화하기)
+	@Mutation(() => User, { description: 'Return: 비밀번호 초기화하기(찾기)' })
+	resetPwd(
+		@Args('email') email: string, //
+		@Args('newPassword') newPassword: string,
+	): Promise<User> {
+		return this.usersService.resetPassword({ email, newPassword });
+	}
+
 	// 이메일 인증번호 전송
-	@Mutation(() => String, { description: ' 이메일 인증번호 전송 ' })
+	@Mutation(() => String, { description: ' Return: 이메일 인증번호 전송 ' })
 	getTokenEmail(
 		@Args('email') email: string, //
 	): Promise<string> {
@@ -86,7 +95,7 @@ export class UsersResolver {
 	}
 
 	// 이메일 인증번호 검증
-	@Mutation(() => Boolean, { description: '인증번호 검증' })
+	@Mutation(() => Boolean, { description: 'Return: 인증번호 검증' })
 	checkValidToken(
 		@Args('email') email: string, //
 		@Args('token') token: string,
