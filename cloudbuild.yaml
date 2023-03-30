@@ -16,7 +16,7 @@ steps:
       - set
       - image
       - deployment/groomeong-backend
-      - backend-sha256-1=asia.gcr.io/project-groomeong/backend:1.2
+      - backend-sha256-1=asia.gcr.io/project-groomeong/backend:1.4
     env:
       - CLOUDSDK_COMPUTE_ZONE=asia-northeast3
       - CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-5
@@ -26,7 +26,7 @@ steps:
       - set
       - image
       - deployment/groomeong-logstash
-      - logstash-sha256-1=asia.gcr.io/project-groomeong/logstash:1.0
+      - logstash-sha256-1=asia.gcr.io/project-groomeong/logstash:1.1
     env:
       - CLOUDSDK_COMPUTE_ZONE=asia-northeast3
       - CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-5
