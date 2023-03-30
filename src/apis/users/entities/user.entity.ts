@@ -42,13 +42,13 @@ export class User {
 	image: string;
 
 	@CreateDateColumn({ nullable: true })
-	createAt: Date;
+	createdAt: Date;
 
 	@DeleteDateColumn({ nullable: true })
-	deleteAt: Date;
+	deletedAt: Date;
 
 	@UpdateDateColumn({ nullable: true })
-	updateAt: Date;
+	updatedAt: Date;
 
 	// Dog
 	@OneToMany(
