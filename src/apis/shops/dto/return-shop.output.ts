@@ -11,7 +11,7 @@ export class ReturnShopOutput extends Shop {
 @ObjectType()
 export class AutocompleteShopsOutput {
 	@Field(() => String)
-	shopId: string;
+	shopid: string;
 
 	@Field(() => String)
 	name: string;
@@ -26,23 +26,23 @@ export class AutocompleteShopsOutput {
 	phone: string;
 
 	@Field(() => String)
-	openHour: string;
+	openhour: string;
 
 	@Field(() => String)
-	closeHour: string;
+	closehour: string;
 
 	@Field(() => String)
 	address: string;
 
 	@Field(() => Int)
-	averageStar: number;
+	averagestar: number;
 
 	@Field(() => String)
 	id: string;
 
 	@Field(() => String)
-	imageUrl: string;
+	imageurl: string;
 
 	@Field(() => Int)
-	isThumbnail: number;
+	isthumbnail: number;
 }
