@@ -1,8 +1,6 @@
 version: '3.7'
 
-# 컴퓨터들
 services:
-  # 컴퓨터이름
   my-backend:
     build:
       context: .
@@ -14,7 +12,6 @@ services:
     env_file:
       - ./.env.docker
 
-  # 컴퓨터이름
   my-database:
     # platform: linux/86_64
     image: mysql:latest
@@ -31,6 +28,10 @@ services:
 
   elasticsearch:
     image: elasticsearch:7.17.0
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.elasticsearch
+    restart: always
     environment:
       discovery.type: single-node
     ports:
@@ -41,4 +42,6 @@ services:
     volumes:
       - ./elk/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
       - ./elk/logstash/mysql-connector-java-8.0.28.jar:/usr/share/logstash/mysql-connector-java-8.0.28.jar
-      - ./elk/logstash/auto_template.json:/usr/share/logstash/auto_template.json
+      - ./elk/logstash/auto_template2.json:/usr/share/logstash/auto_template2.json
+    depends_on:
+      - elasticsearch

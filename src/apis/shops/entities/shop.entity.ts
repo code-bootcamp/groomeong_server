@@ -1,4 +1,4 @@
-import { Field, Float, ObjectType } from '@nestjs/graphql';
+import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Reservation } from 'src/apis/reservations/entities/reservation.entity';
 import { Review } from 'src/apis/reviews/entities/review.entity';
 import { ShopImage } from 'src/apis/shopImages/entities/shopImages.entity';
@@ -19,7 +19,7 @@ export class Shop {
 	@Field(() => String)
 	id: string;
 
-	@Column({ length: 10 })
+	@Column({ length: 30 })
 	@Field(() => String)
 	name: string;
 
@@ -38,6 +38,10 @@ export class Shop {
 	@Column({ length: 100 })
 	@Field(() => String)
 	address: string;
+
+	@Column()
+	@Field(() => Int)
+	code: number;
 
 	@Column()
 	@Field(() => String)
@@ -77,8 +81,8 @@ export class Shop {
 	@UpdateDateColumn()
 	updatedAt: Date;
 
-	// // <--- 삭제 기능 추가되면 주석 해제 --->
-	// @DeleteDateColumn({ nullable: true })
-	// @Field(() => Date)
-	// deleteAt?: Date;
+	// 삭제 일시
+	@DeleteDateColumn({ nullable: true })
+	@Field(() => Date)
+	deletedAt?: Date;
 }

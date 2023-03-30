@@ -9,7 +9,7 @@ import { ShopsModule } from './apis/shops/shops.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './apis/users/user.module';
 import { JwtAccessStrategy } from './apis/auth/strategies/jwt-access.strategy';
-import { JwtRefreshStrategy } from './apis/auth/strategies/jwt-refresh.stratehy';
+import { JwtRefreshStrategy } from './apis/auth/strategies/jwt-refresh.strategy';
 import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
 import { JwtGoogleStrategy } from './apis/auth/strategies/jwt-social-google.strategy';
@@ -21,6 +21,8 @@ import { ReviewsModule } from './apis/reviews/reviews.module';
 import { ShopImagesModule } from './apis/shopImages/shopImage.module';
 import { AppController } from './app.controller';
 import { AddShopReviewModule } from './apis/shop-review/shop-review.module';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './commons/filter/http-exception.filter';
 
 @Module({
 	imports: [
@@ -69,12 +71,12 @@ import { AddShopReviewModule } from './apis/shop-review/shop-review.module';
 			password: process.env.DATABASE_PASSWORD,
 			database: process.env.DATABASE_DATABASE,
 			entities: [__dirname + '/apis/**/*.entity.*'],
-			synchronize: true,
+			synchronize: true, //배포테스트를 위해 false 처리. 로컬 개발 시 true로.
 			logging: true,
 		}),
 		CacheModule.register<RedisClientOptions>({
 			store: redisStore,
-			url: 'redis://my-redis:6379',
+			url: `redis://${process.env.REDIS_HOST}:6379`,
 			isGlobal: true,
 		}),
 	],
@@ -83,6 +85,10 @@ import { AddShopReviewModule } from './apis/shop-review/shop-review.module';
 		JwtRefreshStrategy,
 		JwtGoogleStrategy,
 		JwtKakaoStrategy,
+		{
+			provide: APP_FILTER,
+			useClass: HttpExceptionFilter,
+		},
 	],
 	controllers: [AppController],
 })

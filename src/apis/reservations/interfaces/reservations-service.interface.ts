@@ -37,3 +37,7 @@ export interface IReservationsServiceFindAllByUserId {
 export interface IReservationsServiceFindAllByShopId {
 	shopId: string;
 }
+
+export interface IReservationsServiceFindForShopDetailPage {
+	shopId: string;
+}

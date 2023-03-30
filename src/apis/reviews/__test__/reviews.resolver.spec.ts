@@ -1,12 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Review } from '../entities/review.entity';
 import { ReviewsResolver } from '../reviews.resolver';
 import { ReviewsService } from '../reviews.service';
 
-jest.mock('../reviews.service');
+jest.mock('../reviews.resolver');
+
+const EXAMPLE_REVIEW = {
+	id: "EXAMPLE_REVIEW_ID",
+	contents: "EXAMPLE_REVIEW_CONTENTS",
+	createdAt: new Date(),
+	star: 5,
+	reservation: {id : 'EXAMPLE_RESERVATION_ID'},
+	shop: {id : 'EXAMPLE_SHOP_ID'}
+}
 
 describe('ReviewResolver', () => {
-	let mockReviewsService: ReviewsService;
+	let mockReviewsService = {
+		find : jest.fn(() => EXAMPLE_REVIEW),
+		findByShopIdWithPage : jest.fn(()=>EXAMPLE_REVIEW),
+		create : jest.fn(()=> EXAMPLE_REVIEW)
+	}
 	let reviewsResolver: ReviewsResolver;
 
 	beforeEach(async () => {
@@ -25,7 +37,7 @@ describe('ReviewResolver', () => {
 
 	describe('fetchReview', () => {
 		it('reivewService의 find 메서드 실행', async () => {
-			await reviewsResolver.fetchReview;
+			return await reviewsResolver.fetchReview({reviewId})
 		});
 	});
 });

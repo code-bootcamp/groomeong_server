@@ -24,7 +24,7 @@ export class Review {
 
 	@CreateDateColumn({ nullable: true })
 	@Field(() => Date)
-	createAt: Date;
+	createdAt: Date;
 
 	@Column()
 	@Field(() => Float)

@@ -3,6 +3,7 @@ import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { IContext } from 'src/commons/interface/context';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { CreateReservationInput } from './dto/create-reservation.input';
+import { returnUserWithReviewOutput } from './dto/return-reservation.output';
 import { Reservation } from './entities/reservation.entity';
 import { ReservationsService } from './reservation.service';
 
@@ -51,11 +52,20 @@ export class ReservationsResolver {
 		description: 'Return : 한 가게의 예약 정보',
 	})
 	fetchReservationsByShop(
-		@Context() context: IContext, //
+		@Args('shopId') shopId: string, //
 	): Promise<Reservation[]> {
-		const userId = context.req.user.id;
-		console.log(userId, '@@@@');
-		return this.reservationsService.findAllByUserId({ userId });
+		return this.reservationsService.findAllByShopId({ shopId });
+	}
+
+	// 가게의 모든 예약과 예약자 가져오기
+	@Query(() => [returnUserWithReviewOutput], {
+		description:
+			'Return : { profile: 회원정보 , review: 그 회원이 작성한 리뷰 } 형식의 객체들이 모인 배열',
+	})
+	fetchForShopDetailPage(
+		@Args('shopId') shopId: string, //
+	): Promise<returnUserWithReviewOutput[]> {
+		return this.reservationsService.findForShopDetailPage({ shopId });
 	}
 
 	//예약 삭제하기

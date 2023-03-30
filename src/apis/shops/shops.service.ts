@@ -19,6 +19,8 @@ import {
 	IShopsServiceUpdate,
 } from './interface/shops-service.interface';
 import axios from 'axios';
+import { districtCode } from 'src/commons/utils/addresscode';
+import { AutocompleteShopsOutput } from './dto/return-shop.output';
 
 @Injectable()
 export class ShopsService {
@@ -26,6 +28,19 @@ export class ShopsService {
 		@InjectRepository(Shop)
 		private readonly shopsRepository: Repository<Shop>, //
 	) {}
+
+	// 리뷰 평점 순으로 검색 결과 반환
+	sortByAvgStar({ hits: _hits }): AutocompleteShopsOutput[] {
+		if (_hits.length === 0) {
+			return null;
+		}
+
+		const hits = _hits.map((hit) => hit._source);
+		hits.sort((a, b) => {
+			return b.averagestar - a.averagestar;
+		});
+		return hits;
+	}
 
 	// DB의 모든 가게 정보 불러오기 + 페이징 추가
 	async findAll({ page, count }): Promise<Shop[]> {
@@ -62,37 +77,7 @@ export class ShopsService {
 
 		return allShops;
 	}
-	//
-	//
-	//
-	//
-	//
 
-	// async findAllWithPage({ shopsPerPage }): Promise<PagedShopOutput[]> {
-	// 	const allShops = await this.findAll();
-	// 	const allShopsCount: number = allShops.length;
-	// 	const allPageCount: number = Math.ceil(allShopsCount / shopsPerPage);
-	// 	const pagedShops = [];
-	// 	let i = 0;
-	// 	while (i < allPageCount) {
-	// 		for (
-	// 			let j = i * shopsPerPage;
-	// 			j < i * shopsPerPage + shopsPerPage && j < allShopsCount;
-	// 			j++
-	// 		) {
-	// 			pagedShops.push({ page: i + 1, shop: allShops[j] });
-	// 		}
-	// 		i++;
-	// 	}
-	// 	console.log('🟥🟥 pagedShops 🟥🟥', pagedShops);
-	// 	return pagedShops;
-	// }
-
-	//
-	//
-	//
-	//
-	//
 	// 가게 데이터 찾기
 	async findById({ shopId }: IShopsServiceFindById): Promise<Shop> {
 		const myShop = await this.shopsRepository.findOne({
@@ -131,9 +116,18 @@ export class ShopsService {
 			);
 		}
 
+		// 구지역을 코드로 뽑기 위한 로직
+		const district = _address.split(' ')[1];
+		const code = await districtCode({ district });
+
 		const [lat, lng] = await this.getLatLngByAddress({ address: _address });
 
-		return await this.shopsRepository.save({ ...createShopInput, lat, lng });
+		return await this.shopsRepository.save({
+			...createShopInput,
+			lat,
+			lng,
+			code,
+		});
 	}
 
 	async getLatLngByAddress({
@@ -182,7 +176,32 @@ export class ShopsService {
 		return result;
 	}
 
+	// 가게 삭제
+	async delete({ shopId }: IShopsServiceDelete): Promise<boolean> {
+		const checkShop = await this.shopsRepository.findOne({
+			where: { id: shopId },
+		});
+
+		if (!checkShop) {
+			throw new UnprocessableEntityException(
+				`삭제된 목록에서 ID가 ${shopId}인 가게를 찾을 수 없습니다`,
+			);
+		}
+
+		const result = await this.shopsRepository.softDelete({ id: shopId });
+
+		return result.affected ? true : false;
+	}
+
 	// // <--- 기능 필요하면 주석 해제 --->
+	// // 삭제된 가게 리스트 불러오기
+	// async findAllDeleted(): Promise<Shop[]> {
+	// 	return await this.shopsRepository.find({
+	// 		withDeleted: true,
+	// 		relations: ['reservation'],
+	// 	});
+	// }
+
 	// // 가게 연락처(phone)로 해당 가게 정보 찾기
 	// async findByPhone({ phone }: IShopsServiceFindByPhone): Promise<Shop> {
 	// 	const result = await this.shopsRepository.findOne({
@@ -215,14 +234,6 @@ export class ShopsService {
 	// 	return result;
 	// }
 
-	// // 삭제 처리된 모든 가게 정보 불러오기
-	// async findAllDeleted(): Promise<Shop[]> {
-	// 	return await this.shopsRepository.find({
-	// 		withDeleted: true,
-	// 		// relations: ['reservation'],
-	// 	});
-	// }
-
 	// // 삭제된 가게ID로 해당 가게 정보 가져오기
 	// async findDeleted({ shopId }: IShopsServiceFindDeleted): Promise<Shop> {
 	// 	const result = await this.shopsRepository.findOne({
@@ -238,21 +249,6 @@ export class ShopsService {
 	// 	}
 
 	// 	return result;
-	// }
-
-	// // 가게 삭제
-	// async delete({ shopId }: IShopsServiceDelete): Promise<boolean> {
-	// 	const checkShop = await this.shopsRepository.findOne({
-	// 		where: { id: shopId },
-	// 	});
-
-	// 	if (!checkShop) {
-	// 		throw new NotFoundException(`ID가 ${shopId}인 가게를 찾을 수 없습니다`);
-	// 	}
-
-	// 	const result = await this.shopsRepository.softDelete({ id: shopId });
-
-	// 	return result.affected ? true : false;
 	// }
 
 	// // 삭제된 가게 정보 복원
