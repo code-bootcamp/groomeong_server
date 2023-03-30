@@ -3,7 +3,6 @@ import { Reservation } from 'src/apis/reservations/entities/reservation.entity';
 import { Review } from 'src/apis/reviews/entities/review.entity';
 import { ShopImage } from 'src/apis/shopImages/entities/shopImages.entity';
 import {
-	Any,
 	Column,
 	DeleteDateColumn,
 	Entity,
@@ -60,21 +59,21 @@ export class Shop {
 	@OneToMany(() => Reservation, (reservation) => reservation.shop, {
 		nullable: true,
 	})
-	@Field(() => [Reservation])
+	@Field(() => [Reservation], { nullable: true })
 	reservation: Reservation[];
 
 	// 가게(own):가게이미지 = 1:N
 	@OneToMany(() => ShopImage, (shopImage) => shopImage.shop, {
 		nullable: true,
 	})
-	@Field(() => [ShopImage])
+	@Field(() => [ShopImage], { nullable: true })
 	image: ShopImage[];
 
 	// 가게(own):리뷰 = 1:N
 	@OneToMany(() => Review, (review) => review.shop, {
 		nullable: true,
 	})
-	@Field(() => [Review])
+	@Field(() => [Review], { nullable: true })
 	review: Review[];
 
 	// logstash 데이터 폴링 기준 칼럼

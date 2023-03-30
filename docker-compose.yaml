@@ -27,10 +27,10 @@ services:
       - 6379:6379
 
   elasticsearch:
-    image: elasticsearch:7.17.0
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile.elasticsearch
+    # image: elasticsearch:7.17.0
+    build:
+      context: .
+      dockerfile: Dockerfile.elasticsearch
     restart: always
     environment:
       discovery.type: single-node

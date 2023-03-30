@@ -1,6 +1,6 @@
 {
 	"template": "auto-*",
-	"index_patterns": ["autocomplete-shop-*"],
+	"index_patterns": ["auto_shop_*"],
 	"order": "1",
 	"settings": {
 		"analysis": {
