@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   my-backend:
-    image: asia.gcr.io/project-groomeong/backend:1.3
+    image: asia.gcr.io/project-groomeong/backend:1.4
     platform: linux/x86_64
     build:
       context: .
