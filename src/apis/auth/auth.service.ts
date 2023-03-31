@@ -145,10 +145,12 @@ export class AuthService {
 		);
 		console.log('🐳🐳🐳🐳🐳', refreshToken);
 
+
 		// 로컬(개발환경)
 		// res.setHeader('set-Cookie', `refreshToken=${refreshToken}; path=/;`);
 
 		// 배포 환경
+
 		const originList = [
 			'http://localhost:3000',
 			'http://127.0.0.1:3000',
@@ -174,12 +176,14 @@ export class AuthService {
 		// Upgrade-Insecure-Requests => 여러 헤더에 대한 지원을 지정
 		res.setHeader(
 			'Access-Control-Allow-Headers',
-			'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+			'Access-Control-Allow-Headers, Origin, Accept, Authorization, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
 		);
 
 		res.setHeader(
 			'Set-Cookie',
-			`refreshToken=${refreshToken}; path=/; domain=.groomeong.shop; Secure; httpOnly; SameSite=None;`,
+			`refreshToken=${refreshToken}; path=/; domain=.groomeong.shop; Secure; httpOnly; SameSite=None; Max-Age=${
+				60 * 60 * 24 * 14
+			}`,
 		);
 	}
 
