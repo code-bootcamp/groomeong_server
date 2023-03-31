@@ -92,7 +92,7 @@ export class AuthService {
 	getAccessToken({ user }: IAuthServiceGetAccessToken): string {
 		return this.jwtService.sign(
 			{ sub: user.id, email: user.email }, //ƒ
-			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '2w' },
+			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '10h' },
 		);
 	}
 
@@ -101,7 +101,8 @@ export class AuthService {
 			{ sub: user.id, email: user.email }, //
 			{ secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
 		);
-
+		console.log('🐳🐳🐳🐳🐳', refreshToken);
+    
 		const originList = [
 			'http://localhost:3000',
 			'http://127.0.0.1:3000',
@@ -115,6 +116,7 @@ export class AuthService {
 			res.setHeader('Access-Control-Allow-Origin', origin);
 		}
 
+		// res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
 		// 프런트엔드 js 코드에 대한 응답을 노출할지 여부를 브라우저에 알려준다.
 		res.setHeader('Access-Control-Allow-Credentials', 'true');
 		// 리소스에 엑세스할 때 허용되는 하나 이상의 메서드를 지정해준다.
@@ -126,8 +128,8 @@ export class AuthService {
 		// X-Custom-Header => 서버에 대한 cors 요청에 의해 지원
 		// Upgrade-Insecure-Requests => 여러 헤더에 대한 지원을 지정
 		res.setHeader(
-			'Access-Control-Allow-Headers', //
-			'Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+			'Access-Control-Allow-Headers',
+			'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
 		);
 
 		res.setHeader(
