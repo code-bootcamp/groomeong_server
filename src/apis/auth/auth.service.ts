@@ -101,7 +101,7 @@ export class AuthService {
 	getAccessToken({ user }: IAuthServiceGetAccessToken): string {
 		return this.jwtService.sign(
 			{ sub: user.id, email: user.email }, //ƒ
-			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '2w' },
+			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '10h' },
 		);
 	}
 
@@ -110,9 +110,9 @@ export class AuthService {
 			{ sub: user.id, email: user.email }, //
 			{ secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
 		);
-
+		console.log('🐳🐳🐳🐳🐳', refreshToken);
 		// 개발 환경
-		// res.setHeader('set-Cookie', `refreshToken=${refreshToken}; path=/;`);
+		// res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/;`);
 
 		// 배포 환경 ============== 배포 하기 전까지 잠시 주석 =============
 
@@ -120,7 +120,7 @@ export class AuthService {
 			'http://localhost:3000',
 			'http://groomeong.store', // 프론트 도메인 주소??
 			'https://groomeong.store', // 프론트 도메인 주소??
-			'https://www.groomeong.shop/graphql',
+			'https://groomeong.shop',
 			// ssl 된 주소 https:// .....
 		];
 		const origin = req.headers.origin;
@@ -129,6 +129,7 @@ export class AuthService {
 			res.setHeader('Access-Control-Allow-Origin', origin);
 		}
 
+		// res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
 		// 프런트엔드 js 코드에 대한 응답을 노출할지 여부를 브라우저에 알려준다.
 		res.setHeader('Access-Control-Allow-Credentials', 'true');
 		// 리소스에 엑세스할 때 허용되는 하나 이상의 메서드를 지정해준다.
@@ -140,13 +141,13 @@ export class AuthService {
 		// X-Custom-Header => 서버에 대한 cors 요청에 의해 지원
 		// Upgrade-Insecure-Requests => 여러 헤더에 대한 지원을 지정
 		res.setHeader(
-			'Access-Control-Allow-Headers', //
-			'Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+			'Access-Control-Allow-Headers',
+			'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
 		);
 
 		res.setHeader(
 			'Set-Cookie',
-			`refreshToken=${refreshToken}; path=/; domain=www.groomeong.shop ; Secure; httpOnly; SameSite=None;`,
+			`refreshToken=${refreshToken}; path=/; domain=.groomeong.shop; Secure; httpOnly; SameSite=None;`,
 		);
 	}
 
