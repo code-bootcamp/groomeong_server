@@ -15,9 +15,9 @@ const EXAMPLE_USER: User = {
 	password: 'exampleUserPassword',
 	phone: 'exampleUserPhone',
 	image: 'exampleUserImage',
-	createAt: new Date(),
-	deleteAt: new Date(),
-	updateAt: new Date(),
+	createdAt: new Date(),
+	deletedAt: new Date(),
+	updatedAt: new Date(),
 	dogs: [null],
 	reservation: [null],
 };

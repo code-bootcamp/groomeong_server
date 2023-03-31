@@ -31,7 +31,7 @@ const EXAMPLE_USER: User = {
 describe('AuthResolver', () => {
 	let authService: AuthService;
 	let usersService: UsersService;
-	let jwt: JwtService; // Fix here
+	let jwt: JwtService;
 	let cacheManager: Cache;
 
 	const context: IContext = {
