@@ -79,6 +79,48 @@ export class AuthService {
 				},
 			);
 
+			// 개발 환경
+			// res.setHeader('Authorization', ''); // Authorization 헤더 값을 빈 문자열로 설정합니다.
+			// res.clearCookie('refreshToken'); // refreshToken 쿠키를 삭제합니다.
+
+			// 배포 환경
+			const originList = [
+				'http://localhost:3000',
+				'http://127.0.0.1:3000',
+				'http://34.64.53.80:3000',
+				'https://groomeong.shop',
+				'https://groomeong.store',
+			];
+			const origin = req.headers.origin;
+			if (originList.includes(origin)) {
+				// 리소스에 엑세스하기 위해 코드 요청을 허용하도록 브라우저에 알리는 응답
+				res.setHeader('Access-Control-Allow-Origin', origin);
+			}
+
+			// 프런트엔드 js 코드에 대한 응답을 노출할지 여부를 브라우저에 알려준다.
+			res.setHeader('Access-Control-Allow-Credentials', 'true');
+			// 리소스에 엑세스할 때 허용되는 하나 이상의 메서드를 지정해준다.
+			res.setHeader(
+				'Access-Control-Allow-Methods', //
+				'GET, HEAD, OPTIONS, POST, PUT',
+			);
+			// 실제 요청 중에 사용할 수 있는 HTTP 헤더를 나타내는 실행 전 요청에 대한 응답.
+			// X-Custom-Header => 서버에 대한 cors 요청에 의해 지원
+			// Upgrade-Insecure-Requests => 여러 헤더에 대한 지원을 지정
+			res.setHeader(
+				'Access-Control-Allow-Headers',
+				'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+			);
+
+			res.clearCookie('refreshToken', {
+				path: '/',
+				domain: '.groomeong.shop',
+				secure: true,
+				httpOnly: true,
+				sameSite: 'none',
+				maxAge: 0,
+			});
+
 			return '로그아웃 성공';
 		} catch (err) {
 			throw new UnauthorizedException('로그아웃 실패');
@@ -92,7 +134,7 @@ export class AuthService {
 	getAccessToken({ user }: IAuthServiceGetAccessToken): string {
 		return this.jwtService.sign(
 			{ sub: user.id, email: user.email }, //ƒ
-			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '2w' },
+			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '10h' },
 		);
 	}
 
@@ -101,7 +143,12 @@ export class AuthService {
 			{ sub: user.id, email: user.email }, //
 			{ secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
 		);
+		console.log('🐳🐳🐳🐳🐳', refreshToken);
 
+		// 로컬(개발환경)
+		// res.setHeader('set-Cookie', `refreshToken=${refreshToken}; path=/;`);
+
+		// 배포 환경
 		const originList = [
 			'http://localhost:3000',
 			'http://127.0.0.1:3000',
@@ -126,8 +173,8 @@ export class AuthService {
 		// X-Custom-Header => 서버에 대한 cors 요청에 의해 지원
 		// Upgrade-Insecure-Requests => 여러 헤더에 대한 지원을 지정
 		res.setHeader(
-			'Access-Control-Allow-Headers', //
-			'Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+			'Access-Control-Allow-Headers',
+			'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
 		);
 
 		res.setHeader(

@@ -16,7 +16,7 @@ steps:
       - set
       - image
       - deployment/groomeong-backend
-      - backend-sha256-1=asia.gcr.io/project-groomeong/backend:1.6
+      - backend-sha256-1=asia.gcr.io/project-groomeong/backend:1.7
     env:
       - CLOUDSDK_COMPUTE_ZONE=asia-northeast3
       - CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-5
