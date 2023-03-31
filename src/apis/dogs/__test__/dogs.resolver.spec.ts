@@ -1,13 +1,12 @@
-import {
-	CanActivate,
-	ExecutionContext,
-	NotFoundException,
-} from '@nestjs/common';
+import { CanActivate, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { DogsResolver } from '../dogs.resolver';
 import { DogsService } from '../dogs.service';
 import { DOG_TYPE } from '../enum/dog-type.enum';
 import { GqlAuthGuard } from '../../auth/guards/gql-auth.guard';
+import * as httpMocks from 'node-mocks-http';
+import { IAuthUser, IContext } from 'src/commons/interface/context';
+import { User } from 'src/apis/users/entities/user.entity';
 
 const MOCK_USER = {
 	id: 'c84fa63e-7a05-4cd5-b015-d4db9a262b18',
@@ -36,27 +35,24 @@ const MOCK_DOG = {
 	userId: 'c84fa63e-7a05-4cd5-b015-d4db9a262b18',
 };
 
-// mock 서비스 만들기
-const mockDogsService = {
-	// mock 서비스 로직 만들기
-	findOneById: jest.fn().mockImplementation((id: string) => {
-		return MOCK_DOG;
-	}),
-};
-
-const mockAuthGuard: CanActivate = {
-	canActivate(context: ExecutionContext) {
-		const request = context.switchToHttp().getRequest();
-		request.user = {
-			email: 'liberty556@gmail.com',
-			id: 'c84fa63e-7a05-4cd5-b015-d4db9a262b18',
-		};
-		return request.user;
-	},
-};
-
 describe('DogsResolver', () => {
 	let dogsResolver: DogsResolver;
+
+	const mockAuthGuard: CanActivate = {
+		canActivate: jest.fn().mockImplementation(() => true),
+	};
+
+	const context: IContext = {
+		req: httpMocks.createRequest(),
+		res: httpMocks.createResponse(),
+	};
+	context.req.user = new User();
+	context.req.user.id = MOCK_USER.id;
+
+	const mockDogsService = {
+		findOneById: jest.fn().mockImplementation((id: string) => MOCK_DOG),
+		findByUserId: jest.fn().mockImplementation((userId: string) => [MOCK_DOG]),
+	};
 
 	beforeEach(async () => {
 		const dogsModule = await Test.createTestingModule({
@@ -66,11 +62,12 @@ describe('DogsResolver', () => {
 					provide: DogsService,
 					useValue: mockDogsService,
 				},
+				{
+					provide: GqlAuthGuard,
+					useValue: mockAuthGuard,
+				},
 			],
-		})
-			.overrideGuard(GqlAuthGuard)
-			.useValue(mockAuthGuard)
-			.compile();
+		}).compile();
 
 		dogsResolver = dogsModule.get<DogsResolver>(DogsResolver);
 	});
@@ -79,10 +76,9 @@ describe('DogsResolver', () => {
 		expect(dogsResolver).toBeDefined();
 	});
 
-	describe('fetchDog API', () => {
+	describe('fetchDog', () => {
 		it('강아지 정보를 리턴해야 함', () => {
-			const validMockId = MOCK_DOG.id;
-			expect(dogsResolver.fetchDog(validMockId)).toEqual({
+			expect(dogsResolver.fetchDog(MOCK_DOG.id)).toEqual({
 				...MOCK_DOG,
 			});
 		});
@@ -94,6 +90,12 @@ describe('DogsResolver', () => {
 			} catch (error) {
 				expect(error).toBeInstanceOf(NotFoundException);
 			}
+		});
+	});
+
+	describe('fetchUserDogs', () => {
+		it('유저의 강아지 정보를 배열로 리턴해야 함', () => {
+			expect(dogsResolver.fetchUserDogs(context)).toEqual([{ ...MOCK_DOG }]);
 		});
 	});
 });
