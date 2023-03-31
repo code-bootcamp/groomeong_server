@@ -40,6 +40,16 @@ import { HttpExceptionFilter } from './commons/filter/http-exception.filter';
 			driver: ApolloDriver,
 			autoSchemaFile: true,
 			context: ({ req, res }) => ({ req, res }),
+			cors: {
+				origin: [
+					'http://localhost:3000',
+					'http://127.0.0.1:3000',
+					'http://34.64.53.80:3000',
+					'https://groomeong.shop',
+					'https://groomeong.store',
+				],
+				credentials: true,
+			},
 		}),
 		ConfigModule.forRoot(),
 		MailerModule.forRootAsync({
@@ -71,7 +81,7 @@ import { HttpExceptionFilter } from './commons/filter/http-exception.filter';
 			password: process.env.DATABASE_PASSWORD,
 			database: process.env.DATABASE_DATABASE,
 			entities: [__dirname + '/apis/**/*.entity.*'],
-			synchronize: true,
+			synchronize: false,
 			logging: true,
 		}),
 		CacheModule.register<RedisClientOptions>({
