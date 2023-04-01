@@ -36,19 +36,27 @@ describe('DogsService', () => {
 
 	describe('findOneById', () => {
 		it('강아지를 찾지 못하면 NotFoundException을 던져야 함', () => {
-			const inValidMockId = '3ce6246c-f37a-426e-b95a-b38ec6d55f4f';
-
+			const invalidMockId = '3ce6246c-f37a-426e-b95a-b38ec6d55f4f';
 			mockDogsRepository.findOne.mockResolvedValueOnce(null);
+
 			expect(
-				dogsService.findOneById({ id: inValidMockId }),
+				dogsService.findOneById({ id: invalidMockId }),
 			).rejects.toThrowError(NotFoundException);
+			expect(mockDogsRepository.findOne).toHaveBeenCalledWith({
+				where: { id: invalidMockId },
+				relations: { user: true },
+			});
 		});
 
 		it('id에 해당하는 강아지 정보를 리턴해야 함', async () => {
 			const validMockId = MOCK_DOG.id;
-
 			mockDogsRepository.findOne.mockResolvedValueOnce(MOCK_DOG);
+
 			const result = await dogsService.findOneById({ id: validMockId });
+			expect(mockDogsRepository.findOne).toHaveBeenCalledWith({
+				where: { id: validMockId },
+				relations: { user: true },
+			});
 			expect(result).toEqual(MOCK_DOG);
 		});
 	});
@@ -62,14 +70,26 @@ describe('DogsService', () => {
 				{ ...MOCK_DOG },
 			];
 			mockDogsRepository.findBy.mockResolvedValueOnce(mockDogs);
+
 			const result = await dogsService.findByUserId({ userId: mockUserId });
+			expect(mockDogsRepository.findBy).toHaveBeenCalledWith({
+				user: {
+					id: mockUserId,
+				},
+			});
 			expect(result).toEqual(mockDogs);
 		});
 
 		it('유저의 강아지 정보가 없다면 빈 배열을 리턴해야 함', async () => {
-			const mockUserId = 'c84fa63e-7a05-4cd5-b015-d4db9a262b11';
+			const mockUserId = MOCK_DOG.userId;
 			mockDogsRepository.findBy.mockResolvedValueOnce([]);
+
 			const result = await dogsService.findByUserId({ userId: mockUserId });
+			expect(mockDogsRepository.findBy).toHaveBeenCalledWith({
+				user: {
+					id: mockUserId,
+				},
+			});
 			expect(result).toEqual([]);
 		});
 	});
@@ -102,6 +122,12 @@ describe('DogsService', () => {
 				createDogInput,
 				userId: MOCK_USER.id,
 			});
+			expect(mockDogsRepository.save).toHaveBeenCalledWith({
+				...createDogInput,
+				user: {
+					id: MOCK_USER.id,
+				},
+			});
 			expect(result).toEqual(createdDog);
 		});
 	});
@@ -117,11 +143,16 @@ describe('DogsService', () => {
 		};
 
 		it('강아지를 찾지 못하면 NotFoundException을 던져야 함', () => {
-			const inValidMockId = '3ce6246c-f37a-426e-b95a-b38ec6d55f4f';
+			const invalidMockId = '3ce6246c-f37a-426e-b95a-b38ec6d55f4f';
 			mockDogsRepository.findOne.mockResolvedValueOnce(null);
+
 			expect(
-				dogsService.updateOneById({ id: inValidMockId, updateDogInput }),
+				dogsService.updateOneById({ id: invalidMockId, updateDogInput }),
 			).rejects.toThrowError(NotFoundException);
+			expect(mockDogsRepository.findOne).toHaveBeenCalledWith({
+				where: { id: invalidMockId },
+				relations: { user: true },
+			});
 		});
 
 		it('업데이트한 강아지 정보를 리턴해야 함', async () => {
@@ -131,6 +162,14 @@ describe('DogsService', () => {
 			const result = await dogsService.updateOneById({
 				id: MOCK_DOG.id,
 				updateDogInput,
+			});
+			expect(mockDogsRepository.findOne).toHaveBeenCalledWith({
+				where: { id: MOCK_DOG.id },
+				relations: { user: true },
+			});
+			expect(mockDogsRepository.save).toHaveBeenCalledWith({
+				...MOCK_DOG,
+				...updateDogInput,
 			});
 			expect(result).toEqual(UPDATED_MOCK_DOG);
 		});
@@ -143,14 +182,31 @@ describe('DogsService', () => {
 			expect(
 				dogsService.deleteOneById({ id: invalidMockId, userId: MOCK_USER.id }),
 			).rejects.toThrowError(NotFoundException);
+			expect(mockDogsRepository.findOne).toHaveBeenCalledWith({
+				where: { id: invalidMockId },
+				relations: { user: true },
+			});
 		});
 
-		it('삭제 여부 true를 반환해야 함', () => {
+		it('삭제 여부 true를 반환해야 함', async () => {
 			mockDogsRepository.findOne.mockResolvedValueOnce(MOCK_DOG);
 			mockDogsRepository.softDelete.mockResolvedValueOnce(true);
-			expect(
-				dogsService.deleteOneById({ id: MOCK_DOG.id, userId: MOCK_USER.id }),
-			).toBeTruthy();
+
+			const result = await dogsService.deleteOneById({
+				id: MOCK_DOG.id,
+				userId: MOCK_USER.id,
+			});
+			expect(result).toBe(true);
+			expect(mockDogsRepository.findOne).toHaveBeenCalledWith({
+				where: { id: MOCK_DOG.id },
+				relations: { user: true },
+			});
+			expect(mockDogsRepository.softDelete).toHaveBeenCalledWith({
+				id: MOCK_DOG.id,
+				user: {
+					id: MOCK_USER.id,
+				},
+			});
 		});
 	});
 });
