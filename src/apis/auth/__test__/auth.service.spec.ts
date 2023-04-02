@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { CACHE_MANAGER, UnprocessableEntityException } from '@nestjs/common';
+import {
+	CACHE_MANAGER,
+	UnauthorizedException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { UsersService } from 'src/apis/users/user.service';
 import { User } from 'src/apis/users/entities/user.entity';
@@ -8,8 +11,6 @@ import { AuthService } from '../auth.service';
 import { IContext } from 'src/commons/interface/context';
 import { JwtService } from '@nestjs/jwt';
 import * as httpMocks from 'node-mocks-http';
-import { MockUsersRepository } from './auth.mocking.dummy';
-import { MailerModule } from '@nestjs-modules/mailer';
 
 jest.mock('../auth.service');
 
@@ -20,9 +21,9 @@ const EXAMPLE_USER: User = {
 	password: 'exampleUserPassword',
 	phone: 'exampleUserPhone',
 	image: 'exampleUserImage',
-	createAt: new Date(),
-	deleteAt: new Date(),
-	updateAt: new Date(),
+	createdAt: new Date(),
+	deletedAt: new Date(),
+	updatedAt: new Date(),
 	dogs: [null],
 	reservation: [null],
 };
@@ -30,35 +31,41 @@ const EXAMPLE_USER: User = {
 describe('AuthResolver', () => {
 	let authService: AuthService;
 	let usersService: UsersService;
-	let jwtService: JwtService;
-	let cache: Cache;
-	let context: IContext;
+	let jwt: JwtService;
+	let cacheManager: Cache;
+
+	const context: IContext = {
+		req: httpMocks.createRequest(),
+		res: httpMocks.createResponse(),
+	};
+	context.req.user = new User();
+	context.req.user.id = EXAMPLE_USER.id;
+	const email = EXAMPLE_USER.email;
+	const password = EXAMPLE_USER.password;
+	const process = {
+		env: {
+			JWT_ACCESS_KEY: 'exampleAccess',
+			JWT_REFRESH_KEY: 'exampleRefresh',
+		},
+	};
 
 	beforeEach(async () => {
 		jest.clearAllMocks();
-		const usersModule: TestingModule = await Test.createTestingModule({
-			imports: [
-				MailerModule.forRootAsync({
-					useFactory: () => ({
-						transport: {
-							service: 'Gmail',
-							host: process.env.EMAIL_HOST,
-							port: Number(process.env.DATABASE_PORT),
-							secure: false,
-							auth: {
-								user: process.env.EMAIL_USER,
-								pass: process.env.EMAIL_PASS,
-							},
-						},
-					}),
-				}),
-			],
+		const modules: TestingModule = await Test.createTestingModule({
 			providers: [
 				AuthService,
-				UsersService,
 				{
-					provide: getRepositoryToken(User),
-					useClass: MockUsersRepository,
+					provide: UsersService,
+					useValue: {
+						findOneByEmail: jest.fn(() => EXAMPLE_USER),
+						create: jest.fn(() => EXAMPLE_USER),
+					},
+				},
+				{
+					provide: JwtService,
+					useValue: {
+						verify: jest.fn(() => 'EXAMPLE_TOKEN'),
+					},
 				},
 				{
 					provide: CACHE_MANAGER,
@@ -69,21 +76,12 @@ describe('AuthResolver', () => {
 				},
 			],
 		}).compile();
-		const authModule: TestingModule = await Test.createTestingModule({
-			providers: [AuthService],
-		}).compile();
 
-		usersService = usersModule.get<UsersService>(UsersService);
-		authService = authModule.get<AuthService>(AuthService);
-		cache = usersModule.get(CACHE_MANAGER);
-		context = {
-			req: httpMocks.createRequest(),
-			res: httpMocks.createResponse(),
-		};
+		authService = modules.get<AuthService>(AuthService);
+		usersService = modules.get<UsersService>(UsersService);
+		jwt = modules.get<JwtService>(JwtService);
+		cacheManager = modules.get(CACHE_MANAGER);
 	});
-
-	const email = EXAMPLE_USER.email;
-	const password = EXAMPLE_USER.password;
 
 	describe('login', () => {
 		it('의존성주입한 usersService 에서 email로 찾아오기', async () => {
@@ -129,10 +127,58 @@ describe('AuthResolver', () => {
 	});
 
 	describe('logout', () => {
-		//
-	});
+		const req = context.req;
+		it('토큰 증명해서 로그아웃 인가', async () => {
+			const req = {
+				headers: {
+					authorization: 'Bearer ACCESS_TOKEN',
+					cookie: 'refreshToken=REFRESH_TOKEN',
+				},
+			};
 
-	describe('restoreAccessToken', () => {
-		//
+			try {
+				const accessToken = await req.headers['authorization'].replace(
+					'Bearer ',
+					'',
+				);
+				const refreshToken = await req.headers['cookie'].split(
+					'refreshToken=',
+				)[1];
+
+				// accessToken 토큰
+				const jwtAccessKey = jwt.verify(accessToken);
+
+				// refresh 토큰
+				const jwtRefreshKey = jwt.verify(refreshToken);
+
+				await cacheManager.set(`accessToken:${accessToken}`, 'accessToken', {
+					ttl: jwtAccessKey['exp'] - jwtAccessKey['iat'],
+				});
+
+				await cacheManager.set(`refreshToken:${refreshToken}`, 'refreshToken', {
+					ttl: jwtRefreshKey['exp'] - jwtRefreshKey['iat'],
+				});
+
+				expect(jwt.verify).toBeCalled();
+
+				return '로그아웃에 성공했습니다.';
+			} catch (error) {
+				expect(error).toBeInstanceOf(Error);
+				expect(error.message).toBe('로그아웃을 실패했습니다.');
+				throw new UnauthorizedException('로그아웃을 실패했습니다.');
+			}
+		});
+
+		describe('restoreAccessToken', () => {
+			const user = EXAMPLE_USER;
+
+			beforeEach(async () => {
+				await authService.getAccessToken({ user });
+			});
+
+			it('getAccessToken should be called', () => {
+				expect(authService.getAccessToken).toBeCalled();
+			});
+		});
 	});
 });
