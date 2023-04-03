@@ -23,7 +23,6 @@ import * as jwt from 'jsonwebtoken';
 export class AuthService {
 	constructor(
 		private readonly usersService: UsersService, //
-
 		private readonly jwtService: JwtService, //
 
 		@Inject(CACHE_MANAGER)
@@ -37,15 +36,11 @@ export class AuthService {
 		req,
 		res,
 	}: IAuthServiceLogin): Promise<string> {
-		// 의존성주입한 usersService 에서 email 찾아오기
 		const user = await this.usersService.findOneByEmail({ email });
-
-		// 일치하는 유저가 없으면 에러던지기!!
 		if (!user) {
 			throw new UnprocessableEntityException('이메일이 일치하지 않습니다!!');
 		}
 
-		// 이메일은 일치하지만 비밀번호가 일치하지 않으면 에러던지기!!
 		const isAuth = await bcrypt.compare(password, user.password);
 		if (!isAuth) {
 			throw new UnprocessableEntityException('비밀번호가 일치하지 않습니다!!');
@@ -59,18 +54,14 @@ export class AuthService {
 
 	async logout({ req, res }: IAuthServiceLogOut) {
 		try {
-			const accessToken = await req.headers['authorization'].replace(
-				'Bearer ',
-				'',
+			const accessToken = req.headers['authorization'].replace('Bearer ', '');
+			const refreshToken = req.headers['cookie'].split('refreshToken=')[1];
+
+			const jwtAccessKey = jwt.verify(
+				accessToken, //
+				process.env.JWT_ACCESS_KEY,
 			);
-			const refreshToken = await req.headers['cookie'].split(
-				'refreshToken=',
-			)[1];
 
-			// accessToken 토큰
-			const jwtAccessKey = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
-
-			// refresh 토큰
 			const jwtRefreshKey = jwt.verify(
 				refreshToken,
 				process.env.JWT_REFRESH_KEY,
@@ -87,10 +78,52 @@ export class AuthService {
 					ttl: jwtRefreshKey['exp'] - jwtRefreshKey['iat'],
 				},
 			);
-			// 🚗🚗🚗🚗🚗🚗🚗🚗🚗 res 이용해서 배포 수정해주기 !!!
-			return '🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊🦊로그아웃에 성공했습니다.';
+
+			// 개발 환경
+			// res.setHeader('Authorization', ''); // Authorization 헤더 값을 빈 문자열로 설정합니다.
+			// res.clearCookie('refreshToken'); // refreshToken 쿠키를 삭제합니다.
+
+			// 배포 환경
+			const originList = [
+				'http://localhost:3000',
+				'http://127.0.0.1:3000',
+				'http://34.64.53.80:3000',
+				'https://groomeong.shop',
+				'https://groomeong.store',
+			];
+			const origin = req.headers.origin;
+			if (originList.includes(origin)) {
+				// 리소스에 엑세스하기 위해 코드 요청을 허용하도록 브라우저에 알리는 응답
+				res.setHeader('Access-Control-Allow-Origin', origin);
+			}
+
+			// 프런트엔드 js 코드에 대한 응답을 노출할지 여부를 브라우저에 알려준다.
+			res.setHeader('Access-Control-Allow-Credentials', 'true');
+			// 리소스에 엑세스할 때 허용되는 하나 이상의 메서드를 지정해준다.
+			res.setHeader(
+				'Access-Control-Allow-Methods', //
+				'GET, HEAD, OPTIONS, POST, PUT',
+			);
+			// 실제 요청 중에 사용할 수 있는 HTTP 헤더를 나타내는 실행 전 요청에 대한 응답.
+			// X-Custom-Header => 서버에 대한 cors 요청에 의해 지원
+			// Upgrade-Insecure-Requests => 여러 헤더에 대한 지원을 지정
+			res.setHeader(
+				'Access-Control-Allow-Headers',
+				'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+			);
+
+			res.clearCookie('refreshToken', {
+				path: '/',
+				domain: '.groomeong.shop',
+				secure: true,
+				httpOnly: true,
+				sameSite: 'none',
+				maxAge: 0,
+			});
+
+			return '로그아웃 성공';
 		} catch (err) {
-			throw new UnauthorizedException('로그아웃을 실패했습니다.');
+			throw new UnauthorizedException('로그아웃 실패');
 		}
 	}
 
@@ -101,7 +134,7 @@ export class AuthService {
 	getAccessToken({ user }: IAuthServiceGetAccessToken): string {
 		return this.jwtService.sign(
 			{ sub: user.id, email: user.email }, //ƒ
-			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '2w' },
+			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '10h' },
 		);
 	}
 
@@ -110,18 +143,19 @@ export class AuthService {
 			{ sub: user.id, email: user.email }, //
 			{ secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
 		);
+		console.log('🐳🐳🐳🐳🐳', refreshToken);
 
-		// 개발 환경
+		// 로컬(개발환경)
 		// res.setHeader('set-Cookie', `refreshToken=${refreshToken}; path=/;`);
 
-		// 배포 환경 ============== 배포 하기 전까지 잠시 주석 =============
+		// 배포 환경
 
 		const originList = [
 			'http://localhost:3000',
-			'http://groomeong.store', // 프론트 도메인 주소??
-			'https://groomeong.store', // 프론트 도메인 주소??
-			'https://www.groomeong.shop/graphql',
-			// ssl 된 주소 https:// .....
+			'http://127.0.0.1:3000',
+			'http://34.64.53.80:3000',
+			'https://groomeong.shop',
+			'https://groomeong.store',
 		];
 		const origin = req.headers.origin;
 		if (originList.includes(origin)) {
@@ -140,29 +174,27 @@ export class AuthService {
 		// X-Custom-Header => 서버에 대한 cors 요청에 의해 지원
 		// Upgrade-Insecure-Requests => 여러 헤더에 대한 지원을 지정
 		res.setHeader(
-			'Access-Control-Allow-Headers', //
-			'Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+			'Access-Control-Allow-Headers',
+			'Access-Control-Allow-Headers, Origin, Accept, Authorization, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
 		);
 
 		res.setHeader(
 			'Set-Cookie',
-			`refreshToken=${refreshToken}; path=/; domain=www.groomeong.shop ; Secure; httpOnly; SameSite=None;`,
+			`refreshToken=${refreshToken}; path=/; domain=.groomeong.shop; Secure; httpOnly; SameSite=None; Max-Age=${
+				60 * 60 * 24 * 14
+			}`,
 		);
 	}
 
 	async loginOAuth({ req, res }: ILoginService): Promise<void> {
-		// 1. 회원조회
 		let user = await this.usersService.findOneByEmail({
 			email: req.user.email,
 		});
+		if (!user) {
+			user = await this.usersService.create({ ...req.user });
+		}
 
-		// 2. 회원가입이 안되어있다면? 자동 회원가입
-		if (!user) user = await this.usersService.create({ ...req.user });
-
-		// 3. 로그인 브라우저 전송
 		this.setRefreshToken({ user, res, req });
-
-		res.redirect('https://groomeong.store/home/');
-		// 페이지 수정 꼭 하기! 배포될때!!🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗 프론트 메인 페이지
+		res.redirect('https://groomeong.store/home');
 	}
 }

@@ -11,18 +11,18 @@ import { ShopsService } from './shops.service';
 			Shop, //
 		]),
 		ElasticsearchModule.register({
-			node: 'http://elasticsearch:9200', // 로컬
+			// node: 'http://elasticsearch:9200', // 로컬
 
 			// 배포
-			// node: 'https://search-groomeong-elasticsearch-7mvk7xnf5m2a6tcx6p5ro5qste.ap-southeast-2.es.amazonaws.com:443',
-			// auth: {
-			// 	username: process.env.OPENSEARCH_ID,
-			// 	password: process.env.OPENSEARCH_PWD,
-			// },
-			// headers: {
-			// 	Accept: 'application/json',
-			// 	'Content-Type': 'application/json',
-			// },
+			node: 'https://search-groomeong-elasticsearch-7mvk7xnf5m2a6tcx6p5ro5qste.ap-southeast-2.es.amazonaws.com:443',
+			auth: {
+				username: process.env.OPENSEARCH_ID,
+				password: process.env.OPENSEARCH_PWD,
+			},
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+			},
 		}),
 	],
 	providers: [
