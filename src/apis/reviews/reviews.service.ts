@@ -1,10 +1,15 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+	Injectable,
+	UnprocessableEntityException,
+	NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ShopsService } from '../shops/shops.service';
 import { Review } from './entities/review.entity';
 import {
 	IReviewServiceCreate,
+	IReviewServiceDeleteOneById,
 	IReviewServiceFindById,
 	IReviewServiceFindByShopId,
 } from './interfaces/reviews-service.interface';
@@ -149,5 +154,19 @@ export class ReviewsService {
 		}
 
 		return true;
+	}
+
+	async deleteOneById({ id }: IReviewServiceDeleteOneById): Promise<boolean> {
+		const review = await this.reviewsRepository.findOne({
+			where: { id },
+		});
+
+		if (!review) {
+			throw new NotFoundException(`id ${id}인 리뷰를 찾을 수 없습니다.`);
+		}
+
+		const result = await this.reviewsRepository.softDelete({ id });
+
+		return result ? true : false;
 	}
 }
