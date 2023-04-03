@@ -6,16 +6,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Shop } from './entities/shop.entity';
-import { ShopImagesService } from '../shopImages/shopImage.service';
 import {
 	IShopsServiceCreate,
 	IShopsServiceDelete,
-	IShopsServiceFindByAddress,
 	IShopsServiceFindById,
-	IShopsServiceFindByPhone,
-	IShopsServiceFindDeleted,
 	IShopsServiceGetLatLngByAddress,
-	IShopsServiceRestore,
 	IShopsServiceUpdate,
 } from './interface/shops-service.interface';
 import axios from 'axios';
@@ -45,7 +40,13 @@ export class ShopsService {
 	// DB의 모든 가게 정보 불러오기 + 페이징 추가
 	async findAll({ page, count }): Promise<Shop[]> {
 		const allShops = await this.shopsRepository.find({
-			relations: ['reservation', 'image', 'review'],
+			relations: [
+				'reservation',
+				'image',
+				'review',
+				'reservation.review',
+				'reservation.user',
+			],
 			skip: (page - 1) * count,
 			take: count,
 		});
@@ -111,29 +112,32 @@ export class ShopsService {
 
 	// 가게 신규 생성
 	async create({ createShopInput }: IShopsServiceCreate): Promise<Shop> {
-		const _address = createShopInput.address;
+		const { address } = createShopInput;
 		const checkShop = await this.shopsRepository.findOne({
-			where: { address: _address },
+			where: { address },
 		});
 
 		if (checkShop) {
 			throw new ConflictException(
-				`해당 주소(${_address})로 등록된 가게가 있습니다`,
+				`주소 ${address}로 등록된 가게가 이미 있습니다`,
 			);
 		}
 
-		// 구지역을 코드로 뽑기 위한 로직
-		const district = _address.split(' ')[1];
-		const code = await districtCode({ district });
+		// 지역구를 지역코드로 변환하기
+		const district = address.split(' ')[1];
+		const code = districtCode({ district });
 
-		const [lat, lng] = await this.getLatLngByAddress({ address: _address });
+		// 주소에 대한 위도, 경도 가져오기
+		const [lat, lng] = await this.getLatLngByAddress({ address });
 
-		return await this.shopsRepository.save({
+		const result = await this.shopsRepository.save({
 			...createShopInput,
 			lat,
 			lng,
 			code,
 		});
+
+		return result;
 	}
 
 	async getLatLngByAddress({
@@ -165,15 +169,13 @@ export class ShopsService {
 
 		if (!checkShop) {
 			throw new UnprocessableEntityException(
-				`ID가 ${shopId}인 가게를 찾을 수 없습니다`,
+				`id가 ${shopId}인 가게를 찾을 수 없습니다`,
 			);
 		}
 
 		const myShop = await this.findById({ shopId });
 		const _averageStar = myShop.averageStar === 0 ? null : myShop.averageStar;
-		console.log(myShop);
-
-		const result = this.shopsRepository.save({
+		const result = await this.shopsRepository.save({
 			...myShop,
 			...updateShopInput,
 			averageStar: _averageStar,
@@ -190,7 +192,7 @@ export class ShopsService {
 
 		if (!checkShop) {
 			throw new UnprocessableEntityException(
-				`삭제된 목록에서 ID가 ${shopId}인 가게를 찾을 수 없습니다`,
+				`id가 ${shopId}인 가게를 찾을 수 없습니다`,
 			);
 		}
 
