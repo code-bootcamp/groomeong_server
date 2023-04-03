@@ -145,7 +145,6 @@ export class AuthService {
 		);
 		console.log('🐳🐳🐳🐳🐳', refreshToken);
 
-
 		// 로컬(개발환경)
 		// res.setHeader('set-Cookie', `refreshToken=${refreshToken}; path=/;`);
 
@@ -196,6 +195,6 @@ export class AuthService {
 		}
 
 		this.setRefreshToken({ user, res, req });
-		res.redirect('https://groomeong.store');
+		res.redirect('https://groomeong.store/home');
 	}
 }
