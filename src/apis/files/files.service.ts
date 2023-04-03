@@ -22,11 +22,11 @@ export class FilesService {
 					let filename = '';
 
 					if (dogId) {
-						filename = `origin/dog/${uuid()}/${image.filename}`; // 강아지 이미지 주소 설정
+						filename = `origin/dog/${uuid()}/${image.filename}`;
 					} else if (shopId) {
-						filename = `origin/shop/${uuid()}/${image.filename}`; // 미용샵 이미지 주소 설정
+						filename = `origin/shop/${uuid()}/${image.filename}`;
 					} else {
-						filename = `origin/profile/${uuid()}/${image.filename}`; // 프로필 이미지 주소 설정
+						filename = `origin/profile/${uuid()}/${image.filename}`;
 					}
 
 					image
