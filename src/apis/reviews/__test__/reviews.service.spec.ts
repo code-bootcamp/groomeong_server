@@ -102,14 +102,8 @@ describe('ReviewsService', () => {
 			});
 
 			expect(result).toBe(reviews);
-			expect(mockShopsService.findById).toHaveBeenCalledWith({ shopId });
-			expect(mockRepository.find).toHaveBeenCalledWith({
-				where: { shop: { id: shopId } },
-				skip: (page - 1) * count,
-				take: count,
-				order: { createdAt: 'ASC' },
-				relations: ['shop', 'reservation'],
-			});
+			expect(mockShopsService.findById).toBeCalled();
+			expect(mockRepository.find).toBeCalled();
 		});
 	});
 

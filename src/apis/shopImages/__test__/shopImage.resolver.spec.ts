@@ -5,9 +5,6 @@ import { ShopImage } from '../entities/shopImages.entity';
 import { UpdateShopImageInput } from '../dto/update-shopImage.input';
 import { Shop } from 'src/apis/shops/entities/shop.entity';
 
-// jest.mock('../shopImage.resolver');
-jest.mock('../shopImage.service');
-
 const EXAMPLE_SHOP: Shop = {
 	id: '1',
 	name: '1',
