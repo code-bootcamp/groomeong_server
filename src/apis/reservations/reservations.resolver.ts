@@ -5,7 +5,7 @@ import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { CreateReservationInput } from './dto/create-reservation.input';
 import { returnUserWithReviewOutput } from './dto/return-reservation.output';
 import { Reservation } from './entities/reservation.entity';
-import { ReservationsService } from './reservation.service';
+import { ReservationsService } from './reservations.service';
 
 @Resolver()
 export class ReservationsResolver {
@@ -13,8 +13,55 @@ export class ReservationsResolver {
 		private readonly reservationsService: ReservationsService, //
 	) {}
 
-	//예약 생성하기
-	@Mutation(() => Reservation, { description: 'Return: 생성된 신규 예약 정보' })
+	@Query(
+		() => Reservation, //
+		{ description: 'Return : 예약 정보' },
+	)
+	fetchReservation(
+		@Args('reservationId') reservationId: string, //
+	): Promise<Reservation> {
+		return this.reservationsService.findOne({ reservationId });
+	}
+
+	@UseGuards(GqlAuthGuard('access'))
+	@Query(
+		() => [Reservation], //
+		{ description: 'Return : 한 회원의 모든 예약 정보' },
+	)
+	fetchReservationsByUser(
+		@Context() context: IContext, //
+	): Promise<Reservation[]> {
+		const userId = context.req.user.id;
+		return this.reservationsService.findAllByUserId({ userId });
+	}
+
+	@Query(
+		() => [Reservation], //
+		{ description: 'Return : 한 가게의 예약 정보' },
+	)
+	fetchReservationsByShop(
+		@Args('shopId') shopId: string, //
+	): Promise<Reservation[]> {
+		return this.reservationsService.findAllByShopId({ shopId });
+	}
+
+	@Query(
+		() => [returnUserWithReviewOutput], //
+		{
+			description:
+				'Return : { profile: 회원정보 , review: 그 회원이 작성한 리뷰 } 형식의 배열',
+		},
+	)
+	fetchForShopDetailPage(
+		@Args('shopId') shopId: string, //
+	): Promise<returnUserWithReviewOutput[]> {
+		return this.reservationsService.findForShopDetailPage({ shopId });
+	}
+
+	@Mutation(
+		() => Reservation, //
+		{ description: 'Return: 생성된 신규 예약 정보' },
+	)
 	async createReservation(
 		@Args('createReservationInput')
 		createReservationInput: CreateReservationInput, //
@@ -24,52 +71,10 @@ export class ReservationsResolver {
 		});
 	}
 
-	// 예약ID로 예약정보 가져오기
-	@Query(() => Reservation, {
-		description: 'Return : 예약 정보',
-	})
-	fetchReservation(
-		@Args('reservationId') reservationId: string, //
-	): Promise<Reservation> {
-		return this.reservationsService.findOne({ reservationId });
-	}
-
-	// 회원의 모든 예약 가져오기
-	@UseGuards(GqlAuthGuard('access'))
-	@Query(() => [Reservation], {
-		description: 'Return : 한 회원의 예약 정보',
-	})
-	fetchReservationsByUser(
-		@Context() context: IContext, //
-	): Promise<Reservation[]> {
-		const userId = context.req.user.id;
-		console.log(userId, '@@@@');
-		return this.reservationsService.findAllByUserId({ userId });
-	}
-
-	// 가게의 모든 예약 가져오기
-	@Query(() => [Reservation], {
-		description: 'Return : 한 가게의 예약 정보',
-	})
-	fetchReservationsByShop(
-		@Args('shopId') shopId: string, //
-	): Promise<Reservation[]> {
-		return this.reservationsService.findAllByShopId({ shopId });
-	}
-
-	// 가게의 모든 예약과 예약자 가져오기
-	@Query(() => [returnUserWithReviewOutput], {
-		description:
-			'Return : { profile: 회원정보 , review: 그 회원이 작성한 리뷰 } 형식의 객체들이 모인 배열',
-	})
-	fetchForShopDetailPage(
-		@Args('shopId') shopId: string, //
-	): Promise<returnUserWithReviewOutput[]> {
-		return this.reservationsService.findForShopDetailPage({ shopId });
-	}
-
-	//예약 삭제하기
-	@Mutation(() => Boolean, { description: ' Return: 예약 삭제하기' })
+	@Mutation(
+		() => Boolean, //
+		{ description: ' Return: 예약 삭제하기' },
+	)
 	deleteReservation(
 		@Args('reservationId') reservationId: string, //
 	): Promise<boolean> {

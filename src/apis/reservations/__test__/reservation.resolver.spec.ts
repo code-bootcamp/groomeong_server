@@ -11,8 +11,8 @@ import { ShopsService } from 'src/apis/shops/shops.service';
 import { UsersService } from 'src/apis/users/user.service';
 import { CreateReservationInput } from '../dto/create-reservation.input';
 import { Reservation } from '../entities/reservation.entity';
-import { ReservationsResolver } from '../reservation.resolver';
-import { ReservationsService } from '../reservation.service';
+import { ReservationsResolver } from '../reservations.resolver';
+import { ReservationsService } from '../reservations.service';
 import {
 	MOCK_RESERVATION,
 	MOCK_REVIEW,
