@@ -59,7 +59,7 @@ describe('ShopImagesResolver', () => {
 	});
 
 	describe('fetchThumbnailByShop', () => {
-		it('should return a ShopImage object', async () => {
+		it('썸네일 이미지 리턴해야함', async () => {
 			const shopImageMock: ShopImage = {
 				id: '1',
 				imageUrl: 'https://test.com/image.jpg',
@@ -77,7 +77,7 @@ describe('ShopImagesResolver', () => {
 	});
 
 	describe('fetchShopImagesByShop', () => {
-		it('should return an array of ShopImage objects', async () => {
+		it('ShopImage 배열 리턴해야함', async () => {
 			const shopImagesMock: ShopImage[] = [
 				{
 					id: '1',
@@ -103,7 +103,7 @@ describe('ShopImagesResolver', () => {
 	});
 
 	describe('createShopImage', () => {
-		it('should return a ShopImage object', async () => {
+		it('새로 생성한 ShopImage 리턴해야함', async () => {
 			const input = {
 				imageUrl: 'https://test.com/image.jpg',
 				isThumbnail: true,
