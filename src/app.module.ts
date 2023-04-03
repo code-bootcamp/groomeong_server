@@ -16,7 +16,7 @@ import { JwtGoogleStrategy } from './apis/auth/strategies/jwt-social-google.stra
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { JwtKakaoStrategy } from './apis/auth/strategies/jwt-social-kakao.strategy';
-import { ReservationsModule } from './apis/reservations/reservation.module';
+import { ReservationsModule } from './apis/reservations/reservations.module';
 import { ReviewsModule } from './apis/reviews/reviews.module';
 import { ShopImagesModule } from './apis/shopImages/shopImage.module';
 import { AppController } from './app.controller';
