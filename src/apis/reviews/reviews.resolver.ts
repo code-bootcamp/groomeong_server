@@ -12,18 +12,20 @@ export class ReviewsResolver {
 		private readonly reviewsService: ReviewsService, //
 	) {}
 
-	@Query(() => Review, {
-		description: 'Return: 리뷰ID 기준으로 1개 불러오기',
-	})
+	@Query(
+		() => Review, //
+		{ description: 'Return: 리뷰ID 기준으로 1개 불러오기' },
+	)
 	fetchReview(
 		@Args('reviewId') reviewId: string, //
 	): Promise<Review> {
 		return this.reviewsService.find({ reviewId });
 	}
 
-	@Query(() => [Review], {
-		description: 'Return: 가게ID 기준으로 모든 리뷰 불러오기',
-	})
+	@Query(
+		() => [Review], //
+		{ description: 'Return: 가게ID 기준으로 모든 리뷰 불러오기' },
+	)
 	async fetchReviewsByShopId(
 		@Args({ name: 'page', defaultValue: 1, nullable: true })
 		page: number, //
@@ -40,9 +42,10 @@ export class ReviewsResolver {
 	}
 
 	@UseGuards(GqlAuthGuard('access'))
-	@Mutation(() => Review, {
-		description: 'Return: 신규 생성된 리뷰 데이터',
-	})
+	@Mutation(
+		() => Review, //
+		{ description: 'Return: 신규 생성된 리뷰 데이터' },
+	)
 	createReview(
 		@Args('createReviewInput') createReviewInput: CreateReviewInput, //
 		@Context() context: IContext,
@@ -54,9 +57,10 @@ export class ReviewsResolver {
 		});
 	}
 
-	@Mutation(() => Boolean, {
-		description: 'Return: 리뷰 삭제 후 true 반환',
-	})
+	@Mutation(
+		() => Boolean, //
+		{ description: 'Return: 리뷰 삭제 후 true 반환' },
+	)
 	deleteReview(
 		@Args('reviewId') id: string, //
 	): Promise<boolean> {
