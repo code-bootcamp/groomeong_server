@@ -27,7 +27,7 @@ export class ReviewsResolver {
 	async fetchReviewsByShopId(
 		@Args({ name: 'page', defaultValue: 1, nullable: true })
 		page: number, //
-		@Args({ name: 'page', defaultValue: 1, nullable: true })
+		@Args({ name: 'count', defaultValue: 1, nullable: true })
 		count: number, //
 		@Args('shopId')
 		shopId: string, //
@@ -52,5 +52,14 @@ export class ReviewsResolver {
 			userId: _userId,
 			createReviewInput,
 		});
+	}
+
+	@Mutation(() => Boolean, {
+		description: 'Return: 리뷰 삭제 후 true 반환',
+	})
+	deleteReview(
+		@Args('reviewId') id: string, //
+	): Promise<boolean> {
+		return this.reviewsService.deleteOneById({ id });
 	}
 }

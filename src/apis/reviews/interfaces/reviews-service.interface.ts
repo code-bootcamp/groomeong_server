@@ -18,3 +18,7 @@ export interface IReviewServiceFindByShopId {
 	page: number;
 	count: number;
 }
+
+export interface IReviewServiceDeleteOneById {
+	id: string;
+}
