@@ -2,7 +2,6 @@ import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CreateDogInput } from './dto/create-dog.input';
 import { DogsService } from './dogs.service';
 import { Dog } from './entities/dog.entity';
-import { UpdateDogInput } from './dto/update-dog.input';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { IContext } from 'src/commons/interface/context';
@@ -45,17 +44,6 @@ export class DogsResolver {
 	): Promise<Dog> {
 		const userId = context.req.user.id;
 		return this.dogsService.create({ createDogInput, userId });
-	}
-
-	@Mutation(
-		() => Dog,
-		{ description: ' Return: 업데이트한 강아지 데이터 ' }, //
-	)
-	updateDog(
-		@Args('id') id: string, //
-		@Args('updateDogInput') updateDogInput: UpdateDogInput, //
-	): Promise<Dog> {
-		return this.dogsService.updateOneById({ id, updateDogInput });
 	}
 
 	@Mutation(

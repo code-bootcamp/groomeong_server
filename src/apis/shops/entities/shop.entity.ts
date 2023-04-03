@@ -22,7 +22,7 @@ export class Shop {
 	@Field(() => String)
 	name: string;
 
-	@Column({ length: 13 })
+	@Column({ length: 30 })
 	@Field(() => String)
 	phone: string;
 

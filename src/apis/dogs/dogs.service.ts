@@ -6,7 +6,6 @@ import {
 	IDogsServiceDeleteById,
 	IDogsServiceFindByUserId,
 	IDogsServiceFindOneById,
-	IDogsServiceUpdateOneById,
 } from './interfaces/dogs-service.interface';
 import { Repository } from 'typeorm';
 
@@ -47,18 +46,6 @@ export class DogsService {
 			},
 		});
 		return dog;
-	}
-
-	async updateOneById({
-		id,
-		updateDogInput,
-	}: IDogsServiceUpdateOneById): Promise<Dog> {
-		const founded = await this.findOneById({ id });
-		const updated = await this.dogsRepository.save({
-			...founded,
-			...updateDogInput,
-		});
-		return updated;
 	}
 
 	async deleteOneById({
