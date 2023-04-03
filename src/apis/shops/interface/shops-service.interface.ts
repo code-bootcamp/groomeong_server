@@ -1,8 +1,18 @@
+import { Reservation } from 'src/apis/reservations/entities/reservation.entity';
 import { CreateShopInput } from '../dto/create-shop.input';
 import { UpdateShopInput } from '../dto/update-shop.input';
 
 export interface IShopsServiceCreate {
 	createShopInput: CreateShopInput;
+}
+
+export interface IShopsServiceFindAll {
+	page: number;
+	count: number;
+}
+
+export interface IShopsServiceFilterReservations {
+	reservations: Reservation[];
 }
 
 export interface IShopsServiceGetLatLngByAddress {
