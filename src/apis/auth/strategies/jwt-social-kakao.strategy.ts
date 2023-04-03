@@ -6,7 +6,7 @@ export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'KaKao') {
 		super({
 			clientID: process.env.KAKAO_CLIENT_ID,
 			clientSecret: process.env.KAKAO_CLIENT_SECRET,
-			callbackURL: 'https://groomeong.store/login/kakao/',
+			callbackURL: 'https://groomeong.store/login/kakao',
 			scope: ['account_email', 'profile_nickname'],
 		});
 	}
