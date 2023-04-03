@@ -52,6 +52,7 @@ describe('ShopImagesService', () => {
 						findOne: jest.fn(),
 						find: jest.fn(),
 						save: jest.fn(),
+						delete: jest.fn(),
 					},
 				},
 			],
@@ -62,7 +63,7 @@ describe('ShopImagesService', () => {
 	});
 
 	describe('findThumbnailByShopId', () => {
-		it('should return the thumbnail of the shop', async () => {
+		it('썸네일 이미지 리턴해야함', async () => {
 			const mockShopImage = new ShopImage();
 			jest
 				.spyOn(mockRepository, 'findOne')
@@ -73,7 +74,7 @@ describe('ShopImagesService', () => {
 			expect(mockRepository.findOne).toBeCalled();
 		});
 
-		it('should throw UnprocessableEntityException when thumbnail is not found', async () => {
+		it('썸네일이 없으면 UnprocessableEntityException 던져야 함', async () => {
 			jest.spyOn(mockRepository, 'findOne').mockResolvedValueOnce(undefined);
 
 			expect(mockRepository.findOne).toBeCalled();
@@ -81,7 +82,7 @@ describe('ShopImagesService', () => {
 	});
 
 	describe('findByShopId', () => {
-		it('should return all images of the shop', async () => {
+		it('한 가게의 모든 이미지 배열 리턴해야함', async () => {
 			const mockShopImages = [new ShopImage()];
 			jest
 				.spyOn(shopImagesService, 'findByShopId')
@@ -97,7 +98,7 @@ describe('ShopImagesService', () => {
 			});
 		});
 
-		it('should throw UnprocessableEntityException when the shop is not found', async () => {
+		it('가게를 찾을 수 없는 경우 UnprocessableEntityException 던져야함', async () => {
 			jest
 				.spyOn(shopImagesService, 'findByShopId')
 				.mockResolvedValueOnce(undefined);
@@ -106,6 +107,69 @@ describe('ShopImagesService', () => {
 				UnprocessableEntityException,
 			);
 			expect(shopImagesService.findByShopId).toHaveBeenCalledWith({ shopId });
+		});
+	});
+
+	describe('save', () => {
+		it('DB테이블에 신규 이미지 저장', async () => {
+			const checkURL = jest.fn(({ shopId }) => EXAMPLE_SHOP_IMAGE);
+			try {
+				const shopId = EXAMPLE_SHOP_IMAGE.shop.id;
+				await checkURL({ shopId });
+			} catch (error) {
+				expect(error).toBeInstanceOf(ConflictException);
+				throw new ConflictException();
+			}
+
+			const result = mockRepository.save({
+				imageUrl: EXAMPLE_SHOP_IMAGE.imageUrl,
+				isThumbnail: EXAMPLE_SHOP_IMAGE.isThumbnail,
+				shop: { id: EXAMPLE_SHOP_IMAGE.shop.id },
+			});
+
+			expect(checkURL).toBeCalledTimes(1);
+			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('imageUrl');
+			expect(result).toHaveProperty('isThumbnail');
+			expect(result).toHaveProperty('shop');
+		});
+	});
+
+	const updateShopImageInput = {
+		imageUrl: EXAMPLE_SHOP_IMAGE.imageUrl,
+		isThumbnail: EXAMPLE_SHOP_IMAGE.isThumbnail,
+		shop: { id: EXAMPLE_SHOP_IMAGE.shop.id },
+	};
+	const shopImageId = EXAMPLE_SHOP_IMAGE.id;
+
+	describe('update', () => {
+		it('delete를 실행한 뒤 save를 실행한다', async () => {
+			const shopImageId = EXAMPLE_SHOP_IMAGE.id;
+			await mockRepository.delete(shopImageId);
+			const result = mockRepository.save({
+				imageUrl: EXAMPLE_SHOP_IMAGE.imageUrl,
+				isThumbnail: EXAMPLE_SHOP_IMAGE.isThumbnail,
+				shop: { id: EXAMPLE_SHOP_IMAGE.shop.id },
+			});
+			expect(result).toHaveProperty('id');
+			expect(result).toHaveProperty('imageUrl');
+			expect(result).toHaveProperty('isThumbnail');
+			expect(result).toHaveProperty('shop');
+		});
+	});
+
+	const checkImage = jest.fn(({ shopId }) => EXAMPLE_SHOP_IMAGE);
+	describe('delete', () => {
+		it('checkImage 통과 후 delete 실행', async () => {
+			try {
+				await checkImage({ shopId });
+			} catch (error) {
+				expect(error).toThrow(UnprocessableEntityException);
+				throw new UnprocessableEntityException('아이디를 찾을 수 없습니다');
+			}
+			const result = await mockRepository.delete(shopImageId);
+			expect(checkImage).toBeCalled();
+			expect(result).toEqual(true);
 		});
 	});
 });
