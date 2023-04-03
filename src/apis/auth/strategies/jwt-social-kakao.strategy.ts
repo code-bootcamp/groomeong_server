@@ -1,12 +1,12 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-kakao';
 
-export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'KaKao') {
+export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
 	constructor() {
 		super({
 			clientID: process.env.KAKAO_CLIENT_ID,
 			clientSecret: process.env.KAKAO_CLIENT_SECRET,
-			callbackURL: 'https://groomeong.store/login/kakao',
+			callbackURL: 'https://groomeong.shop/login/kakao',
 			scope: ['account_email', 'profile_nickname'],
 		});
 	}
