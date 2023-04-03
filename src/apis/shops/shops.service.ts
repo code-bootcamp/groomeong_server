@@ -82,7 +82,13 @@ export class ShopsService {
 	async findById({ shopId }: IShopsServiceFindById): Promise<Shop> {
 		const myShop = await this.shopsRepository.findOne({
 			where: { id: shopId },
-			relations: ['reservation', 'image', 'review'],
+			relations: [
+				'reservation',
+				'image',
+				'review',
+				'reservation.review',
+				'reservation.user',
+			],
 		});
 
 		if (!myShop) {
