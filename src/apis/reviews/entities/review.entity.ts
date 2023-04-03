@@ -9,6 +9,7 @@ import {
 	ManyToOne,
 	OneToOne,
 	PrimaryGeneratedColumn,
+	DeleteDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -29,6 +30,9 @@ export class Review {
 	@Column()
 	@Field(() => Float)
 	star: number;
+
+	@DeleteDateColumn()
+	deletedAt: Date;
 
 	// 예약(own) : 리뷰 = 1 : 1 // FK컬럼이 생기는 곳 = 리뷰
 	@JoinColumn()

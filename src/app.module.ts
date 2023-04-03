@@ -81,7 +81,7 @@ import { HttpExceptionFilter } from './commons/filter/http-exception.filter';
 			password: process.env.DATABASE_PASSWORD,
 			database: process.env.DATABASE_DATABASE,
 			entities: [__dirname + '/apis/**/*.entity.*'],
-			synchronize: false,
+			synchronize: true,
 			logging: true,
 		}),
 		CacheModule.register<RedisClientOptions>({
