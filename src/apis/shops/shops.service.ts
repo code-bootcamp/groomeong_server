@@ -9,6 +9,8 @@ import { Shop } from './entities/shop.entity';
 import {
 	IShopsServiceCreate,
 	IShopsServiceDelete,
+	IShopsServiceFilterReservations,
+	IShopsServiceFindAll,
 	IShopsServiceFindById,
 	IShopsServiceGetLatLngByAddress,
 	IShopsServiceUpdate,
@@ -16,6 +18,7 @@ import {
 import axios from 'axios';
 import { districtCode } from 'src/commons/utils/addresscode';
 import { AutocompleteShopsOutput } from './dto/return-shop.output';
+import { Reservation } from '../reservations/entities/reservation.entity';
 
 @Injectable()
 export class ShopsService {
@@ -38,7 +41,7 @@ export class ShopsService {
 	}
 
 	// DB의 모든 가게 정보 불러오기 + 페이징 추가
-	async findAll({ page, count }): Promise<Shop[]> {
+	async findAll({ page, count }: IShopsServiceFindAll): Promise<Shop[]> {
 		const allShops = await this.shopsRepository.find({
 			relations: [
 				'reservation',
@@ -79,6 +82,14 @@ export class ShopsService {
 		return allShops;
 	}
 
+	filterReservations({
+		reservations,
+	}: IShopsServiceFilterReservations): Reservation[] {
+		return reservations.filter(
+			(reservation) => reservation.user && reservation.review,
+		);
+	}
+
 	// 가게 데이터 찾기
 	async findById({ shopId }: IShopsServiceFindById): Promise<Shop> {
 		const myShop = await this.shopsRepository.findOne({
@@ -90,6 +101,11 @@ export class ShopsService {
 				'reservation.review',
 				'reservation.user',
 			],
+		});
+
+		// 유저가 존재하고 리뷰까지 작성한 경우만 필터링
+		myShop.reservation = this.filterReservations({
+			reservations: myShop.reservation,
 		});
 
 		if (!myShop) {
