@@ -30,7 +30,7 @@ export class User {
 	// @Field(() => String)
 	password: string;
 
-	@Column({ length: 16 })
+	@Column({ length: 30 })
 	@Field(() => String)
 	phone?: string;
 
