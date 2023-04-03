@@ -22,11 +22,7 @@
 	},
 	"dependencies": {
 		"@apollo/server": "^4.5.0",
-<<<<<<< HEAD
-		"@elastic/elasticsearch": "^7.0.0",
-=======
 		"@elastic/elasticsearch": "7.13.0",
->>>>>>> 7865a492a12584e16382eabddf53ab547553938a
 		"@google-cloud/storage": "^6.9.3",
 		"@nestjs-modules/mailer": "^1.8.1",
 		"@nestjs/apollo": "^10.1.7",
