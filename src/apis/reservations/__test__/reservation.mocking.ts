@@ -13,9 +13,6 @@ export const MOCK_RESERVATION = {
 	dog: {
 		id: '64acf5f8-95bf-4256-8a23-8b073fb02c42',
 	},
-	review: {
-		id: '9cf2e431-70dd-44ca-ad9c-8735d594fc0a',
-	},
 };
 
 export const MOCK_SHOP = {
@@ -31,4 +28,13 @@ export const MOCK_SHOP = {
 	averageStar: 5,
 	updatedAt: '2023-03-30 01:03:12',
 	deletedAt: null,
+};
+
+export const MOCK_REVIEW = {
+	id: '3f50f151-55ba-4e1b-a5dc-8f08f2bc9394',
+	contents: '너무 이쁘게 잘라주세요',
+	createdAt: '2023-03-30 01:03:12.261083',
+	star: 4,
+	reservationId: 'e9b15e1d-a71b-4dcf-841f-16f99f6f91f8',
+	shopId: '89a3c0c1-60db-4725-8e65-b33a95acb800',
 };
