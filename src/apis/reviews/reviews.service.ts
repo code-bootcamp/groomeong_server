@@ -67,10 +67,6 @@ export class ReviewsService {
 	}: IReviewServiceCreate): Promise<Review> {
 		const shopId = createReviewInput.shopId;
 
-		// //리뷰 작성 권한 체크하기
-		// // -> 브라우저에서 유저의 권한 여부에 따라 다른 페이지를 보여준다면, create 시 권한 체크는 불필요하지 않은지?
-		// this.checkReviewAuth({ shopId, userId, reservationCountByUser });
-
 		// 리뷰 저장하기
 		const result = await this.reviewsRepository.save({
 			contents: createReviewInput.contents,

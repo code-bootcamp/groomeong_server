@@ -100,8 +100,8 @@ describe('shopImagesService', () => {
 			try {
 				await checkShop({ shopId });
 			} catch (error) {
-				throw new UnprocessableEntityException();
 				expect(error).toBeInstanceOf(UnprocessableEntityException);
+				throw new UnprocessableEntityException();
 			}
 
 			const result = mockShopImagesRepository.find({
@@ -118,8 +118,8 @@ describe('shopImagesService', () => {
 			try {
 				await checkURL({ shopId });
 			} catch (error) {
-				throw new ConflictException();
 				expect(error).toBeInstanceOf(ConflictException);
+				throw new ConflictException();
 			}
 
 			const result = mockShopImagesRepository.save({
@@ -165,8 +165,8 @@ describe('shopImagesService', () => {
 			try {
 				await checkImage({ shopId });
 			} catch (error) {
-				throw new UnprocessableEntityException('아이디를 찾을 수 없습니다');
 				expect(error).toThrow(UnprocessableEntityException);
+				throw new UnprocessableEntityException('아이디를 찾을 수 없습니다');
 			}
 			const result = await mockShopImagesRepository.delete({
 				shopImageId,

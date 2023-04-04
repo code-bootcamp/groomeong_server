@@ -31,7 +31,7 @@ export class Review {
 	@Field(() => Float)
 	star: number;
 
-	@DeleteDateColumn()
+	@DeleteDateColumn({ nullable: true })
 	deletedAt: Date;
 
 	// 예약(own) : 리뷰 = 1 : 1 // FK컬럼이 생기는 곳 = 리뷰
