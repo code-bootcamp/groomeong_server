@@ -12,13 +12,11 @@ export class UsersResolver {
 		private readonly usersService: UsersService, //
 	) {}
 
-	// 전체 조회하기
 	@Query(() => [User], { description: ' Return: 전체 유저 정보 ' })
 	fetchUsers(): Promise<User[]> {
 		return this.usersService.findAll();
 	}
 
-	// 하나 조회하기
 	@Query(() => User, { description: ' Return:  유저 정보 ' })
 	fetchUser(
 		@Args('userId') userId: string, //
@@ -26,7 +24,6 @@ export class UsersResolver {
 		return this.usersService.findOne({ userId });
 	}
 
-	// 삭제된 유저 조회하기
 	@Query(() => [User])
 	fetchUserWithDeleted(): Promise<User[]> {
 		return this.usersService.findAllWithDeleted();
@@ -39,7 +36,6 @@ export class UsersResolver {
 		return this.usersService.duplicationEmail({ email });
 	}
 
-	// 로그인 된 유저 조회하기 (마이페이지가 들어가기 위함)
 	@UseGuards(GqlAuthGuard('access'))
 	@Query(() => User, {
 		description: ' Return : 로그인한 유저, 유저 댕댕이 프로필',
@@ -50,7 +46,6 @@ export class UsersResolver {
 		return this.usersService.findUserDog({ email: context.req.user.email });
 	}
 
-	// 회원가입
 	@Mutation(() => User, { description: ' Return: 유저 회원가입 ' })
 	createUser(
 		@Args('name') name: string,
@@ -66,7 +61,6 @@ export class UsersResolver {
 		});
 	}
 
-	// 회원 수정하기
 	@UseGuards(GqlAuthGuard('access'))
 	@Mutation(() => User, { description: ' Return: 회원정보 업데이트 ' })
 	updateUser(
@@ -77,7 +71,6 @@ export class UsersResolver {
 		return this.usersService.update({ userId, updateUserInput });
 	}
 
-	// 비밀번호 찾기(초기화하기)
 	@Mutation(() => User, { description: 'Return: 비밀번호 초기화하기(찾기)' })
 	resetPwd(
 		@Args('email') email: string, //
@@ -86,7 +79,6 @@ export class UsersResolver {
 		return this.usersService.resetPassword({ email, newPassword });
 	}
 
-	// 이메일 인증번호 전송
 	@Mutation(() => String, { description: ' Return: 이메일 인증번호 전송 ' })
 	getTokenEmail(
 		@Args('email') email: string, //
@@ -94,7 +86,6 @@ export class UsersResolver {
 		return this.usersService.sendTokenEmail({ email });
 	}
 
-	// 이메일 인증번호 검증
 	@Mutation(() => Boolean, { description: 'Return: 인증번호 검증' })
 	checkValidToken(
 		@Args('email') email: string, //
@@ -103,7 +94,6 @@ export class UsersResolver {
 		return this.usersService.checkToken({ email, token });
 	}
 
-	// 유저 삭제하기
 	@Mutation(() => Boolean, { description: ' Return: 유저 정보 삭제하기 ' })
 	deleteUser(
 		@Args('userId') userId: string, //
