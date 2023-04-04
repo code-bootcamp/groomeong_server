@@ -7,9 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DogsService } from '../dogs/dogs.service';
 import { Review } from '../reviews/entities/review.entity';
-import { ReviewsService } from '../reviews/reviews.service';
 import { ShopsService } from '../shops/shops.service';
-import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/user.service';
 import { returnUserWithReviewOutput } from './dto/return-reservation.output';
 import { Reservation } from './entities/reservation.entity';
@@ -20,7 +18,6 @@ import {
 	IReservationsServiceFindAllByShopId,
 	IReservationsServiceFindAllByUserId,
 	IReservationsServiceFindById,
-	IReservationsServiceFindDeletedById,
 	IReservationsServiceFindForShopDetailPage,
 } from './interfaces/reservations-service.interface';
 
@@ -28,20 +25,19 @@ import {
 export class ReservationsService {
 	constructor(
 		@InjectRepository(Reservation)
-		private readonly reservationsRepository: Repository<Reservation>, //
+		private readonly reservationsRepository: Repository<Reservation>,
+		@InjectRepository(Review)
+		private readonly reviewsRepository: Repository<Review>,
+
 		private readonly usersService: UsersService,
 		private readonly shopsService: ShopsService,
 		private readonly dogsService: DogsService,
-		@InjectRepository(Review)
-		private readonly reviewsRepository: Repository<Review>,
 	) {}
 
-	// 신규 예약 정보 생성
 	async create({
 		createReservationInput,
 	}: IReservationsServiceCreate): Promise<Reservation> {
 		const { date, time, shopId, userId, dogId } = createReservationInput;
-
 		const checkReservation = await this.checkDuplication({
 			date,
 			time,
@@ -82,7 +78,6 @@ export class ReservationsService {
 		});
 	}
 
-	// 예약 가능 여부 확인하기
 	async checkDuplication({
 		date,
 		time,
@@ -98,13 +93,12 @@ export class ReservationsService {
 		return checkReservation;
 	}
 
-	// 예약ID로 해당 예약정보 찾기
 	async findOne({
 		reservationId,
 	}: IReservationsServiceFindById): Promise<Reservation> {
 		const result = await this.reservationsRepository.findOne({
 			where: { id: reservationId },
-			relations: ['shop', 'user', 'dog'],
+			relations: ['shop', 'user', 'dog', 'review'],
 			order: {
 				date: 'ASC',
 				time: 'ASC',
@@ -118,7 +112,6 @@ export class ReservationsService {
 		return result;
 	}
 
-	// 회원의 모든 예약 가져오기
 	async findAllByUserId({
 		userId,
 	}: IReservationsServiceFindAllByUserId): Promise<Reservation[]> {
@@ -140,13 +133,12 @@ export class ReservationsService {
 		return result;
 	}
 
-	// 가게의 모든 예약 가져오기
 	async findAllByShopId({
 		shopId,
 	}: IReservationsServiceFindAllByShopId): Promise<Reservation[]> {
 		const result = await this.reservationsRepository.find({
 			where: { shop: { id: shopId } },
-			relations: ['shop', 'user', 'dog'],
+			relations: ['shop', 'user', 'dog', 'review'],
 			order: {
 				date: 'ASC',
 				time: 'ASC',
@@ -214,7 +206,6 @@ export class ReservationsService {
 		return fetchList;
 	}
 
-	//예약 삭제하기
 	async delete({
 		reservationId,
 	}: IReservationsServiceDelete): Promise<boolean> {
@@ -234,43 +225,4 @@ export class ReservationsService {
 
 		return result.affected ? true : false;
 	}
-
-	// // <--- 기능 필요하다면 주석 해제 --->
-	// // 삭제된 예약 정보 가져오기
-	// async findDeletedById({
-	// 	reservationId,
-	// }: IReservationsServiceFindDeletedById): Promise<Reservation> {
-	// 	const result = await this.reservationsRepository.findOne({
-	// 		where: { id: reservationId },
-	// 		withDeleted: true,
-	// 		// relations: ['shop', 'user', 'dog'],
-	// 	});
-
-	// 	if (!result) {
-	// 		throw new UnprocessableEntityException(
-	// 			`예약ID가 ${reservationId}인 예약을 찾을 수 없습니다`,
-	// 		);
-	// 	}
-
-	// 	return result;
-	// }
-
-	// // 유저의 삭제된 예약 정보 가져오기
-	// async findDeletedByUserId({
-	// 	userId,
-	// }: IReservationsServiceFindAllByUserId): Promise<Reservation> {
-	// 	const result = await this.reservationsRepository.find({
-	// 		where: { user: { id: userId } },
-	// 		withDeleted: true,
-	// 		// relations: ['shop', 'user', 'dog'],
-	// 	});
-
-	// 	if (!result) {
-	// 		throw new NotFoundException(
-	// 			`회원ID가 ${userId}인 예약을 찾을 수 없습니다`,
-	// 		);
-	// 	}
-
-	// 	return result;
-	// }
 }
