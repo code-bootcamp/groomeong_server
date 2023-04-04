@@ -5,6 +5,7 @@ import { DogsService } from '../dogs.service';
 import { CreateDogInput } from '../dto/create-dog.input';
 import { UpdateDogInput } from '../dto/update-dog.input';
 import { Dog } from '../entities/dog.entity';
+import { DOG_TYPE } from '../enum/dog-type.enum';
 import { MOCK_DOG, MOCK_USER, UPDATED_MOCK_DOG } from './dogs.mocking';
 
 describe('DogsService', () => {
@@ -35,13 +36,20 @@ describe('DogsService', () => {
 	});
 
 	describe('findOneById', () => {
-		it('강아지를 찾지 못하면 NotFoundException을 던져야 함', () => {
+		it('강아지를 찾지 못하면 NotFoundException을 던져야 함', async () => {
+			mockDogsRepository.findOne.mockImplementation(
+				(where: { id: string }, relations: { user: true }) => null,
+			);
 			const invalidMockId = '3ce6246c-f37a-426e-b95a-b38ec6d55f4f';
-			mockDogsRepository.findOne.mockResolvedValueOnce(null);
 
-			expect(
-				dogsService.findOneById({ id: invalidMockId }),
-			).rejects.toThrowError(NotFoundException);
+			try {
+				await dogsService.findOneById({ id: invalidMockId });
+			} catch (error) {
+				expect(error).toBeInstanceOf(NotFoundException);
+				expect(error.message).toBe(
+					`id ${invalidMockId}를 갖는 강아지를 찾을 수 없음`,
+				);
+			}
 			expect(mockDogsRepository.findOne).toHaveBeenCalledWith({
 				where: { id: invalidMockId },
 				relations: { user: true },
@@ -50,7 +58,9 @@ describe('DogsService', () => {
 
 		it('id에 해당하는 강아지 정보를 리턴해야 함', async () => {
 			const validMockId = MOCK_DOG.id;
-			mockDogsRepository.findOne.mockResolvedValueOnce(MOCK_DOG);
+			mockDogsRepository.findOne.mockImplementation(
+				(where: { id: string }, relations: { user: true }) => MOCK_DOG,
+			);
 
 			const result = await dogsService.findOneById({ id: validMockId });
 			expect(mockDogsRepository.findOne).toHaveBeenCalledWith({
@@ -69,7 +79,9 @@ describe('DogsService', () => {
 				{ ...MOCK_DOG },
 				{ ...MOCK_DOG },
 			];
-			mockDogsRepository.findBy.mockResolvedValueOnce(mockDogs);
+			mockDogsRepository.findBy.mockImplementation(
+				(user: { id: string }) => mockDogs,
+			);
 
 			const result = await dogsService.findByUserId({ userId: mockUserId });
 			expect(mockDogsRepository.findBy).toHaveBeenCalledWith({
@@ -82,7 +94,9 @@ describe('DogsService', () => {
 
 		it('유저의 강아지 정보가 없다면 빈 배열을 리턴해야 함', async () => {
 			const mockUserId = MOCK_DOG.userId;
-			mockDogsRepository.findBy.mockResolvedValueOnce([]);
+			mockDogsRepository.findBy.mockImplementation(
+				(user: { id: string }) => [],
+			);
 
 			const result = await dogsService.findByUserId({ userId: mockUserId });
 			expect(mockDogsRepository.findBy).toHaveBeenCalledWith({
@@ -114,9 +128,13 @@ describe('DogsService', () => {
 				image: MOCK_DOG.image,
 				createdAt: new Date(),
 				deletedAt: null,
-				userId: MOCK_USER.id,
+				user: {
+					id: MOCK_USER.id,
+				},
 			};
-			mockDogsRepository.save.mockResolvedValueOnce(createdDog);
+			mockDogsRepository.save.mockImplementation(
+				(createDogInput: CreateDogInput, userId: string) => createdDog,
+			);
 
 			const result = await dogsService.create({
 				createDogInput,
@@ -142,13 +160,20 @@ describe('DogsService', () => {
 			specifics: UPDATED_MOCK_DOG.specifics,
 		};
 
-		it('강아지를 찾지 못하면 NotFoundException을 던져야 함', () => {
+		it('강아지를 찾지 못하면 NotFoundException을 던져야 함', async () => {
 			const invalidMockId = '3ce6246c-f37a-426e-b95a-b38ec6d55f4f';
-			mockDogsRepository.findOne.mockResolvedValueOnce(null);
+			mockDogsRepository.findOne.mockImplementation(
+				(where: { id: string }, relations: { user: true }) => null,
+			);
 
-			expect(
-				dogsService.updateOneById({ id: invalidMockId, updateDogInput }),
-			).rejects.toThrowError(NotFoundException);
+			try {
+				await dogsService.updateOneById({ id: invalidMockId, updateDogInput });
+			} catch (error) {
+				expect(error).toBeInstanceOf(NotFoundException);
+				expect(error.message).toBe(
+					`id ${invalidMockId}를 갖는 강아지를 찾을 수 없음`,
+				);
+			}
 			expect(mockDogsRepository.findOne).toHaveBeenCalledWith({
 				where: { id: invalidMockId },
 				relations: { user: true },
@@ -156,13 +181,25 @@ describe('DogsService', () => {
 		});
 
 		it('업데이트한 강아지 정보를 리턴해야 함', async () => {
-			mockDogsRepository.findOne.mockResolvedValueOnce(MOCK_DOG);
-			mockDogsRepository.save.mockResolvedValueOnce(UPDATED_MOCK_DOG);
+			mockDogsRepository.findOne.mockImplementation(
+				(where: { id: string }, relations: { user: true }) => MOCK_DOG,
+			);
+			mockDogsRepository.save.mockImplementation(
+				(
+					name: string,
+					age: number,
+					weight: number,
+					breed: DOG_TYPE,
+					specifics: string,
+					image: string,
+				) => UPDATED_MOCK_DOG,
+			);
 
 			const result = await dogsService.updateOneById({
 				id: MOCK_DOG.id,
 				updateDogInput,
 			});
+			expect(result).toEqual(UPDATED_MOCK_DOG);
 			expect(mockDogsRepository.findOne).toHaveBeenCalledWith({
 				where: { id: MOCK_DOG.id },
 				relations: { user: true },
@@ -171,17 +208,25 @@ describe('DogsService', () => {
 				...MOCK_DOG,
 				...updateDogInput,
 			});
-			expect(result).toEqual(UPDATED_MOCK_DOG);
 		});
 	});
 
 	describe('deleteOneById', () => {
-		it('강아지를 찾지 못하면 NotFoundException을 던져야 함', () => {
+		it('강아지를 찾지 못하면 NotFoundException을 던져야 함', async () => {
+			mockDogsRepository.findOne.mockResolvedValue(null);
 			const invalidMockId = '3ce6246c-f37a-426e-b95a-b38ec6d55f4f';
-			mockDogsRepository.findOne.mockResolvedValueOnce(null);
-			expect(
-				dogsService.deleteOneById({ id: invalidMockId, userId: MOCK_USER.id }),
-			).rejects.toThrowError(NotFoundException);
+
+			try {
+				await dogsService.deleteOneById({
+					id: invalidMockId,
+					userId: MOCK_USER.id,
+				});
+			} catch (error) {
+				expect(error).toBeInstanceOf(NotFoundException);
+				expect(error.message).toBe(
+					`id ${invalidMockId}를 갖는 강아지를 찾을 수 없음`,
+				);
+			}
 			expect(mockDogsRepository.findOne).toHaveBeenCalledWith({
 				where: { id: invalidMockId },
 				relations: { user: true },
@@ -189,8 +234,10 @@ describe('DogsService', () => {
 		});
 
 		it('삭제 여부 true를 반환해야 함', async () => {
-			mockDogsRepository.findOne.mockResolvedValueOnce(MOCK_DOG);
-			mockDogsRepository.softDelete.mockResolvedValueOnce(true);
+			mockDogsRepository.findOne.mockResolvedValue(MOCK_DOG);
+			mockDogsRepository.softDelete.mockImplementation(
+				(id: string, user: { id: string }) => true,
+			);
 
 			const result = await dogsService.deleteOneById({
 				id: MOCK_DOG.id,
