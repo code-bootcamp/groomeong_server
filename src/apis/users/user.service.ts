@@ -24,7 +24,6 @@ import {
 	IUsersServiceSendEmail,
 	IUsersServiceSendTokenEmail,
 	IUsersServiceUpdate,
-	IUsersServiceUpdatePwd,
 } from './interface/users.interface';
 import { MailerService } from '@nestjs-modules/mailer';
 import { sendTokenTemplate, welcomeTemplate } from 'src/commons/utils/utils';
@@ -40,12 +39,10 @@ export class UsersService {
 		private readonly mailerService: MailerService,
 	) {}
 
-	// 전체 조회하기
 	async findAll(): Promise<User[]> {
 		return await this.userRepository.find({});
 	}
 
-	// 하나 조회하기
 	async findOne({ userId }: IUsersServiceFindOne): Promise<User> {
 		const myUser = await this.userRepository.findOne({
 			where: { id: userId },
@@ -57,27 +54,23 @@ export class UsersService {
 		return myUser;
 	}
 
-	// 중복 계정 체크를 위한 이메일 조회
 	findOneByEmail({ email }: IUsersServiceFindOneByEmail): Promise<User> {
 		return this.userRepository.findOne({ where: { email } });
 	}
 
-	// 삭제된 유저 조회하기
 	findAllWithDeleted(): Promise<User[]> {
 		return this.userRepository.find({
 			withDeleted: true,
 		});
 	}
 
-	// 이메일 인증번호 전송
 	async sendTokenEmail({
 		email,
 	}: IUsersServiceSendTokenEmail): Promise<string> {
 		const token = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
-		// 이메일 정상인지 확인
+
 		this.checkValidationEmail({ email });
-		console.log(token);
-		// 이메일 인증번호 토큰 보내주기.
+
 		await this.mailerService.sendMail({
 			to: email,
 			from: process.env.EMAIL_USER,
@@ -96,7 +89,6 @@ export class UsersService {
 		return token;
 	}
 
-	// 이메일이 정상인지 확인
 	checkValidationEmail({ email }: IUsersServiceCheckValidationEmail) {
 		if (
 			email === undefined ||
@@ -109,7 +101,6 @@ export class UsersService {
 		}
 	}
 
-	// 이메일 중복검사
 	async duplicationEmail({
 		email,
 	}: IUsersServiceDuplicationEmail): Promise<boolean> {
@@ -121,24 +112,18 @@ export class UsersService {
 		}
 	}
 
-	// 회원가입
 	async create({
 		name, //
 		email,
 		password,
 		phone,
-	}: // image,
-	IUsersServiceCreate): Promise<User> {
-		//이메일 정상인지 확인
+	}: IUsersServiceCreate): Promise<User> {
 		await this.checkValidationEmail({ email });
 
-		// 비밀번호 암호화해주기
 		const hasedPassword = await bcrypt.hash(password, 10);
 
-		// 이메일 가입환영 템플릿 보내주기
 		await this.sendEmail({ email, name });
 
-		// 다시 리졸버로 값을 보내준다.
 		return this.userRepository.save({
 			name,
 			email,
@@ -147,16 +132,13 @@ export class UsersService {
 		});
 	}
 
-	// 로그인한 유저와 유저 댕댕이 프로필
 	async findUserDog({ email }: IUsersServiceFindUserDog): Promise<User> {
 		const result = await this.userRepository.findOne({
 			where: { email },
-			// relations: {dog:true},
 		});
 		return result;
 	}
 
-	// 가입환영 템플릿 만들어주기
 	async sendEmail({ email, name }: IUsersServiceSendEmail) {
 		const EMAIL_USER = process.env.EMAIL_USER;
 
@@ -175,7 +157,6 @@ export class UsersService {
 		return true;
 	}
 
-	// 회원 수정하기
 	async update({
 		userId, //
 		updateUserInput,
@@ -195,7 +176,6 @@ export class UsersService {
 		return result;
 	}
 
-	// 비밀번호 찾기(초기화하기)
 	async resetPassword({
 		email,
 		newPassword,
@@ -209,7 +189,6 @@ export class UsersService {
 		return await this.userRepository.save(theUser);
 	}
 
-	// 유저 삭제하기(삭제는 나중에)
 	async delete({
 		userId, //
 	}: IUsersServiceDelete) {
@@ -217,7 +196,6 @@ export class UsersService {
 		return result.affected ? true : false;
 	}
 
-	// 이메일 인증번호 검증
 	async checkToken({ email, token }: IUsersServiceCheckToken) {
 		const myToken = await this.cacheManager.get(email);
 		return myToken === token ? true : false;
