@@ -9,7 +9,7 @@ services:
       dockerfile: Dockerfile.prod
 
   logstash:
-    image: asia.gcr.io/project-groomeong/logstash:1.1
+    image: asia.gcr.io/project-groomeong/logstash:1.2
     platform: linux/x86_64
     build:
       context: .
