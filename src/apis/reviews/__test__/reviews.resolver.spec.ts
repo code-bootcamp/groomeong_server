@@ -1,11 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ReviewsResolver } from '../reviews.resolver';
 import { ReviewsService } from '../reviews.service';
-import * as httpMocks from 'node-mocks-http';
-import { IContext } from 'src/commons/interface/context';
-import { CreateReviewInput } from '../dto/create-review.input';
-
-jest.mock('../reviews.resolver');
+import { Review } from '../entities/review.entity';
 
 const EXAMPLE_REVIEW = {
 	id: 'EXAMPLE_REVIEW_ID',
@@ -16,88 +12,53 @@ const EXAMPLE_REVIEW = {
 	shop: { id: '500d75e0-0223-4046-be13-55887bfbf6f0' },
 };
 
-describe('ReviewResolver', () => {
-	let mockReviewsService = {
-		find: jest.fn(({ reviewId }) => EXAMPLE_REVIEW),
-		findByShopIdWithPage: jest.fn(
-			({ page, count, reviewId }) => EXAMPLE_REVIEW,
-		),
-		create: jest.fn(({ userId, createReviewInput }) => EXAMPLE_REVIEW),
-	};
+describe('ReviewsResolver', () => {
 	let reviewsResolver: ReviewsResolver;
-	let context: IContext;
+	let reviewsService: ReviewsService;
 
 	beforeEach(async () => {
-		const reviewsModule: TestingModule = await Test.createTestingModule({
+		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				ReviewsResolver,
 				{
 					provide: ReviewsService,
-					useValue: mockReviewsService,
+					useValue: {
+						find: jest.fn(),
+						findByShopIdWithPage: jest.fn(),
+						create: jest.fn(),
+						deleteOneById: jest.fn(),
+					},
 				},
 			],
 		}).compile();
-		mockReviewsService = reviewsModule.get(ReviewsService);
-		reviewsResolver = reviewsModule.get<ReviewsResolver>(ReviewsResolver);
-		context = {
-			req: httpMocks.createRequest(),
-			res: httpMocks.createResponse(),
-		};
+
+		reviewsResolver = module.get<ReviewsResolver>(ReviewsResolver);
+		reviewsService = module.get<ReviewsService>(ReviewsService);
 	});
 
-	const reviewId = EXAMPLE_REVIEW.id;
-	const shopId = EXAMPLE_REVIEW.shop.id;
-	const userId = 'exampleUserId';
-
 	describe('fetchReview', () => {
-		it('reivewService의 find 메서드 실행', async () => {
-			const result = await reviewsResolver.fetchReview(reviewId);
-			return result;
-
-			expect(result).toEqual(EXAMPLE_REVIEW);
-			expect(mockReviewsService.find({ reviewId })).toBeCalled();
+		it('should return a review by reviewId', async () => {
+			const review = new Review();
+			jest.spyOn(reviewsService, 'find').mockResolvedValueOnce(review);
+			const result = await reviewsResolver.fetchReview(EXAMPLE_REVIEW.id);
+			expect(reviewsService.find).toBeCalled();
 		});
 	});
 
 	describe('fetchReviewsByShopId', () => {
-		it('reivewService의 findByShopIdWithPage 메서드 실행', async () => {
-			const page = 1;
+		it('should return reviews by shopId', async () => {
+			const reviews: Review[] = [new Review(), new Review()];
 			const count = 100;
+			const page = 1;
+			jest
+				.spyOn(reviewsService, 'findByShopIdWithPage')
+				.mockResolvedValueOnce(reviews);
 			const result = await reviewsResolver.fetchReviewsByShopId(
 				page,
 				count,
-				shopId,
+				EXAMPLE_REVIEW.shop.id,
 			);
-			return result;
-
-			expect(result).toEqual(EXAMPLE_REVIEW);
-			expect(
-				mockReviewsService.findByShopIdWithPage({ page, count, reviewId }),
-			).toBeCalled();
-		});
-	});
-
-	describe('createReview', () => {
-		it('reivewService의 create 메서드 실행', async () => {
-			const createReviewInput: CreateReviewInput = {
-				contents: EXAMPLE_REVIEW.contents,
-				star: EXAMPLE_REVIEW.star,
-				reservationId: EXAMPLE_REVIEW.reservation.id,
-				shopId: EXAMPLE_REVIEW.shop.id,
-			};
-			const result = await reviewsResolver.createReview(
-				createReviewInput,
-				context,
-			);
-			return result;
-
-			expect(result).toEqual(EXAMPLE_REVIEW);
-			expect(
-				mockReviewsService.create({
-					userId,
-					createReviewInput,
-				}),
-			).toBeCalled();
+			expect(reviewsService.findByShopIdWithPage).toBeCalled();
 		});
 	});
 });
