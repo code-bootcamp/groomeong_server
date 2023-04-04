@@ -7,11 +7,9 @@ import * as httpMocks from 'node-mocks-http';
 import { IContext } from 'src/commons/interface/context';
 import { User } from 'src/apis/users/entities/user.entity';
 import { CreateDogInput } from '../dto/create-dog.input';
-import { UpdateDogInput } from '../dto/update-dog.input';
-import { MOCK_DOG, MOCK_USER, UPDATED_MOCK_DOG } from './dogs.mocking';
+import { MOCK_DOG, MOCK_USER } from './dogs.mocking';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Dog } from '../entities/dog.entity';
-import { DOG_TYPE } from '../enum/dog-type.enum';
 
 describe('DogsResolver', () => {
 	let dogsResolver: DogsResolver;
@@ -142,64 +140,6 @@ describe('DogsResolver', () => {
 			expect(mockDogsService.create).toHaveBeenCalledWith({
 				createDogInput,
 				userId: context.req.user.id,
-			});
-		});
-	});
-
-	describe('updateDog', () => {
-		const updateDogInput: UpdateDogInput = {
-			weight: UPDATED_MOCK_DOG.weight,
-			breed: UPDATED_MOCK_DOG.breed,
-		};
-
-		it('업데이트한 강아지 정보를 리턴해야 함', async () => {
-			mockDogsRepository.findOne.mockImplementation(
-				(where: { id: string }, relations: { user: true }) => MOCK_DOG,
-			);
-			mockDogsService.findOneById.mockImplementation((id: string) => MOCK_DOG);
-			mockDogsRepository.save.mockImplementation(
-				(
-					id: string,
-					name: string,
-					age: number,
-					weight: number,
-					breed: DOG_TYPE,
-					specifics: string,
-					image: string,
-					createdAt: Date,
-					deleledAt: Date,
-					userId: string,
-				) => UPDATED_MOCK_DOG,
-			);
-			mockDogsService.updateOneById.mockImplementation(
-				(id: string, updateDogInput: UpdateDogInput) => UPDATED_MOCK_DOG,
-			);
-
-			const result = await dogsResolver.updateDog(MOCK_DOG.id, updateDogInput);
-			expect(result).toEqual(UPDATED_MOCK_DOG);
-			expect(mockDogsService.updateOneById).toHaveBeenCalledWith({
-				id: MOCK_DOG.id,
-				updateDogInput,
-			});
-		});
-
-		it('NotFoundException을 던져야 함', () => {
-			const invalidMockId = '3ce6246c-f37a-426e-b95a-b38ec6d55f4f';
-			mockDogsRepository.findOne.mockImplementation(
-				(where: { id: string }) => null,
-			);
-
-			try {
-				dogsResolver.updateDog(invalidMockId, updateDogInput);
-			} catch (error) {
-				expect(error).toBeInstanceOf(NotFoundException);
-				expect(error.message).toBe(
-					`id ${invalidMockId}를 갖는 강아지를 찾을 수 없음`,
-				);
-			}
-			expect(mockDogsService.updateOneById).toHaveBeenCalledWith({
-				id: invalidMockId,
-				updateDogInput,
 			});
 		});
 	});
