@@ -1,7 +1,6 @@
 import {
 	ConflictException,
 	Injectable,
-	NotFoundException,
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,7 +23,6 @@ export class ShopImagesService {
 		private readonly shopsService: ShopsService,
 	) {}
 
-	// 가게ID로 썸네일 찾기
 	async findThumbnailByShopId({
 		shopId,
 	}: IShopImagesServiceFindThumbnail): Promise<ShopImage> {
@@ -44,7 +42,6 @@ export class ShopImagesService {
 		});
 	}
 
-	// 가게ID로 해당 이미지 찾기
 	async findByShopId({
 		shopId,
 	}: IShopImagesServiceFindByShopId): Promise<ShopImage[]> {
@@ -61,8 +58,7 @@ export class ShopImagesService {
 		});
 	}
 
-	// DB테이블에 신규 이미지 저장
-	async save({
+	async create({
 		imageUrl,
 		isThumbnail,
 		shopId,
@@ -81,7 +77,6 @@ export class ShopImagesService {
 		});
 	}
 
-	// DB테이블에서 이미지 업데이트
 	async update({
 		updateShopImageInput,
 	}: IShopImagesServiceUpdate): Promise<ShopImage> {
@@ -90,14 +85,10 @@ export class ShopImagesService {
 			imageUrl: updateShopImageInput.imageUrl,
 		});
 		return await this.shopImageRepository.save({
-			id: updateShopImageInput.id,
-			imageUrl: updateShopImageInput.imageUrl,
-			isThumbnail: updateShopImageInput.isThumbnail,
-			shop: { id: updateShopImageInput.shopId },
+			...updateShopImageInput,
 		});
 	}
 
-	// DB테이블에서 이미지 삭제
 	async delete({ shopImageId }: IShopImagesServiceDelete): Promise<boolean> {
 		const checkImage = await this.shopImageRepository.findOne({
 			where: { id: shopImageId },
@@ -108,12 +99,10 @@ export class ShopImagesService {
 				`가게이미지ID가 ${shopImageId}인 이미지를 찾을 수 없습니다`,
 			);
 		}
-		console.log('찾았음');
 
 		const result = await this.shopImageRepository.delete({
 			id: shopImageId,
 		});
-		console.log('✨✨✨ 삭제 완료 ✨✨✨');
 
 		return result.affected ? true : false;
 	}
