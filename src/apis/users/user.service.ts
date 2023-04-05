@@ -46,7 +46,12 @@ export class UsersService {
 	async findOne({ userId }: IUsersServiceFindOne): Promise<User> {
 		const myUser = await this.userRepository.findOne({
 			where: { id: userId },
-			relations: { reservation: true },
+			relations: [
+				'reservation',
+				'reservation.shop',
+				'dogs',
+				'reservation.review',
+			],
 		});
 		if (!myUser) {
 			throw new NotFoundException(`ID가 ${userId}인 회원을 찾을 수 없습니다`);
@@ -135,6 +140,7 @@ export class UsersService {
 	async findUserDog({ email }: IUsersServiceFindUserDog): Promise<User> {
 		const result = await this.userRepository.findOne({
 			where: { email },
+			relations: ['reservation', 'reservation.shop', 'reservation.review'],
 		});
 		return result;
 	}
