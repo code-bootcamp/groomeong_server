@@ -2,4 +2,4 @@ FROM opensearchproject/logstash-oss-with-opensearch-output-plugin:7.16.2
 
 COPY ./elk/logstash/logstash.prod.conf /usr/share/logstash/pipeline/
 COPY ./elk/logstash/mysql-connector-java-8.0.28.jar /usr/share/logstash/
-COPY ./elk/logstash/auto_template3.json /usr/share/logstash/
+COPY ./elk/logstash/auto_template.json /usr/share/logstash/
