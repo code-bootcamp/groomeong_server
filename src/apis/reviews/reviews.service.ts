@@ -23,7 +23,6 @@ export class ReviewsService {
 		private readonly shopsService: ShopsService,
 	) {}
 
-	// 리뷰 가져오기
 	async find({ reviewId }: IReviewServiceFindById): Promise<Review> {
 		const result = await this.reviewsRepository.findOne({
 			where: { id: reviewId },
@@ -37,7 +36,6 @@ export class ReviewsService {
 		return result;
 	}
 
-	// 가게의 모든 리뷰 가져오기
 	async findByShopIdWithPage({
 		page,
 		count, //
