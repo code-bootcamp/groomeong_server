@@ -229,12 +229,10 @@
 │ ├── 📝 app.controller.ts
 │ ├── 📝 app.module.ts
 │ └── 📝 main.ts
-├── 🐳 .dockerignore
-├── 📝 .env.docker
-├── 📝 .env.prod
 ├── 📝 .eslintrc.js
 ├── 📝 .gitignore
 ├── 📝 .prettierrc
+├── 🐳 .dockerignore
 ├── 🐳 docker-compose.prod.yaml
 ├── 🐳 docker-compose.yaml
 ├── 🐳 Dockerfile
@@ -243,7 +241,6 @@
 ├── 🐳 Dockerfile.prod
 ├── 🧸 nest-cli.json
 ├── 🧸 package.json
-├── 🧸 project-groomeong-34231f48bd14.json
 ├── 📝 README.md
 ├── 🧸 settings.json
 ├── 🧸 tsconfig.build.json
