@@ -1,5 +1,7 @@
 .dockerignore
 project-groomeong-34231f48bd14.json
+groomeong-383308-b73133e2a10e.json
+client_secret_551257188742-k4rjo1mi0uicg1dahpnp7jopv41vkciv.apps.googleusercontent.com.json
 logstash.conf
 logstash.copy.conf
 

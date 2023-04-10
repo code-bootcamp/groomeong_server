@@ -16,17 +16,17 @@ steps:
       - set
       - image
       - deployment/groomeong-backend
-      - backend-sha256-1=asia.gcr.io/project-groomeong/backend:2.7
+      - backend-sha256-1=asia.gcr.io/groomeong-383308/backend:2.7
     env:
       - CLOUDSDK_COMPUTE_ZONE=asia-northeast3
-      - CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-5
+      - CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1
 
   - name: gcr.io/cloud-builders/kubectl
     args:
       - set
       - image
       - deployment/groomeong-logstash
-      - logstash-sha256-1=asia.gcr.io/project-groomeong/logstash:1.3
+      - logstash-sha256-1=asia.gcr.io/groomeong-383308/logstash:1.3
     env:
       - CLOUDSDK_COMPUTE_ZONE=asia-northeast3
-      - CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-5
+      - CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1
