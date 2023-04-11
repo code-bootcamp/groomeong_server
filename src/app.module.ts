@@ -27,7 +27,7 @@ import { HttpExceptionFilter } from './commons/filter/http-exception.filter';
 @Module({
 	imports: [
 		AddShopReviewModule,
-		ShopsModule, //
+		ShopsModule,
 		AuthModule,
 		DogsModule,
 		FilesModule,
@@ -44,9 +44,8 @@ import { HttpExceptionFilter } from './commons/filter/http-exception.filter';
 				origin: [
 					'http://localhost:3000',
 					'http://127.0.0.1:3000',
-					'http://34.64.53.80:3000',
-					'https://groomeong.shop',
 					'https://groomeong.store',
+					'https://groomeong-backend.shop',
 				],
 				credentials: true,
 			},

@@ -87,8 +87,7 @@ export class AuthService {
 			const originList = [
 				'http://localhost:3000',
 				'http://127.0.0.1:3000',
-				'http://34.64.53.80:3000',
-				'https://groomeong.shop',
+				'https://groomeong-backend.shop',
 				'https://groomeong.store',
 			];
 			const origin = req.headers.origin;
@@ -114,7 +113,7 @@ export class AuthService {
 
 			res.clearCookie('refreshToken', {
 				path: '/',
-				domain: '.groomeong.shop',
+				domain: '.groomeong-backend.shop',
 				secure: true,
 				httpOnly: true,
 				sameSite: 'none',
@@ -153,8 +152,7 @@ export class AuthService {
 		const originList = [
 			'http://localhost:3000',
 			'http://127.0.0.1:3000',
-			'http://34.64.53.80:3000',
-			'https://groomeong.shop',
+			'https://groomeong-backend.shop',
 			'https://groomeong.store',
 		];
 		const origin = req.headers.origin;
@@ -180,7 +178,7 @@ export class AuthService {
 
 		res.setHeader(
 			'Set-Cookie',
-			`refreshToken=${refreshToken}; path=/; domain=.groomeong.shop; Secure; httpOnly; SameSite=None; Max-Age=${
+			`refreshToken=${refreshToken}; path=/; domain=.groomeong-backend.shop; Secure; httpOnly; SameSite=None; Max-Age=${
 				60 * 60 * 24 * 14
 			}`,
 		);
