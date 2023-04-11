@@ -99,8 +99,6 @@
 ```md
 .
 └── 📂 backend /
-├── 📂 .vscode/
-│ └── 🧸 settings.json
 ├── 📂 elk/
 │ └── 📂 logstash/
 │ ├── 🧸 auto-template.json
