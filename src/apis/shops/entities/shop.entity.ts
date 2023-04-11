@@ -38,7 +38,7 @@ export class Shop {
 	@Field(() => String)
 	address: string;
 
-	@Column()
+	@Column({ nullable: true })
 	@Field(() => Int)
 	code: number;
 

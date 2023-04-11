@@ -29,7 +29,7 @@ export class ShopsResolver {
 		searchKeyword: string, //
 	): Promise<AutocompleteShopsOutput[]> {
 		const searchResult = await this.elasticsearchService.search({
-			index: 'auto_shop_2',
+			index: 'auto_shop_3',
 			body: {
 				query: {
 					multi_match: {

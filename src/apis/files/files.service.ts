@@ -13,7 +13,7 @@ export class FilesService {
 		const bucket = process.env.GCP_BUCKET_NAME;
 		const storage = new Storage({
 			projectId: process.env.GCP_PROJECT_ID,
-			keyFilename: process.env.GCP_KEY_FILENAME,
+			keyFilename: `/groomeong-backend-secrets/${process.env.GCP_KEY_FILENAME}`,
 		});
 		const images = await Promise.all(_image);
 		const results = await Promise.all(
