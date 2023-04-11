@@ -98,151 +98,165 @@
 
 ```md
 .
-└── 📂 backend /
-├── 📂 elk/
-│ └── 📂 logstash/
-│ ├── 🧸 auto-template.json
-│ ├── ⚙️ logstash.conf
-│ └── 🫕 mysql-connector-java-8.0.28.jar
-├── 📂 src/
-│ ├── 📂 apis/
-│ │ ├── 📂 auth/
-│ │ │ ├── 📂 **test**/
-│ │ │ │ ├── 📝 auth.mocking.dummy.ts
-│ │ │ │ ├── 🛎️ auth.resolver.spec.ts
-│ │ │ │ └── 🛎️ auth.service.spec.ts
-│ │ │ ├── 📂 guards/
-│ │ │ │ ├── 📝 dynamic-auth.guard-02.ts
-│ │ │ │ └── 🔐 gql-auth.guard.ts
-│ │ │ ├── 📂 interface/
-│ │ │ │ └── 📝 auth.interface.ts
-│ │ │ ├── 📂 streategies/
-│ │ │ │ ├── 📝 jwt-access.strategy.ts
-│ │ │ │ ├── 📝 jwt-refresh.stratehy.ts
-│ │ │ │ ├── 📝 jwt-social-google.strategy.ts
-│ │ │ │ └── 📝 jwt-social-kakao.strategy.ts
-│ │ │ ├── 📝 auth.controller.ts
-│ │ │ ├── 📝 auth.module.ts
-│ │ │ ├── 📝 auth.resovler.ts
-│ │ │ └── 📝 auth.service.ts
-│ │ ├── 📂 dogs/
-│ │ │ ├── 📂 **test/
-│ │ │ │ └── 🛎️ dogs.resolver.spec.ts
-│ │ │ ├── 📂 dto/
-│ │ │ │ ├── 📝 create-dog.input
-│ │ │ │ └── 📝 update-dog.input
-│ │ │ ├── 📂 entities/
-│ │ │ │ └── 📝 dog.entity.ts
-│ │ │ ├── 📂 enum/
-│ │ │ │ └── 📝 dog-type.enum.ts
-│ │ │ ├── 📂 interfaces/
-│ │ │ │ └── 📝 dogs-service.interface.ts
-│ │ │ ├── 📝 dogs.module.ts
-│ │ │ ├── 📝 dogs.resolver.ts
-│ │ │ └── 📝 dogs.service.ts
-│ │ ├── 📂 files/
-│ │ │ ├── 📂 interfaces/
-│ │ │ │ └── 📝 files-service.interface
-│ │ │ ├── 📝 files.module.ts
-│ │ │ ├── 📝 files.resolver.ts
-│ │ │ └── 📝 files.service.ts
-│ │ ├── 📂 reservations/
-│ │ │ ├── 📂 dto/
-│ │ │ │ └── 📝 create-reservation.input.ts
-│ │ │ ├── 📂 entities/
-│ │ │ │ └── 📝 reservation.entity.ts
-│ │ │ ├── 📂 interfaces
-│ │ │ ├── 📝 reservation.module.ts
-│ │ │ ├── 📝 reservation.resolver.ts
-│ │ │ └── 📝 reservation.service.ts
-│ │ ├── 📂 reviews/
-│ │ │ ├── 📂 dto/
-│ │ │ │ └── 📝 create-review.input.ts
-│ │ │ ├── 📂 entities/
-│ │ │ │ └── 📝 review.entity.ts
-│ │ │ ├── 📂 interfaces/
-│ │ │ │ └── 📝 reviews-service.interface.ts
-│ │ │ ├── 📝 reviews.module.ts
-│ │ │ ├── 📝 reviews.resolver.ts
-│ │ │ └── 📝 reviews.service.ts
-│ │ ├── 📂 shop-review/
-│ │ │ ├── 📂 dto/
-│ │ │ │ └── 📝 return-shop-review.output
-│ │ │ ├── 📝 shop-review.module.ts
-│ │ │ ├── 📝 shop-review.resolver.ts
-│ │ │ └── 📝 shop-review.service.ts
-│ │ ├── 📂 shopImages/
-│ │ │ ├── 📂 **test**/
-│ │ │ │ ├── 📝 shopImage.moking.dummy.ts
-│ │ │ │ ├── 🛎️ shopImage.resolver.spec.ts
-│ │ │ │ └── 🛎️ shopImage.service.spec.ts
-│ │ │ ├── 📂 dto/
-│ │ │ │ ├── 📝 save-shopImage.input.ts
-│ │ │ │ └── 📝 update-shopImage.input.ts
-│ │ │ ├── 📂 entities/
-│ │ │ │ └── 📝 shopImages.entity.ts
-│ │ │ ├── 📂 interfaces/
-│ │ │ │ └── 📝 shopImages-service.interface.ts
-│ │ │ ├── 📝 shopImage.module.ts
-│ │ │ ├── 📝 shopImage.resolver.ts
-│ │ │ └── 📝 shopImage.service.ts
-│ │ ├── 📂 shops/
-│ │ │ ├── 📂 **test**/
-│ │ │ │ └── 🛎️ shops.service.spec.ts
-│ │ │ ├── 📂 dto/
-│ │ │ │ ├── 📝 create-shop.input.ts
-│ │ │ │ ├── 📝 return-shop.output.ts
-│ │ │ │ └── 📝 update-shop.input.ts
-│ │ │ ├── 📂 entities/
-│ │ │ │ └── 📝 shop.entity.ts
-│ │ │ ├── 📂 interfaces/
-│ │ │ │ └── 📝 shops-service.interface.ts
-│ │ │ ├── 📝 shops.module.ts
-│ │ │ ├── 📝 shops.resolver.ts
-│ │ │ └── 📝 shops.service.ts
-│ │ └── 📂 users/
-│ │ ├── 📂 **test\_\_/
-│ │ │ └── 🛎️ users.service.spec.ts
-│ │ ├── 📂 dto/
-│ │ │ ├── 📝 create-users.input.ts
-│ │ │ └── 📝 update-users.input.ts
-│ │ ├── 📂 entities/
-│ │ │ └── 📝 user.entity.ts
-│ │ ├── 📂 interface/
-│ │ │ └── 📝 users.interface.ts
-│ │ ├── 📝 user.module.ts
-│ │ ├── 📝 user.resolver.ts
-│ │ └── 📝 user.service.ts
-│ ├── 📂 commons/
-│ │ ├── 📂 filter/
-│ │ │ └── 📝 http-exception.filter.ts
-│ │ ├── 📂 interface/
-│ │ │ └── 📝 context.ts
-│ │ └── 📂 utils/
-│ │ ├── 📝 addresscode.ts
-│ │ └── 📝 utils.ts
-│ ├── 📂 test/
-│ │ ├── 🛎️ app.e2e-spec.ts
-│ │ └── 🧸 jest-e2e.json
-│ ├── 📝 app.controller.ts
-│ ├── 📝 app.module.ts
-│ └── 📝 main.ts
-├── 📝 .eslintrc.js
-├── 📝 .gitignore
-├── 📝 .prettierrc
-├── 🐳 .dockerignore
-├── 🐳 docker-compose.prod.yaml
-├── 🐳 docker-compose.yaml
-├── 🐳 Dockerfile
-├── 🐳 Dockerfile.elasticsearch
-├── 🐳 Dockerfile.logstash
-├── 🐳 Dockerfile.prod
-├── 🧸 nest-cli.json
-├── 🧸 package.json
-├── 📝 README.md
-├── 🧸 settings.json
-├── 🧸 tsconfig.build.json
-├── 🧸 tsconfig.json
-├── 📝 yarn-error.log
-└── 📝 yarn.lock
+└── 📂 backend/
+    ├── 📂 elk/
+    │   └── 📂 logstash/
+    │       ├── auto_template.json
+    │       ├── logstash.prod.conf
+    │       └── mysql-connector-java-8.0.28.jar
+    ├── 📂 node_modules
+    ├── 📂 src/
+    │   └── 📂 apis/
+    │       ├── 📂 auth/
+    │       │   ├── 📂 __test__/
+    │       │   │   ├── auth.mocking.dummy.ts
+    │       │   │   ├── auth.resolver.spec.ts
+    │       │   │   └── auth.service.spec.ts
+    │       │   ├── 📂 guards/
+    │       │   │   ├── dynamic-auth.guard-02.ts
+    │       │   │   └── gql-auth.guard.ts
+    │       │   ├── 📂 interface/
+    │       │   │   └── auth.interface.ts
+    │       │   ├── 📂 strategies/
+    │       │   │   ├── jwt-access.strategy.ts
+    │       │   │   ├── jwt-refresh.strategy.ts
+    │       │   │   ├── jwt-social-google.strategy.ts
+    │       │   │   └── jwt-social-kakao.strategy.ts`
+    │       │   ├── auth.controller.ts
+    │       │   ├── auth.module.ts
+    │       │   ├── auth.resolver.ts
+    │       │   └── auth.service.ts
+    │       ├── 📂 dogs/
+    │       │   ├── 📂 __test__/
+    │       │   │   ├── dogs.mocking.ts
+    │       │   │   ├── dogs.resolver.spec.ts
+    │       │   │   └── dogs.service.spec.ts
+    │       │   ├── 📂 dto/
+    │       │   │   └── create-dog.input.ts
+    │       │   ├── 📂 entities/
+    │       │   │   └── dog.entity.ts
+    │       │   ├── 📂 enum/
+    │       │   │   └── dog-type.enum.ts
+    │       │   ├── 📂 interfaces/
+    │       │   │   └── dogs-service.interface.ts
+    │       │   ├── dogs.module.ts
+    │       │   ├── dogs.resolver.ts
+    │       │   └── dogs.service.ts
+    │       ├── 📂 files/
+    │       │   ├── 📂 interfaces/
+    │       │   │   └── files-service.interface.ts
+    │       │   ├── files.module.ts
+    │       │   ├── files.resolver.ts
+    │       │   └── files.service.ts
+    │       ├── 📂 reservations/
+    │       │   ├── 📂 __test__/
+    │       │   │   ├── reservation.mocking.ts
+    │       │   │   └── reservation.resolver.spec.ts
+    │       │   ├── 📂 dto/
+    │       │   │   ├── create-reservation.input.ts
+    │       │   │   └── return-reservation.output.ts
+    │       │   ├── 📂 entities/
+    │       │   │   └── reservation.entity.ts
+    │       │   ├── 📂 interfaces/
+    │       │   │   └── reservations-service.interface.ts
+    │       │   ├── reservations.module.ts
+    │       │   ├── reservations.resolver.ts
+    │       │   └── reservations.service.ts
+    │       ├── 📂 reviews/
+    │       │   ├── 📂 __test__/
+    │       │   │   ├── reviews.resolver.spec.ts
+    │       │   │   └── reviews.service.spec.ts
+    │       │   ├── 📂 dto/
+    │       │   │   └── create-review.input.ts
+    │       │   ├── 📂 entities/
+    │       │   │   └── review.entity.ts
+    │       │   ├── 📂 interfaces/
+    │       │   │   └── reviews-service.interface.ts
+    │       │   ├── reviews.module.ts
+    │       │   ├── reviews.resolver.ts
+    │       │   └── reviews.service.ts
+    │       ├── 📂 shop-review/
+    │       │   ├── 📂 __test__/
+    │       │   │   ├── shop-review.resolver.spec.ts
+    │       │   │   └── shop-review.service.spec.ts
+    │       │   ├── 📂 dto/
+    │       │   │   └── return-shop-review.output.ts
+    │       │   ├── shop-review.module.ts
+    │       │   ├── shop-review.resolver.ts
+    │       │   └── shop-review.service.ts
+    │       ├── 📂 shopImages/
+    │       │   ├── 📂 __test__/
+    │       │   │   ├── shopImage.mocking.dummy.ts
+    │       │   │   ├── shopImage.resolver.spec.ts
+    │       │   │   ├── shopImage.service.spec.ts
+    │       │   │   └── shopImage.service2.spec.ts
+    │       │   ├── 📂 dto/
+    │       │   │   └── update-shopImage.input.ts
+    │       │   ├── 📂 entities/
+    │       │   │   └── shopImages.entity.ts
+    │       │   ├── 📂 interfaces/
+    │       │   │   └── shopImages-service.interface.ts
+    │       │   ├── shopImage.module.ts
+    │       │   ├── shopImage.resolver.ts
+    │       │   └── shopImage.service.ts
+    │       ├── 📂 shops/
+    │       │   ├── 📂 __test__/
+    │       │   │   ├── shops.resolver.spec.ts
+    │       │   │   └── shops.service.spec.ts
+    │       │   ├── 📂 dto/
+    │       │   │   ├── create-shop.input.ts
+    │       │   │   ├── return-shop.output.ts
+    │       │   │   └── update-shop.input.ts
+    │       │   ├── 📂 entities/
+    │       │   │   └── shop.entity.ts
+    │       │   ├── 📂 interface/
+    │       │   │   └── shops-service.interfaces.ts
+    │       │   ├── shops.module.ts
+    │       │   ├── shops.resolver.ts
+    │       │   └── shops.service.ts
+    │       ├── 📂 users/
+    │       │   ├── 📂 __test__/
+    │       │   │   ├── users.resolver.spec.ts
+    │       │   │   └── users.service.spec.ts
+    │       │   ├── 📂 dto/
+    │       │   │   ├── create-users.input.ts
+    │       │   │   └── update-users.input.ts
+    │       │   ├── 📂 entities/
+    │       │   │   └── user.entity.ts
+    │       │   ├── 📂 interface/
+    │       │   │   └── users.interace.ts
+    │       │   ├── user.module.ts
+    │       │   ├── user.resolver.ts
+    │       │   └── user.service.ts
+    │       ├── 📂 commons/
+    │       │   ├── 📂 filter/
+    │       │   │   └── http-exception.filter.ts
+    │       │   ├── 📂 interface/
+    │       │   │   └── context.ts
+    │       │   └── 📂 utils/
+    │       │       ├── addresscode.ts
+    │       │       └── utils
+    │       ├── app.controller.ts
+    │       ├── app.module.ts
+    │       └── main.ts
+    ├── .dockerignore
+    ├── .env.docker
+    ├── .env.prod
+    ├── .eslintrc.js
+    ├── .gitignore
+    ├── .prettierrc
+    ├── cloudbuild.yaml
+    ├── docker-compose.prod.yaml
+    ├── docker-compose.yaml
+    ├── Dockerfile
+    ├── Dockerfile.elasticsearch
+    ├── Dockerfile.logstash
+    ├── Dockerfile.prod
+    ├── nest-cli.json
+    ├── package.json
+    ├── README.md
+    ├── settings.json
+    ├── tsconfig.build.json
+    ├── tsconfig.json
+    └── yarn.lock
 ```
